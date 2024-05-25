@@ -39,27 +39,56 @@ void flashlight_face_setup(movement_settings_t *settings, uint8_t watch_face_ind
 
 void flashlight_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
-    (void) context;
+    flashlight_state_t *state = (flashlight_state_t *)context;
+    state->on = false;
+    state->color = 1;  // Green
+}
 
-    watch_enable_digital_output(A2);
-    watch_set_pin_level(A2, false);
+static void _flashlight_face_update_lcd(flashlight_state_t *state) {
+    char buf[11];
+    const char colors[][2] = {"R", "G", "Y"};
+    sprintf(buf, "FL %s      ", colors[state->color]);
+    watch_display_string(buf, 0);
+}
+
+static void _flashlight_face_update_led(flashlight_state_t *state) {
+    if (!state->on){
+        watch_set_led_off();
+        return;
+    }
+    switch (state->color)
+    {
+    case 0:
+        watch_set_led_red();
+        break;
+    case 1:
+        watch_set_led_green();
+        break;
+    case 2:
+        watch_set_led_yellow();
+        break;
+    default:
+        break;
+    }
 }
 
 bool flashlight_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
-    (void) context;
+    flashlight_state_t *state = (flashlight_state_t *)context;
 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
-            watch_display_string("FL", 0);
+            _flashlight_face_update_lcd(state);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             break;
         case EVENT_LIGHT_BUTTON_UP:
-            if (watch_get_pin_level(A2)) {
-                watch_set_pin_level(A2, false);
-            } else {
-                watch_set_pin_level(A2, true);
-            }
+            state->on = !state->on;
+            _flashlight_face_update_led(state);
+            break;
+        case EVENT_ALARM_BUTTON_UP:
+            state->color = (state->color + 1) % 3;
+            _flashlight_face_update_lcd(state);
+            _flashlight_face_update_led(state);
             break;
         case EVENT_TIMEOUT:
             movement_move_to_face(0);
@@ -74,8 +103,6 @@ bool flashlight_face_loop(movement_event_t event, movement_settings_t *settings,
 void flashlight_face_resign(movement_settings_t *settings, void *context) {
     (void) settings;
     (void) context;
-
-    watch_set_pin_level(A2, false);
-    watch_disable_digital_output(A2);
+    watch_set_led_off();
 }
 
