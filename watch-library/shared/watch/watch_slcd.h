@@ -107,6 +107,10 @@ void watch_clear_indicator(WatchIndicatorSegment indicator);
   */
 void watch_clear_all_indicators(void);
 
+/** @brief Clears all segments on the bottom row.
+  */
+void watch_clear_bottom_row(void);
+
 /** @brief Blinks a single character in position 7. Does not affect other positions.
   * @details Six of the seven segments in position 7 (and only position 7) are capable of autonomous
   *          blinking. This blinking does not require any CPU resources, and will continue even in

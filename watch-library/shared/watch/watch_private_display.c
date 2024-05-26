@@ -166,3 +166,21 @@ void watch_clear_all_indicators(void) {
     watch_clear_pixel(0, 16);
     watch_clear_pixel(1, 10);
 }
+
+void watch_clear_bottom_row(void) {
+    for (uint8_t i = 4; i < 10; i++)
+    {
+        uint64_t segmap = Segment_Map[i];
+        for (int i = 0; i < 8; i++) {
+            uint8_t com = (segmap & 0xFF) >> 6;
+            if (com > 2) {
+                // COM3 means no segment exists; skip it.
+                segmap = segmap >> 8;
+                continue;
+            }
+            uint8_t seg = segmap & 0x3F;
+            watch_clear_pixel(com, seg);
+            segmap = segmap >> 8;
+        }
+    }
+}

@@ -35,12 +35,14 @@
  */
 
 typedef struct {
-    bool active;
+    bool blink;
     bool fast;
     bool led;
     uint8_t text : 4;
     uint8_t color : 2;
     uint8_t led_duration_bak : 2;
+    uint8_t party_text : 2;
+    uint8_t curr_year : 6;  // 0-63 (representing 2020-2083)
 } party_state_t;
 
 void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);

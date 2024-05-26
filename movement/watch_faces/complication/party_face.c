@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "party_face.h"
+#include "watch_private_display.h"
 
 void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
@@ -40,23 +41,37 @@ void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
 void party_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     party_state_t *state = (party_state_t *)context;
-    state->active = false;
-    state->led = true;
+    watch_date_time date_time;
+    date_time = watch_rtc_get_date_time();
+    state->curr_year = date_time.unit.year;
+    state->blink = false;
+    state->led = false;
+    state->fast = false;
     state->led_duration_bak = settings->bit.led_duration;
     settings->bit.led_duration = 0; // Turn off the LED turning on in this mode
     // Handle any tasks related to your watch face coming on screen.
 }
 
 static void _party_face_init_lcd(party_state_t *state) {
-    char buf[11];
-    const char text[MAX_TEXT][7] = {" Party", " Pronn"};
-    sprintf(buf, "%s %c%s", state->led ? "L1" : "L0",state->fast ? 'F' : 'S', text[state->text]);
-    watch_display_string(buf, 0);
-}
+    char text[11];
+    const char partyTime[][7] = {"Tin&e", "To   ","Party"};
+    switch (state->text)
+    {
+    case 1:
+        sprintf(text, "     Pron&");
+        break;
+    case 0:
+    default:
+        if (!state->blink)
+            state->party_text = 2;
+        else{
+            state->party_text = (state->party_text + 1)  % 3;
+        }
+        sprintf(text, "EF%02d %s", state->curr_year + 20, partyTime[state->party_text]);
+        break;
+    }
+    watch_display_string(text, 0);
 
-static void _party_face_update_lcd_on(party_state_t *state) {
-    char text[MAX_TEXT][11] = {"EF24 Party", "     Pronn"}; // EF24 = Electric Forest 2024
-    watch_display_string(text[state->text], 0);
 }
 
 bool party_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -67,38 +82,22 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             _party_face_init_lcd(state);
             break;
         case EVENT_LIGHT_BUTTON_UP:
-            if (!state->active) {
-                state->led = !state->led;
-                _party_face_init_lcd(state);
-            }
+            state->led = !state->led;
+            if (!state->led)
+                watch_set_led_off();
             break;
         case EVENT_LIGHT_LONG_PRESS:
-            if (!state->active) {
-                state->text = (state->text + 1) % MAX_TEXT;
-                _party_face_init_lcd(state);
-            }
+            state->text = (state->text + 1) % MAX_TEXT;
+            _party_face_init_lcd(state);
             break;
         case EVENT_ALARM_BUTTON_UP:
-            if (!state->active) {
-                state->active = true;
-                movement_request_tick_frequency(state->fast ? 8 : 2);
-            } else {
-                state->active = false;
-                watch_set_led_off();
-                _party_face_init_lcd(state);
-            }
+            state->blink = !state->blink;
+            movement_request_tick_frequency(state->fast ? 8 : 2);
+            _party_face_init_lcd(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
-            if (!state->active) {
-                state->fast = !state->fast;
-                _party_face_init_lcd(state);
-            }
-            break;
-        case EVENT_TIMEOUT:
-            if (!state->active){
-                watch_set_led_off();
-                movement_move_to_face(0);
-            }
+            state->fast = !state->fast;
+            movement_request_tick_frequency(state->fast ? 8 : 2);
             break;
         case EVENT_LOW_ENERGY_UPDATE:
 
@@ -109,15 +108,15 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             watch_start_tick_animation(500);
             break;
         case EVENT_TICK:
-            if (state->active) {
-                if (event.subsecond % 2 == 0){
-                    _party_face_update_lcd_on(state);
-                }
-                else{
+            if (state->blink) {
+                if (event.subsecond % 2 == 0)
+                    _party_face_init_lcd(state);
+                else if (state->text == 0)  // Clear only the bottom row when the party text is occurring
+                    watch_clear_bottom_row();
+                else
                     watch_clear_display();
-                }
-                if (!state->led)
-                    break;
+            }
+            if (state->led) {
                 switch (state->color)
                 {
                 case 0:
