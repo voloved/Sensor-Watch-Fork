@@ -25,7 +25,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "party_face.h"
-#include "watch_private_display.h"
 
 void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
@@ -54,7 +53,8 @@ void party_face_activate(movement_settings_t *settings, void *context) {
 
 static void _party_face_init_lcd(party_state_t *state) {
     char text[11];
-    const char partyTime[][7] = {"Tin&e", "To   ","Party"};
+    const int partyTextNum = 3;
+    const char partyTime[][7] = {" It's","Party", "Tin&e"};
     switch (state->text)
     {
     case 1:
@@ -62,10 +62,13 @@ static void _party_face_init_lcd(party_state_t *state) {
         break;
     case 0:
     default:
-        if (!state->blink)
-            state->party_text = 2;
+        if (!state->blink){
+            state->party_text = 1;  // Party location
+            watch_clear_indicator(WATCH_INDICATOR_BELL);
+        }
         else{
-            state->party_text = (state->party_text + 1)  % 3;
+            state->party_text = (state->party_text + 1)  % partyTextNum;
+            watch_set_indicator(WATCH_INDICATOR_BELL);
         }
         sprintf(text, "EF%02d %s", state->curr_year + 20, partyTime[state->party_text]);
         break;
@@ -82,7 +85,7 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             _party_face_init_lcd(state);
             break;
         case EVENT_LIGHT_BUTTON_UP:
-            state->led = !state->led;
+            state->led = (state->led + 1) % 3;
             if (!state->led)
                 watch_set_led_off();
             break;
@@ -93,7 +96,8 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
         case EVENT_ALARM_BUTTON_UP:
             state->blink = !state->blink;
             movement_request_tick_frequency(state->fast ? 8 : 2);
-            _party_face_init_lcd(state);
+            if (!state->blink)
+                _party_face_init_lcd(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
             state->fast = !state->fast;
@@ -111,12 +115,25 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             if (state->blink) {
                 if (event.subsecond % 2 == 0)
                     _party_face_init_lcd(state);
-                else if (state->text == 0)  // Clear only the bottom row when the party text is occurring
+                else if (state->text == 0){  // Clear only the bottom row when the party text is occurring
                     watch_clear_bottom_row();
+                    watch_clear_indicator(WATCH_INDICATOR_BELL);
+                }
                 else
                     watch_clear_display();
             }
-            if (state->led) {
+            switch (state->led)
+            {
+            case 0:        
+            default:
+                break;
+            case 1:
+                if (event.subsecond % 2 == 0)
+                    watch_set_led_green();
+                else
+                    watch_set_led_off();
+                break;
+            case 2:
                 switch (state->color)
                 {
                 case 0:
@@ -132,7 +149,7 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
                     watch_set_led_off();
                     break;
                 }
-                state->color = (state->color + 1) % 3;
+                state->color = (state->color + 1) % 3;  
             }
             break;
         default:

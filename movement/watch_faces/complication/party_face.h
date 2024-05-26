@@ -37,8 +37,8 @@
 typedef struct {
     bool blink;
     bool fast;
-    bool led;
-    uint8_t text : 4;
+    uint8_t led : 2; // 0 = None; 1 = Green only; 2 = All
+    uint8_t text : 2;
     uint8_t color : 2;
     uint8_t led_duration_bak : 2;
     uint8_t party_text : 2;
