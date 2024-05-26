@@ -101,7 +101,10 @@ void watch_start_tick_animation(uint32_t duration) {
     watch_display_character(' ', 8);
 
     tick_state = true;
-    tick_interval_id = emscripten_set_interval(watch_invoke_tick_callback, (double)duration, NULL);
+    if (duration != 0)
+        tick_interval_id = emscripten_set_interval(watch_invoke_tick_callback, (double)duration, NULL);
+    else
+        tick_interval_id = -2;  // Just to trick the thing into thinking it's running
 }
 
 bool watch_tick_animation_is_running(void) {
@@ -109,7 +112,8 @@ bool watch_tick_animation_is_running(void) {
 }
 
 void watch_stop_tick_animation(void) {
-    emscripten_clear_timeout(tick_interval_id);
+    if (tick_interval_id != -2)
+        emscripten_clear_timeout(tick_interval_id);
     tick_interval_id = -1;
     tick_state = false;
 
