@@ -95,6 +95,21 @@
 #define MOVEMENT_DEFAULT_LED_DURATION 1
 #endif
 
+// Default to not always chiming every hour
+#ifndef MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS 0
+#endif
+
+// Default to beginning a chime at 7am
+#ifndef MOVEMENT_DEFAULT_HOURLY_CHIME_START
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_START 1
+#endif
+
+// Default to beginning a chime at 9pm
+#ifndef MOVEMENT_DEFAULT_HOURLY_CHIME_END
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_END 1
+#endif
+
 #if __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
@@ -384,6 +399,9 @@ void app_init(void) {
     movement_state.settings.bit.to_interval = MOVEMENT_DEFAULT_TIMEOUT_INTERVAL;
     movement_state.settings.bit.le_interval = MOVEMENT_DEFAULT_LOW_ENERGY_INTERVAL;
     movement_state.settings.bit.led_duration = MOVEMENT_DEFAULT_LED_DURATION;
+    movement_state.settings.bit.hourly_chime_always = MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS;
+    movement_state.settings.bit.hourly_chime_start = MOVEMENT_DEFAULT_HOURLY_CHIME_START;
+    movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
     movement_state.next_available_backup_register = 4;
