@@ -86,8 +86,11 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
         case EVENT_LIGHT_BUTTON_UP:
             state->led = (state->led + 1) % 3;
-            if (!state->led)
+            if (!state->led){
                 watch_set_led_off();
+                break;
+            }
+            movement_request_tick_frequency(state->fast ? 8 : 2);
             break;
         case EVENT_LIGHT_LONG_PRESS:
             state->text = (state->text + 1) % MAX_TEXT;

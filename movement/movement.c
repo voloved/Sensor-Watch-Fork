@@ -402,6 +402,7 @@ void app_init(void) {
     movement_state.settings.bit.hourly_chime_always = MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS;
     movement_state.settings.bit.hourly_chime_start = MOVEMENT_DEFAULT_HOURLY_CHIME_START;
     movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
+    movement_state.settings.bit.time_zone = 35;  // Atlantic Time as default
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
     movement_state.next_available_backup_register = 4;
