@@ -104,6 +104,14 @@ const watch_face_t watch_faces[] = {
  */
 #define MOVEMENT_DEFAULT_LED_DURATION 1
 
+/* The latitude and longitude used for the wearers location
+ * Set signed values in 1/100ths of a degree
+ * Set lat and long for Raleigh (3578, -7864)
+ * Double JJ Ranch (4354, -8636)
+ */
+#define MOVEMENT_DEFAULT_LATITUDE 3578
+#define MOVEMENT_DEFAULT_LONGITUDE -7864
+
 /* Set if the watch will chime every hour and ignorethe start and end chimes
  * Valid values are:
  * 0: Use the Start and End values

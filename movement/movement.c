@@ -95,6 +95,16 @@
 #define MOVEMENT_DEFAULT_LED_DURATION 1
 #endif
 
+// Default to no set location latitude
+#ifndef MOVEMENT_DEFAULT_LATITUDE
+#define MOVEMENT_DEFAULT_LATITUDE 0
+#endif
+
+// Default to no set location longitude
+#ifndef MOVEMENT_DEFAULT_LONGITUDE
+#define MOVEMENT_DEFAULT_LONGITUDE 0
+#endif
+
 // Default to not always chiming every hour
 #ifndef MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS
 #define MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS 0
@@ -399,6 +409,8 @@ void app_init(void) {
     movement_state.settings.bit.to_interval = MOVEMENT_DEFAULT_TIMEOUT_INTERVAL;
     movement_state.settings.bit.le_interval = MOVEMENT_DEFAULT_LOW_ENERGY_INTERVAL;
     movement_state.settings.bit.led_duration = MOVEMENT_DEFAULT_LED_DURATION;
+    movement_state.location.bit.latitude = MOVEMENT_DEFAULT_LATITUDE;
+    movement_state.location.bit.longitude = MOVEMENT_DEFAULT_LONGITUDE;
     movement_state.settings.bit.hourly_chime_always = MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS;
     movement_state.settings.bit.hourly_chime_start = MOVEMENT_DEFAULT_HOURLY_CHIME_START;
     movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
@@ -425,10 +437,12 @@ void app_init(void) {
 
 void app_wake_from_backup(void) {
     movement_state.settings.reg = watch_get_backup_data(0);
+    movement_state.location.reg = watch_get_backup_data(1);
 }
 
 void app_setup(void) {
     watch_store_backup_data(movement_state.settings.reg, 0);
+    watch_store_backup_data(movement_state.location.reg, 1);
 
     static bool is_first_launch = true;
 

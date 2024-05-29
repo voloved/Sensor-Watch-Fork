@@ -289,10 +289,6 @@ void sunrise_sunset_face_setup(movement_settings_t *settings, uint8_t watch_face
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(sunrise_sunset_state_t));
         memset(*context_ptr, 0, sizeof(sunrise_sunset_state_t));
-        movement_location_t movement_location;
-        movement_location.bit.latitude = LAT_DEFAULT;
-        movement_location.bit.longitude = LONG_DEFAULT;
-        watch_store_backup_data(movement_location.reg, 1);
     }
 }
 

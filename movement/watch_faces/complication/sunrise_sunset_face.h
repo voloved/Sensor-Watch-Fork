@@ -70,9 +70,4 @@ void sunrise_sunset_face_resign(movement_settings_t *settings, void *context);
     NULL, \
 })
 
-// Set long and lat for Raleigh (3578, -7864)
-// Double JJ Ranch (4354, -8636)
-#define LAT_DEFAULT     4354
-#define LONG_DEFAULT   -8636
-
 #endif // SUNRISE_SUNSET_FACE_H_
