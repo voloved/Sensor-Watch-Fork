@@ -52,19 +52,39 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             if (state->tally_idx > 999999) { //0-999,999
                 //reset tally index and play a reset tune
                 state->tally_idx = 0;
-                watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
-                watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
             }
             print_tally(state);
-            watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
+            if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
             break;
         case EVENT_ALARM_LONG_PRESS:
-            state->tally_idx = 0; // reset tally index
-            //play a reset tune
-            watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
-            watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
-            watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
-            print_tally(state);
+            if (state->tally_idx == 0){  // Able to turn off sound if we hold this button when it's at zero.
+                state->soundOff = !state->soundOff;
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
+                print_tally(state);
+            }
+            else{
+                state->tally_idx = 0; // reset tally index
+                //play a reset tune
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
+                print_tally(state);
+            }
+            break;
+        case EVENT_LIGHT_BUTTON_UP:
+            // decrement tally index
+            if (state->tally_idx != 0){
+                state->tally_idx--;
+                print_tally(state);
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_C6SHARP_D6FLAT, 30);
+            }
+            break;
+        case EVENT_LIGHT_BUTTON_DOWN:
+            break;
+        case EVENT_LIGHT_LONG_PRESS:
+            movement_illuminate_led();
             break;
         case EVENT_ACTIVATE:
             print_tally(state);
@@ -83,6 +103,10 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
 // print tally index at the center of display.
 void print_tally(tally_state_t *state) {
     char buf[14];
+    if (!state->soundOff)
+        watch_set_indicator(WATCH_INDICATOR_BELL);
+    else
+        watch_clear_indicator(WATCH_INDICATOR_BELL);
     sprintf(buf, "TA  %06d", (int)(state->tally_idx)); // center of LCD display
     watch_display_string(buf, 0);
 }

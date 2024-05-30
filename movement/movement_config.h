@@ -43,6 +43,7 @@ const watch_face_t watch_faces[] = {
     probability_face,
     tally_face,
     invaders_face,
+    simon_face,
     wyoscan_face,
     preferences_face,
     set_time_face,
