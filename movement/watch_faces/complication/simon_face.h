@@ -77,6 +77,10 @@ typedef struct {
     uint8_t sequence_length;
     uint8_t teaching_index;
     uint8_t listen_index;
+    bool soundOff;
+    bool lightOff;
+    bool easyMode;  // Easy mode turns off the timer.
+    uint8_t timer:5;
     SimonPlayingState playing_state;
 } simon_state_t;
 
@@ -93,5 +97,12 @@ void simon_face_resign(movement_settings_t *settings, void *context);
      simon_face_resign,                                                       \
      NULL,                                                                    \
      })
+
+/*
+    Max time in seconds before the game says you fail.
+    Iterates once per tick (so it'll be off by at most -1 seconds since 
+    the last tick have occurred just before we our turn begins).
+*/
+#define TIMER_MAX 5
 
 #endif // SIMON_FACE_H_
