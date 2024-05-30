@@ -72,15 +72,13 @@ void sunrise_sunset_face_resign(movement_settings_t *settings, void *context);
 })
 
 // For longLatToUse
-#define COORDS_MAX 2
+#define COORDS_MAX 1
 static const char longLatToUseName[COORDS_MAX + 1][2] = {
         "  ",  // Display for showing the lat and long that th ewatch is set to
         "EF",
-        "RA"
     };
 static const int16_t longLatToUseCoord[COORDS_MAX * 2] = {
         4354, -8636,  //Double JJ Ranch 
-        3578, -7864,  // Raleigh
     };
 
 #endif // SUNRISE_SUNSET_FACE_H_

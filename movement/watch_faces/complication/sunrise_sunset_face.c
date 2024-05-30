@@ -296,8 +296,6 @@ void sunrise_sunset_face_setup(movement_settings_t *settings, uint8_t watch_face
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(sunrise_sunset_state_t));
         memset(*context_ptr, 0, sizeof(sunrise_sunset_state_t));
-        sunrise_sunset_state_t *state = (sunrise_sunset_state_t *) *context_ptr;
-        state->longLatToUse = 1;  // Default to EF
     }
 }
 
