@@ -46,7 +46,14 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
     char buf[14];
     double rise, set, minutes, seconds;
     bool show_next_match = false;
-    movement_location_t movement_location = (movement_location_t) watch_get_backup_data(1);
+    movement_location_t movement_location;
+    if (state->longLatToUse == 0 || state->longLatToUse > COORDS_MAX)
+        movement_location = (movement_location_t) watch_get_backup_data(1);
+    else{
+        uint8_t longLat = 2 * (state->longLatToUse - 1);
+        movement_location.bit.latitude = longLatToUseCoord[longLat];
+        movement_location.bit.longitude = longLatToUseCoord[longLat + 1];
+    }
 
     if (movement_location.reg == 0) {
         watch_display_string("RI  no Loc", 0);
@@ -109,7 +116,7 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
                     if (watch_utility_convert_to_12_hour(&scratch_time)) watch_set_indicator(WATCH_INDICATOR_PM);
                     else watch_clear_indicator(WATCH_INDICATOR_PM);
                 }
-                sprintf(buf, "rI%2d%2d%02d  ", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute);
+                sprintf(buf, "rI%2d%2d%02d%s", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute,longLatToUseName[state->longLatToUse]);
                 watch_display_string(buf, 0);
                 return;
             } else {
@@ -136,7 +143,7 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
                     if (watch_utility_convert_to_12_hour(&scratch_time)) watch_set_indicator(WATCH_INDICATOR_PM);
                     else watch_clear_indicator(WATCH_INDICATOR_PM);
                 }
-                sprintf(buf, "SE%2d%2d%02d  ", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute);
+                sprintf(buf, "SE%2d%2d%02d%s", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute, longLatToUseName[state->longLatToUse]);
                 watch_display_string(buf, 0);
                 return;
             } else {
@@ -289,6 +296,8 @@ void sunrise_sunset_face_setup(movement_settings_t *settings, uint8_t watch_face
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(sunrise_sunset_state_t));
         memset(*context_ptr, 0, sizeof(sunrise_sunset_state_t));
+        sunrise_sunset_state_t *state = (sunrise_sunset_state_t *) *context_ptr;
+        state->longLatToUse = 1;  // Default to EF
     }
 }
 
@@ -359,6 +368,12 @@ bool sunrise_sunset_face_loop(movement_event_t event, movement_settings_t *setti
                 _sunrise_sunset_face_update(settings, state);
             }
             break;
+        case EVENT_ALARM_LONG_PRESS:
+            if (state->page == 0) {
+                state->longLatToUse = (state->longLatToUse + 1) % (COORDS_MAX + 1);
+                _sunrise_sunset_face_update(settings, state);
+            }
+            break;
         case EVENT_ALARM_BUTTON_UP:
             if (state->page) {
                 _sunrise_sunset_face_advance_digit(state);
@@ -368,13 +383,19 @@ bool sunrise_sunset_face_loop(movement_event_t event, movement_settings_t *setti
                 _sunrise_sunset_face_update(settings, state);
             }
             break;
-        case EVENT_ALARM_LONG_PRESS:
+        case EVENT_LIGHT_LONG_PRESS:
             if (state->page == 0) {
                 state->page++;
                 state->active_digit = 0;
                 watch_clear_display();
                 movement_request_tick_frequency(4);
                 _sunrise_sunset_face_update_settings_display(event, context);
+            }
+            else{
+                state->active_digit = 0;
+                state->page = 0;
+                _sunrise_sunset_face_update_location_register(state);
+                _sunrise_sunset_face_update(settings, state);
             }
             break;
         case EVENT_TIMEOUT:

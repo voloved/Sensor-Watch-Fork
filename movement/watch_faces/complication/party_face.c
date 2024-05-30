@@ -46,8 +46,6 @@ void party_face_activate(movement_settings_t *settings, void *context) {
     state->blink = false;
     state->led = false;
     state->fast = false;
-    state->led_duration_bak = settings->bit.led_duration;
-    settings->bit.led_duration = 0; // Turn off the LED turning on in this mode
     // Handle any tasks related to your watch face coming on screen.
 }
 
@@ -111,8 +109,8 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             // If you did not resign in EVENT_TIMEOUT, you can use this event to update the display once a minute.
             // Avoid displaying fast-updating values like seconds, since the display won't update again for 60 seconds.
             // You should also consider starting the tick animation, to show the wearer that this is sleep mode:
+            //watch_start_tick_animation(500);
             watch_set_led_off();
-            watch_start_tick_animation(500);
             break;
         case EVENT_TICK:
             if (state->blink) {
@@ -155,9 +153,10 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
                 state->color = (state->color + 1) % 3;  
             }
             break;
+        case EVENT_LIGHT_BUTTON_DOWN:
+            break;
         default:
             // Movement's default loop handler will step in for any cases you don't handle above:
-            // * EVENT_LIGHT_BUTTON_DOWN lights the LED
             // * EVENT_MODE_BUTTON_UP moves to the next watch face in the list
             // * EVENT_MODE_LONG_PRESS returns to the first watch face (or skips to the secondary watch face, if configured)
             // You can override any of these behaviors by adding a case for these events to this switch statement.
@@ -174,8 +173,6 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
 }
 
 void party_face_resign(movement_settings_t *settings, void *context) {
-    party_state_t *state = (party_state_t *)context;
-    settings->bit.led_duration = state->led_duration_bak; // Turn LED back to default
     (void) settings;
     (void) context;
     watch_set_led_off();
