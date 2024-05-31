@@ -79,8 +79,7 @@ typedef struct {
     uint8_t listen_index;
     bool soundOff;
     bool lightOff;
-    bool easyMode;  // Easy mode turns off the timer.
-    uint8_t timer:5;
+    uint8_t mode:6;  // 0 = Normal ; 1 = No Timeout; 2 = Double speed
     SimonPlayingState playing_state;
 } simon_state_t;
 
@@ -103,6 +102,10 @@ void simon_face_resign(movement_settings_t *settings, void *context);
     Iterates once per tick (so it'll be off by at most -1 seconds since 
     the last tick have occurred just before we our turn begins).
 */
+
+#define TOTAL_MODES 3
 #define TIMER_MAX 5
+#define SIMON_FACE_FREQUENCY 8
+#define DELAY_FOR_TONE_MS 300
 
 #endif // SIMON_FACE_H_

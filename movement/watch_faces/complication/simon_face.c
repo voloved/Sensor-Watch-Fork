@@ -33,6 +33,10 @@
 #endif
 
 static char _simon_display_buf[12];
+static uint8_t _timer;
+static uint16_t _delay_beep;
+static uint16_t _timeout;
+static uint8_t _secSub;
 
 static inline uint8_t _simon_get_rand_num(uint8_t num_values) {
 #if __EMSCRIPTEN__
@@ -64,7 +68,17 @@ static void _simon_not_playing_display(simon_state_t *state) {
     else
         watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
     watch_display_string(_simon_display_buf, 0);
-    if (state->easyMode) watch_display_string("E", 9); // E for easy mode.
+    switch (state->mode)
+    {
+    case 1:
+        watch_display_string("E", 9); // E for easy mode.
+        break;
+    case 2:
+        watch_display_string("H", 9); // H for hard mode.
+        break;
+    default:
+        break;
+    }
 }
 
 static void _simon_reset(simon_state_t *state) {
@@ -102,23 +116,23 @@ static void _simon_play_note(SimonNote note, simon_state_t *state, bool skip_res
         case SIMON_LED_NOTE:
             if (!state->lightOff) watch_set_led_yellow();
             if (state->soundOff)
-                delay_ms(300);
+                delay_ms(_delay_beep);
             else
-                watch_buzzer_play_note(BUZZER_NOTE_D3, 300);
+                watch_buzzer_play_note(BUZZER_NOTE_D3, _delay_beep);
             break;
         case SIMON_MODE_NOTE:
             if (!state->lightOff) watch_set_led_red();
             if (state->soundOff)
-                delay_ms(300);
+                delay_ms(_delay_beep);
             else
-               watch_buzzer_play_note(BUZZER_NOTE_E4, 300);
+               watch_buzzer_play_note(BUZZER_NOTE_E4, _delay_beep);
             break;
         case SIMON_ALARM_NOTE:
             if (!state->lightOff) watch_set_led_green();
             if (state->soundOff)
-                delay_ms(300);
+                delay_ms(_delay_beep);
             else
-               watch_buzzer_play_note(BUZZER_NOTE_C3, 300);
+               watch_buzzer_play_note(BUZZER_NOTE_C3, _delay_beep);
             break;
         case SIMON_WRONG_NOTE:
             if (state->soundOff)
@@ -132,7 +146,7 @@ static void _simon_play_note(SimonNote note, simon_state_t *state, bool skip_res
     if (note != SIMON_WRONG_NOTE) {
         _simon_clear_display(state);
         if (!skip_rest) {
-            watch_buzzer_play_note(BUZZER_NOTE_REST, 200);
+            watch_buzzer_play_note(BUZZER_NOTE_REST, (_delay_beep * 2)/3);
         }
     }
 }
@@ -155,7 +169,7 @@ static void _simon_listen(SimonNote note, simon_state_t *state) {
     if (state->sequence[state->listen_index] == note) {
         _simon_play_note(note, state, true);
         state->listen_index++;
-        state->timer = 0;
+        _timer = 0;
 
         if (state->listen_index == state->sequence_length) {
             state->playing_state = SIMON_READY_FOR_NEXT_NOTE;
@@ -169,6 +183,22 @@ static void _simon_listen(SimonNote note, simon_state_t *state) {
 static void _simon_begin_listening(simon_state_t *state) {
     state->playing_state = SIMON_LISTENING_BACK;
     state->listen_index = 0;
+}
+
+static void _simon_change_speed(simon_state_t *state){
+      switch (state->mode)
+  {
+  case 2:
+        _delay_beep = DELAY_FOR_TONE_MS / 2;
+        _secSub = SIMON_FACE_FREQUENCY / 2;
+        _timeout = (TIMER_MAX * SIMON_FACE_FREQUENCY) / 2;
+    break;
+  default:
+        _delay_beep = DELAY_FOR_TONE_MS;
+        _secSub = SIMON_FACE_FREQUENCY;
+        _timeout = TIMER_MAX * SIMON_FACE_FREQUENCY;
+    break;
+  }
 }
 
 void simon_face_setup(movement_settings_t *settings, uint8_t watch_face_index,
@@ -193,6 +223,10 @@ void simon_face_setup(movement_settings_t *settings, uint8_t watch_face_index,
 void simon_face_activate(movement_settings_t *settings, void *context) {
   (void) settings;
   (void) context;
+  simon_state_t *state = (simon_state_t *)context;
+  _simon_change_speed(state);
+  movement_request_tick_frequency(SIMON_FACE_FREQUENCY);
+   _timer = 0;
 }
 
 bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
@@ -205,11 +239,16 @@ bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
             _simon_reset(state);
             break;
         case EVENT_TICK:
-            if (state->playing_state == SIMON_READY_FOR_NEXT_NOTE) {
-                state->timer = 0;
-                _simon_setup_next_note(state);
+            if (state->playing_state == SIMON_LISTENING_BACK && state->mode != 1)
+            {
+                _timer++;
+                if(_timer >= (_timeout)){
+                    _timer = 0;
+                    _simon_play_note(SIMON_WRONG_NOTE, state, true);
+                    _simon_reset(state);
+                }
             }
-            else if (state->playing_state == SIMON_TEACHING) {
+            else if (state->playing_state == SIMON_TEACHING && event.subsecond  == 0) {
                 SimonNote note = state->sequence[state->teaching_index];
                 // if this is the final note in the sequence, don't play the rest to let
                 // the player jump in faster
@@ -220,14 +259,9 @@ bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
                     _simon_begin_listening(state);
                 }
             }
-            else if (state->playing_state == SIMON_LISTENING_BACK && !state->easyMode)
-            {
-                state->timer++;
-                if(state->timer >= TIMER_MAX){
-                    state->timer = 0;
-                    _simon_play_note(SIMON_WRONG_NOTE, state, true);
-                    _simon_reset(state);
-                }
+            else if (state->playing_state == SIMON_READY_FOR_NEXT_NOTE && (event.subsecond % _secSub)  == 0) {
+                _timer = 0;
+                _simon_setup_next_note(state);
             }
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
@@ -243,7 +277,7 @@ bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
                 state->soundOff = !state->soundOff;
                 _simon_not_playing_display(state);
                 if (!state->soundOff)
-                    watch_buzzer_play_note(BUZZER_NOTE_D3, 300);
+                    watch_buzzer_play_note(BUZZER_NOTE_D3, _delay_beep);
             }
             break;
         case EVENT_LIGHT_BUTTON_UP:
@@ -276,7 +310,8 @@ bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
                 _simon_listen(SIMON_ALARM_NOTE, state);
             }
             else if (state->playing_state == SIMON_NOT_PLAYING){
-                state->easyMode = !state->easyMode;
+                state->mode = (state->mode + 1) % TOTAL_MODES;
+                _simon_change_speed(state);
                 _simon_not_playing_display(state);
             }
             break;
