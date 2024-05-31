@@ -33,7 +33,7 @@ const char preferences_face_titles[PREFERENCES_FACE_NUM_PREFERENCES][11] = {
     "TO        ",   // Timeout: how long before we snap back to the clock face?
     "LE        ",   // Low Energy mode: how long before it engages?
     "HCSt      ",   // Hourly Chime Start
-    "HCEn      ",   // Hourly Chime End
+    "HCEd      ",   // Hourly Chime End
     "LT        ",   // Light: duration
 #ifdef WATCH_IS_BLUE_BOARD
     "LT   blu  ",   // Light: blue component (for watches with blue LED)
