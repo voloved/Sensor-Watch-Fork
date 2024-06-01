@@ -65,7 +65,7 @@ typedef union {
         bool hourly_chime_always : 1;       // if true, then ignore the 
         uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm; 
         uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
-        bool reserved : 1;                  // room for more preferences if needed.
+        bool screen_off_after_le;           // If true and we're in LE mode and it's the top of the hour and the temp is below #DEFAULT_TEMP_ASSUME_WEARING but not zero, then turn off the screen and other tasks.
     } bit;
     uint32_t reg;
 } movement_settings_t;
@@ -274,6 +274,7 @@ typedef struct {
 
     // low energy mode countdown
     int32_t le_mode_ticks;
+    int32_t le_deep_sleeping_ticks;
 
     // app resignation countdown (TODO: consolidate with LE countdown?)
     int16_t timeout_ticks;

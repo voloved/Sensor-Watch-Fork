@@ -34,6 +34,7 @@
 #include "filesystem.h"
 #include "movement.h"
 #include "shell.h"
+#include "thermistor_driver.h"
 
 #ifndef MOVEMENT_FIRMWARE
 #include "movement_config.h"
@@ -120,6 +121,11 @@
 #define MOVEMENT_DEFAULT_HOURLY_CHIME_END 1
 #endif
 
+// Default to having deep sleep be on
+#ifndef MOVEMENT_DEFAULT_LE_DEEP_SLEEP
+#define MOVEMENT_DEFAULT_LE_DEEP_SLEEP true
+#endif
+
 #if __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
@@ -128,6 +134,7 @@ movement_state_t movement_state;
 void * watch_face_contexts[MOVEMENT_NUM_FACES];
 watch_date_time scheduled_tasks[MOVEMENT_NUM_FACES];
 const int32_t movement_le_inactivity_deadlines[8] = {INT_MAX, 600, 3600, 7200, 21600, 43200, 86400, 604800};
+const int32_t movement_le_deep_sleep_deadline = 60; // In minutes (will trigger at the top of the minute, rounded up from the LE timeout tick)
 const int16_t movement_timeout_inactivity_deadlines[4] = {60, 120, 300, 1800};
 movement_event_t event;
 
@@ -189,6 +196,7 @@ void cb_tick(void);
 static inline void _movement_reset_inactivity_countdown(void) {
     movement_state.le_mode_ticks = movement_le_inactivity_deadlines[movement_state.settings.bit.le_interval];
     movement_state.timeout_ticks = movement_timeout_inactivity_deadlines[movement_state.settings.bit.to_interval];
+    movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
 }
 
 static inline void _movement_enable_fast_tick_if_needed(void) {
@@ -355,6 +363,7 @@ static void end_buzzing_and_disable_buzzer(void) {
 
 void movement_play_signal(void) {
     void *maybe_disable_buzzer = end_buzzing_and_disable_buzzer;
+    if (movement_state.le_deep_sleeping_ticks == -1) return;
     if (watch_is_buzzer_or_led_enabled()) {
         maybe_disable_buzzer = end_buzzing;
     } else {
@@ -414,6 +423,7 @@ void app_init(void) {
     movement_state.settings.bit.hourly_chime_always = MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS;
     movement_state.settings.bit.hourly_chime_start = MOVEMENT_DEFAULT_HOURLY_CHIME_START;
     movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
+    movement_state.settings.bit.screen_off_after_le = MOVEMENT_DEFAULT_LE_DEEP_SLEEP;
     movement_state.settings.bit.time_zone = 35;  // Atlantic Time as default
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
@@ -493,6 +503,17 @@ void app_prepare_for_standby(void) {
 void app_wake_from_standby(void) {
 }
 
+static void _decrement_deep_sleep_counter(void){
+    if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
+    else{
+        thermistor_driver_enable();
+        float temperature_c = thermistor_driver_get_temperature();
+        thermistor_driver_disable();
+        if (temperature_c < DEFAULT_TEMP_ASSUME_WEARING && temperature_c != 0) movement_state.le_deep_sleeping_ticks = -1;
+        else movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
+    }
+}
+
 static void _sleep_mode_app_loop(void) {
     movement_state.needs_wake = false;
     // as long as le_mode_ticks is -1 (i.e. we are in low energy mode), we wake up here, update the screen, and go right back to sleep.
@@ -506,6 +527,7 @@ static void _sleep_mode_app_loop(void) {
         // if we need to wake immediately, do it!
         if (movement_state.needs_wake) return;
         // otherwise enter sleep mode, and when the extwake handler is called, it will reset le_mode_ticks and force us out at the next loop.
+        if (movement_state.le_deep_sleeping_ticks == -1) watch_enter_deep_sleep_mode();
         else watch_enter_sleep_mode();
     }
 }
@@ -691,6 +713,7 @@ void cb_alarm_btn_extwake(void) {
 }
 
 void cb_alarm_fired(void) {
+    _decrement_deep_sleep_counter();
     movement_state.needs_background_tasks_handled = true;
 }
 
