@@ -106,6 +106,7 @@
 #include "kitchen_conversions_face.h"
 #include "party_face.h"
 #include "simon_face.h"
+#include "festival_schedule_face.h"
 // New includes go above this line.
 
 #endif // MOVEMENT_FACES_H_
