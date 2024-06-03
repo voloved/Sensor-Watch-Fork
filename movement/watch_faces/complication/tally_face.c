@@ -27,12 +27,19 @@
 #include "tally_face.h"
 #include "watch.h"
 
+static const uint32_t _tally_default[] = {0, 40, 20};
+static const uint8_t _tally_default_size = sizeof(_tally_default) / sizeof(uint32_t);
+static bool _le_mode;
+
 void tally_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(tally_state_t));
         memset(*context_ptr, 0, sizeof(tally_state_t));
+        tally_state_t *state = (tally_state_t *)*context_ptr;
+        state->tally_default_idx = 0;
+        state->tally_idx = _tally_default[state->tally_default_idx];
     }
 }
 
@@ -46,12 +53,19 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
     tally_state_t *state = (tally_state_t *)context;
     
     switch (event.event_type) {
+        case EVENT_LOW_ENERGY_UPDATE:
+            _le_mode = true;
+            break;
         case EVENT_ALARM_BUTTON_UP:
+            if ( _le_mode){
+                _le_mode = false;
+                break;
+            }
             // increment tally index
             state->tally_idx++;
             if (state->tally_idx > 999999) { //0-999,999
                 //reset tally index and play a reset tune
-                state->tally_idx = 0;
+                state->tally_idx = _tally_default[state->tally_default_idx];
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
             }
@@ -59,13 +73,13 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
             break;
         case EVENT_ALARM_LONG_PRESS:
-            if (state->tally_idx == 0){  // Able to turn off sound if we hold this button when it's at zero.
+            if (state->tally_idx == _tally_default[state->tally_default_idx]){  // Able to turn off sound if we hold this button when it's at zero.
                 state->soundOff = !state->soundOff;
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
                 print_tally(state);
             }
             else{
-                state->tally_idx = 0; // reset tally index
+                state->tally_idx = _tally_default[state->tally_default_idx]; // reset tally index
                 //play a reset tune
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
@@ -84,6 +98,14 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
         case EVENT_LIGHT_BUTTON_DOWN:
             break;
         case EVENT_LIGHT_LONG_PRESS:
+            if (state->tally_idx == _tally_default[state->tally_default_idx]){
+                state->tally_default_idx = (state->tally_default_idx + 1) % _tally_default_size;
+                state->tally_idx = _tally_default[state->tally_default_idx];
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
+                if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
+                print_tally(state);
+            }
             movement_illuminate_led();
             break;
         case EVENT_ACTIVATE:

@@ -39,6 +39,7 @@
 
 typedef struct {
     uint32_t tally_idx;
+    uint8_t tally_default_idx : 7;
     bool soundOff;
 } tally_state_t;
 
