@@ -2,145 +2,761 @@
 
 const schedule_t festival_acts[NUM_ACTS + 1]=
 {
-    [0] = {
-        .artist = "EZBK  ",
+    {
+        .artist = "ACRAZE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},  
+        .genre = HOUSE
+    },
+    {
+        .artist = "ALLEYC",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},  
+        .genre = BASS
+    },
+    {
+        .artist = "ATLIEN",
         .stage = RANCH_ARENA,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = JAM,
+        .genre = BASS
     },
-    [1] = {
-        .artist = "POLTIK",
+    {
+        .artist = "AYYBO",
         .stage = RANCH_ARENA,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 17, .unit.minute = 30},
-        .genre = HOUSE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [2] = {
-        .artist = "GASHI",
+    {
+        .artist = "BAGGI",
         .stage = RANCH_ARENA,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 0},
-        .genre = RAP,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [3] = {
-        .artist = "TRES",
+    {
+        .artist = "BARCLA",
         .stage = RANCH_ARENA,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 45},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 0},
-        .genre = BASS,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
-    [4] = {
-        .artist = "SOFITK",
+    {
+        .artist = "BEN BO",
         .stage = RANCH_ARENA,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 30},
-        .genre = JAM,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [5] = {
-        .artist = "ODESZA",
+    {
+        .artist = "BLACK ",
         .stage = RANCH_ARENA,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 45},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 1, .unit.minute = 15},
-        .genre = INDIE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
-    [6] = {
-        .artist = "COCO  ",
-        .stage = SHERWOOD_COURT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 17, .unit.minute = 30},
-        .genre = POP,
+    {
+        .artist = "BOOGIE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
-    [7] = {
-        .artist = "EMOOR",
-        .stage = SHERWOOD_COURT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 0},
-        .genre = WORLD,
+    {
+        .artist = "BRANDI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [8] = {
-        .artist = "SATIN ",
-        .stage = SHERWOOD_COURT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 45},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 0},
-        .genre = BASS,
+    {
+        .artist = "CALUSS",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [9] = {
-        .artist = "SG LEW",
-        .stage = SHERWOOD_COURT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 30},
-        .genre = INDIE,
+    {
+        .artist = "CANNAB",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
-    [10] = {
-        .artist = "JAM XX",
-        .stage = SHERWOOD_COURT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 45},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 1, .unit.minute = 15},
-        .genre = BASS,
+    {
+        .artist = "CANNON",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP
     },
-    [11] = {
-        .artist = "ROBANO",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 14, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 30},
-        .genre = BASS,
+    {
+        .artist = "CASPA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
-    [12] = {
-        .artist = "MS DRE",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 30},
-        .genre = BASS,
+    {
+        .artist = "CASSIA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [13] = {
-        .artist = "CID   ",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 17, .unit.minute = 45},
-        .genre = BASS,
+    {
+        .artist = "CHAOS ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [14] = {
-        .artist = "HUGEL ",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 17, .unit.minute = 45},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 00},
-        .genre = BASS,
+    {
+        .artist = "CHARLO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [15] = {
-        .artist = "JWORRA",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 7, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 20, .unit.minute = 15},
-        .genre = BASS,
+    {
+        .artist = "CHASE ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
-    [16] = {
-        .artist = "LEEFOS",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 20, .unit.minute = 15},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 30},
-        .genre = BASS,
+    {
+        .artist = "COCO &",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
     },
-    [17] = {
-        .artist = "DINOS ",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 45},
-        .genre = JAM,
+    {
+        .artist = "CUCO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE
     },
-    [18] = {
-        .artist = "ROYCE",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 45},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 0, .unit.minute = 0},
-        .genre = BASS,
+    {
+        .artist = "DIMENS",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
-    [19] = {
-        .artist = "GORGON",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 0, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 1, .unit.minute = 30},
-        .genre = BASS,
+    {
+        .artist = "DIRTWI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "DISCO ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "DIXON'",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL
+    },
+    {
+        .artist = "DJ SUS",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "DJ TEN",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "DRAMA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "DUMPST",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "EGGY",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "EMO NI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE
+    },
+    {
+        .artist = "EQUANI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE
+    },
+    {
+        .artist = "EVERYT",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "EXCISI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "G JONE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "GIGANT",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "GREEN ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "H&RRY",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "HAMDI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "HIATUS",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = RAP
+    },
+    {
+        .artist = "INZO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP
+    },
+    {
+        .artist = "IT'S M",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "IVY LA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "JJUUJJ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "JOHN S",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "JUELZ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP
+    },
+    {
+        .artist = "KENNY ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = RAP
+    },
+    {
+        .artist = "KILTRO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE
+    },
+    {
+        .artist = "KNOCK2",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "LAYTON",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "LE YOU",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "LETTUC",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "LEVEL ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "LEVITY",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "LIBIAN",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = RAP
+    },
+    {
+        .artist = "LITTLE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = RAP
+    },
+    {
+        .artist = "LP GIO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "LUCI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "LUDACR",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = RAP
+    },
+    {
+        .artist = "LYNY",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "MADDY ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP
+    },
+    {
+        .artist = "MAJOR ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "MARSH",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "MASCOL",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP
+    },
+    {
+        .artist = "MASONI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "MATROD",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "MAU P",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "MICHAE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "MOJAVE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "NEIL F",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE
+    },
+    {
+        .artist = "NELLY ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP
+    },
+    {
+        .artist = "NEOMA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP
+    },
+    {
+        .artist = "ODD MO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "ODD MO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "ODEN &",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "ONLY F",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "PAPERW",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = RAP
+    },
+    {
+        .artist = "PEACH ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE
+    },
+    {
+        .artist = "POLYRH",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL
+    },
+    {
+        .artist = "PRETTY",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "PROXIM",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "PSYREN",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "RANGER",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "RAWAYA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL
+    },
+    {
+        .artist = "RAYBEN",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "REDRUM",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP
+    },
+    {
+        .artist = "SAMMY ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "SARA L",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "SEVEN ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "SHAE D",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "SLAYYY",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP
+    },
+    {
+        .artist = "STRING",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "SUBTRO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "SULTAN",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "SUPER ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "SWAYLO",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "THOUGH",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP
+    },
+    {
+        .artist = "TRIPP ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP
+    },
+    {
+        .artist = "TSHA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "UMPHRE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM
+    },
+    {
+        .artist = "UNUSUA",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP
+    },
+    {
+        .artist = "VENBEE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "VINI V",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "VNSSA ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "WESTEN",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "WHYTE ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "WILL C",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE
+    },
+    {
+        .artist = "WOOLI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
+    },
+    {
+        .artist = "ZEN SE",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS
     },
     [NUM_ACTS]  = { //Fall back
         .artist = "No Act",

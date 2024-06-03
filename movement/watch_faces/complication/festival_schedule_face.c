@@ -47,8 +47,9 @@ const char festival_genre[GENRE_COUNT + 1][6] =
     [INDIE] = " INdIE",
     [POP] = " POP  ",
     [JAM] = " Jan& ",
+    [TRAP] = " Trap ",
     [RAP] = " RAP  ",
-    [WORLD] = " World",
+    [SOUL] = " SOUL ",
     [GENRE_COUNT] = "      "
 };
 
@@ -56,13 +57,14 @@ static watch_date_time _starting_time;
 static watch_date_time _ending_time;
 static bool _alarm_held;
 static bool _cyc_fest_not_occ;
+static const uint8_t _act_arr_size = sizeof(festival_acts) / sizeof(schedule_t);
 
 
 static uint8_t get_next_act_num(uint8_t act_num, bool get_prev){
     int increment = get_prev ? -1 : 1;
     uint8_t next_act = act_num;
     do{
-       next_act = (next_act + increment + NUM_ACTS) % NUM_ACTS; 
+       next_act = (next_act + increment + _act_arr_size) % _act_arr_size;
     }
     while (festival_acts[next_act].start_time.reg == 0);
     return next_act;
@@ -135,7 +137,7 @@ static void _display_act(uint8_t act_num, uint8_t stage){
 
 static void _display_act_genre(uint8_t act_num){
     char buf[9];
-    sprintf(buf, " g%.6s", festival_genre[festival_acts[act_num].genre]);
+    sprintf(buf, " G%.6s", festival_genre[festival_acts[act_num].genre]);
     watch_display_string(buf , 2);
 }
 
@@ -198,8 +200,10 @@ void festival_schedule_face_setup(movement_settings_t *settings, uint8_t watch_f
 void festival_schedule_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     (void) context;
+    festival_schedule_state_t *state = (festival_schedule_state_t *)context;
     _starting_time = get_starting_time();
     _ending_time = get_ending_time();
+    state->curr_act = NUM_ACTS;
 }
 
 bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -259,7 +263,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             if (!festival_occurring(curr_time, false)){
                 _cyc_fest_not_occ = true;
                 watch_set_indicator(WATCH_INDICATOR_LAP);
-               state->curr_act = get_next_act_num(state->curr_act, false);
+                state->curr_act = get_next_act_num(state->curr_act, false);
                 state->curr_stage = festival_acts[state->curr_act].stage;
                 _display_act(state->curr_act, state->curr_stage);
                 break;

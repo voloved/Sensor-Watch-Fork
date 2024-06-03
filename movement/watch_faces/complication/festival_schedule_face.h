@@ -44,8 +44,9 @@ typedef enum FestivalGenre {
     INDIE,
     POP,
     JAM,
+    TRAP,
     RAP,
-    WORLD,
+    SOUL,
     GENRE_COUNT
 } FestivalGenre;
 
@@ -57,7 +58,7 @@ typedef struct {
     FestivalGenre genre;
 } schedule_t;
 
-#define NUM_ACTS 200
+#define NUM_ACTS 120
 #define SHOW_EMPTY_STAGES false
 
 typedef struct {

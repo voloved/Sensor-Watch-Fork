@@ -504,6 +504,7 @@ void app_wake_from_standby(void) {
 }
 
 static void _decrement_deep_sleep_counter(void){
+    if(movement_state.le_mode_ticks != -1 || movement_state.le_deep_sleeping_ticks == -1) return;
     if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
     else{
         thermistor_driver_enable();
