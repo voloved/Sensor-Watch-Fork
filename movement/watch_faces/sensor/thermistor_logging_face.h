@@ -57,6 +57,7 @@
 #include "watch.h"
 
 #define THERMISTOR_LOGGING_NUM_DATA_POINTS (36)
+#define THERMISTOR_LOGGING_CYC (THERMISTOR_LOGGING_NUM_DATA_POINTS + 1)  //  The last Item is the current temp reading
 
 typedef struct {
     watch_date_time timestamp;

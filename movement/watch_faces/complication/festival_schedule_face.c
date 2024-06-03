@@ -168,17 +168,17 @@ static bool festival_occurring(watch_date_time curr_time, bool update_display){
             if (days_until < 999 && days_until >= 0){
                 char buf[13];
                 if (days_until > 99)
-                    sprintf(buf, "    %3dday", days_until);
+                    sprintf(buf, "EF  %3dday", days_until);
                 else
-                    sprintf(buf, "    %2d day", days_until);
+                    sprintf(buf, "EF  %2d day", days_until);
                 watch_display_string(buf , 0);
             }
-            else watch_display_string("    WAIT  ", 0);
+            else watch_display_string("EF  WAIT  ", 0);
         }
         return false;
     }
     else if (_compare_dates_times(_ending_time, curr_time) <= 0){
-        if (update_display) watch_display_string("    OVER  ", 0);
+        if (update_display) watch_display_string("EF  OVER  ", 0);
         return false;
     }
     return true;

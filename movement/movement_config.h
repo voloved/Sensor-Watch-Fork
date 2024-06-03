@@ -37,7 +37,6 @@ const watch_face_t watch_faces[] = {
     sunrise_sunset_face,
     moon_phase_face,
     tarot_face,
-    thermistor_logging_face,
     probability_face,
     tally_face,
     simon_face,
@@ -45,8 +44,8 @@ const watch_face_t watch_faces[] = {
     wyoscan_face,
     preferences_face,
     set_time_face,
+    thermistor_logging_face,
     voltage_face,
-    thermistor_readout_face,
 };
 
 #define MOVEMENT_NUM_FACES (sizeof(watch_faces) / sizeof(watch_face_t))
