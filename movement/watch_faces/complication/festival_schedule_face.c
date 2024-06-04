@@ -28,6 +28,7 @@
 #include "festival_schedule_arr.h"
 #include "watch_utility.h"
 
+const char festival_name[2] = "EF";
 
 const char festival_stage[STAGE_COUNT + 1][2] =
 {
@@ -56,6 +57,7 @@ const char festival_genre[GENRE_COUNT + 1][6] =
 static watch_date_time _starting_time;
 static watch_date_time _ending_time;
 static bool _alarm_held;
+static uint8_t _ts_ticks;
 static bool _cyc_fest_not_occ;
 static const uint8_t _act_arr_size = sizeof(festival_acts) / sizeof(schedule_t);
 
@@ -162,23 +164,22 @@ static watch_date_time get_ending_time(void){
 }
 
 static bool festival_occurring(watch_date_time curr_time, bool update_display){
+    char buf[13];
     if (_compare_dates_times(_starting_time, curr_time) > 0){
         if (update_display){
             int16_t days_until = _get_days_until(_starting_time, curr_time);
             if (days_until < 999 && days_until >= 0){
-                char buf[13];
-                if (days_until > 99)
-                    sprintf(buf, "EF  %3dday", days_until);
-                else
-                    sprintf(buf, "EF  %2d day", days_until);
-                watch_display_string(buf , 0);
+                if (days_until > 99) sprintf(buf, "%.2s  %3dday", festival_name, days_until);
+                else sprintf(buf, "%.2s  %2d day", festival_name, days_until);
             }
-            else watch_display_string("EF  WAIT  ", 0);
+            else sprintf(buf, "%.2s  WAIT  ", festival_name);
         }
+        watch_display_string(buf , 0);
         return false;
     }
     else if (_compare_dates_times(_ending_time, curr_time) <= 0){
-        if (update_display) watch_display_string("EF  OVER  ", 0);
+        sprintf(buf, "%.2s  OVER  ", festival_name);
+        watch_display_string(buf , 0);
         return false;
     }
     return true;
@@ -210,10 +211,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
     festival_schedule_state_t *state = (festival_schedule_state_t *)context;
     watch_date_time curr_time;
     if (_alarm_held){
-        if (!watch_get_pin_level(BTN_ALARM)){
-            _alarm_held = false;
-            _display_act(state->curr_act, state->curr_stage);
-        }
+        if (!watch_get_pin_level(BTN_ALARM)) _alarm_held = false;
         else return true;
     }
     switch (event.event_type) {
@@ -227,6 +225,10 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
         case EVENT_TICK:
         case EVENT_LOW_ENERGY_UPDATE:
             curr_time = watch_rtc_get_date_time();
+            if (_ts_ticks != 0){
+                if(--_ts_ticks != 0) break;
+                else _display_act(state->curr_act, state->curr_stage);
+            }
             if (!festival_occurring(curr_time, !_cyc_fest_not_occ)) break;
             if (!_act_is_playing(state->curr_act, curr_time)){
                 if (SHOW_EMPTY_STAGES)   
@@ -239,6 +241,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             _display_act(state->curr_act, state->curr_stage);
             break;
         case EVENT_LIGHT_BUTTON_UP:
+            _ts_ticks = 0;
             curr_time = watch_rtc_get_date_time();
             if (!festival_occurring(curr_time, false)){
                 _cyc_fest_not_occ = true;
@@ -259,6 +262,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             _display_act(state->curr_act, state->curr_stage);
             break;
         case EVENT_ALARM_BUTTON_UP:
+            _ts_ticks = 0;
             curr_time = watch_rtc_get_date_time();
             if (!festival_occurring(curr_time, false)){
                 _cyc_fest_not_occ = true;
@@ -279,6 +283,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             break;
         case EVENT_ALARM_LONG_PRESS:
             _alarm_held = true;
+            _ts_ticks = 2;
             _display_act_genre(state->curr_act);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
