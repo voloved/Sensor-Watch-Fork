@@ -94,7 +94,6 @@ static bool world_clock_face_do_display_mode(movement_event_t event, movement_se
                 }
                 pos = 0;
                 if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
-                    if (!watch_tick_animation_is_running()) watch_start_tick_animation(500);
                     sprintf(buf, "%c%c%2d%2d%02d  ",
                         movement_valid_position_0_chars[state->settings.bit.char_0],
                         movement_valid_position_1_chars[state->settings.bit.char_1],
