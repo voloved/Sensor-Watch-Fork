@@ -181,13 +181,15 @@ static bool festival_occurring(watch_date_time curr_time, bool update_display){
                 else sprintf(buf, "%.2s  %2d day", festival_name, days_until);
             }
             else sprintf(buf, "%.2s  WAIT  ", festival_name);
+            watch_display_string(buf , 0);
         }
-        watch_display_string(buf , 0);
         return false;
     }
     else if (_compare_dates_times(_ending_time, curr_time) <= 0){
-        sprintf(buf, "%.2s  OVER  ", festival_name);
-        watch_display_string(buf , 0);
+        if (update_display){
+            sprintf(buf, "%.2s  OVER  ", festival_name);
+            watch_display_string(buf , 0);
+        }
         return false;
     }
     return true;
@@ -224,6 +226,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
     }
     switch (event.event_type) {
         case EVENT_ACTIVATE:
+            _cyc_fest_not_occ = false;
             curr_time = watch_rtc_get_date_time();
             if (!festival_occurring(curr_time, true)) break;
             state->curr_act = _find_first_available_act(0, curr_time, false);
