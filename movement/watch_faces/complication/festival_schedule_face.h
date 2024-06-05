@@ -56,6 +56,7 @@ typedef struct {
     watch_date_time start_time;
     watch_date_time end_time;
     FestivalGenre genre;
+    uint8_t popularity;
 } schedule_t;
 
 #define NUM_ACTS 120

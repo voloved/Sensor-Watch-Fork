@@ -133,14 +133,22 @@ static uint8_t _find_first_available_act(uint8_t first_stage_to_check, watch_dat
 
 static void _display_act(uint8_t act_num, uint8_t stage){
     char buf[11];
-    sprintf(buf, "%.2s  %.6s", festival_stage[stage], festival_acts[act_num].artist);
+    uint8_t popularity = festival_acts[act_num].popularity;
+    if (popularity > 0 && popularity < 100)
+        sprintf(buf, "%.2s%2d%.6s", festival_stage[stage], festival_acts[act_num].popularity, festival_acts[act_num].artist);
+    else
+        sprintf(buf, "%.2s  %.6s", festival_stage[stage], festival_acts[act_num].artist);
     watch_display_string(buf , 0);
 }
 
 static void _display_act_genre(uint8_t act_num){
-    char buf[9];
-    sprintf(buf, " G%.6s", festival_genre[festival_acts[act_num].genre]);
-    watch_display_string(buf , 2);
+    char buf[11];
+    uint8_t popularity = festival_acts[act_num].popularity;
+    if (popularity > 0 && popularity < 100)
+        sprintf(buf, "%2d G%.6s", popularity, festival_genre[festival_acts[act_num].genre]);
+    else
+        sprintf(buf, "   G%.6s", festival_genre[festival_acts[act_num].genre]);
+    watch_display_string(buf , 0);
 }
 
 static watch_date_time get_starting_time(void){
