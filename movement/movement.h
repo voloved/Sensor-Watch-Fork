@@ -274,7 +274,8 @@ typedef struct {
 
     // low energy mode countdown
     int32_t le_mode_ticks;
-    int32_t le_deep_sleeping_ticks;
+    int32_t le_deep_sleeping_ticks : 31;
+    bool ignore_alarm_after_sleep;
 
     // app resignation countdown (TODO: consolidate with LE countdown?)
     int16_t timeout_ticks;

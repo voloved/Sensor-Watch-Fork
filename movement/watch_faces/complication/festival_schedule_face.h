@@ -66,6 +66,7 @@ typedef struct {
     // Anything you need to keep track of, put it here!
     FestivalStage curr_stage;
     uint8_t curr_act;
+    bool cyc_fest_not_occ;
     
 } festival_schedule_state_t;
 

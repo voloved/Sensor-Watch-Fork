@@ -29,7 +29,6 @@
 
 static const uint32_t _tally_default[] = {0, 40, 20};
 static const uint8_t _tally_default_size = sizeof(_tally_default) / sizeof(uint32_t);
-static bool _le_mode;
 
 void tally_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
@@ -53,14 +52,7 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
     tally_state_t *state = (tally_state_t *)context;
     
     switch (event.event_type) {
-        case EVENT_LOW_ENERGY_UPDATE:
-            _le_mode = true;
-            break;
         case EVENT_ALARM_BUTTON_UP:
-            if ( _le_mode){
-                _le_mode = false;
-                break;
-            }
             // increment tally index
             state->tally_idx++;
             if (state->tally_idx > 999999) { //0-999,999
