@@ -130,13 +130,17 @@ static uint8_t _find_first_available_act(uint8_t first_stage_to_check, watch_dat
     return NUM_ACTS;
 }
 
-static void _display_act(uint8_t act_num, uint8_t stage){
+static void _display_act(festival_schedule_state_t *state){
+    if ((state->curr_stage == state->prev_stage) && (state->curr_act == state->prev_act))
+        return;
+    state->prev_stage = state->curr_stage;
+    state->prev_act = state->curr_act;
     char buf[11];
-    uint8_t popularity = festival_acts[act_num].popularity;
+    uint8_t popularity = festival_acts[state->curr_act].popularity;
     if (popularity > 0 && popularity < 40)
-        sprintf(buf, "%.2s%2d%.6s", festival_stage[stage], festival_acts[act_num].popularity, festival_acts[act_num].artist);
+        sprintf(buf, "%.2s%2d%.6s", festival_stage[state->curr_stage], festival_acts[state->curr_act].popularity, festival_acts[state->curr_act].artist);
     else
-        sprintf(buf, "%.2s  %.6s", festival_stage[stage], festival_acts[act_num].artist);
+        sprintf(buf, "%.2s  %.6s", festival_stage[state->curr_stage], festival_acts[state->curr_act].artist);
     watch_display_string(buf , 0);
 }
 
@@ -190,8 +194,6 @@ static bool festival_occurring(watch_date_time curr_time, bool update_display){
     return true;
 }
 
-
-
 void festival_schedule_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -200,6 +202,8 @@ void festival_schedule_face_setup(movement_settings_t *settings, uint8_t watch_f
         memset(*context_ptr, 0, sizeof(festival_schedule_state_t));
         festival_schedule_state_t *state = (festival_schedule_state_t *)*context_ptr;
         state->curr_act = NUM_ACTS;
+        state->prev_act = NUM_ACTS + 1;
+        state -> prev_day = 0;
         state->cyc_fest_not_occ = false;
         // Do any one-time tasks in here; the inside of this conditional happens only at boot.
     }
@@ -223,23 +227,26 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
     switch (event.event_type) {
         case EVENT_ACTIVATE:
             if (state->cyc_fest_not_occ){
-                _display_act(state->curr_act, state->curr_stage);
+                _display_act(state);
                 break;
             }
             curr_time = watch_rtc_get_date_time();
             if (!festival_occurring(curr_time, true)) break;
             state->curr_act = _find_first_available_act(0, curr_time, false);
             state->curr_stage = festival_acts[state->curr_act].stage;
-            _display_act(state->curr_act, state->curr_stage);
+            _display_act(state);
+            state -> prev_day = (curr_time.reg >> 17);
             break;
         case EVENT_TICK:
         case EVENT_LOW_ENERGY_UPDATE:
             curr_time = watch_rtc_get_date_time();
             if (_ts_ticks != 0){
                 if(--_ts_ticks != 0) break;
-                else _display_act(state->curr_act, state->curr_stage);
+                else _display_act(state);
             }
-            if (!festival_occurring(curr_time, !state->cyc_fest_not_occ)) break;
+            bool newDay = ((curr_time.reg >> 17) != (state -> prev_day));
+            state -> prev_day = (curr_time.reg >> 17);
+            if (!festival_occurring(curr_time, (newDay && !state->cyc_fest_not_occ))) break;
             if (!_act_is_playing(state->curr_act, curr_time)){
                 if (SHOW_EMPTY_STAGES)   
                     state->curr_act = NUM_ACTS;
@@ -247,8 +254,8 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                     state->curr_act = _find_first_available_act(state->curr_stage, curr_time, false);
                     state->curr_stage = festival_acts[state->curr_act].stage;
                 } 
-            }  
-            _display_act(state->curr_act, state->curr_stage);
+            }
+            _display_act(state);
             break;
         case EVENT_LIGHT_BUTTON_UP:
             _ts_ticks = 0;
@@ -259,7 +266,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                 
                 state->curr_act = get_next_act_num(state->curr_act, true);
                 state->curr_stage = festival_acts[state->curr_act].stage;
-                _display_act(state->curr_act, state->curr_stage);
+                _display_act(state);
                 break;
             }
             state->curr_stage = (state->curr_stage - 1 + STAGE_COUNT) % STAGE_COUNT;
@@ -269,7 +276,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                 state->curr_act = _find_first_available_act(state->curr_stage, curr_time, true);
                 state->curr_stage = festival_acts[state->curr_act].stage;
             }
-            _display_act(state->curr_act, state->curr_stage);
+            _display_act(state);
             break;
         case EVENT_ALARM_BUTTON_UP:
             _ts_ticks = 0;
@@ -279,7 +286,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                 watch_set_indicator(WATCH_INDICATOR_LAP);
                 state->curr_act = get_next_act_num(state->curr_act, false);
                 state->curr_stage = festival_acts[state->curr_act].stage;
-                _display_act(state->curr_act, state->curr_stage);
+                _display_act(state);
                 break;
             }
             state->curr_stage = (state->curr_stage + 1) % STAGE_COUNT;
@@ -289,12 +296,13 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                 state->curr_act = _find_first_available_act(state->curr_stage, curr_time, false);
                 state->curr_stage = festival_acts[state->curr_act].stage;
             }
-            _display_act(state->curr_act, state->curr_stage);
+            _display_act(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
             _alarm_held = true;
             _ts_ticks = 2;
             _display_act_genre(state->curr_act);
+            state->prev_act = NUM_ACTS + 1; // Forces the display to go back to the prev act.
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             break;

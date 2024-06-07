@@ -65,7 +65,10 @@ typedef struct {
 typedef struct {
     // Anything you need to keep track of, put it here!
     FestivalStage curr_stage;
+    FestivalStage prev_stage;
     uint8_t curr_act;
+    uint8_t prev_act;
+    uint16_t prev_day : 15;
     bool cyc_fest_not_occ;
     
 } festival_schedule_state_t;
