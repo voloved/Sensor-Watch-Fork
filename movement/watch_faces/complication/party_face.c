@@ -80,6 +80,7 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
+            movement_request_tick_frequency(state->fast ? 4 : 2);
             _party_face_init_lcd(state);
             break;
         case EVENT_LIGHT_BUTTON_UP:
@@ -88,7 +89,6 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
                 watch_set_led_off();
                 break;
             }
-            movement_request_tick_frequency(state->fast ? 8 : 2);
             break;
         case EVENT_LIGHT_LONG_PRESS:
             state->text = (state->text + 1) % MAX_TEXT;
@@ -96,13 +96,12 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
         case EVENT_ALARM_BUTTON_UP:
             state->blink = !state->blink;
-            movement_request_tick_frequency(state->fast ? 8 : 2);
             if (!state->blink)
                 _party_face_init_lcd(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
             state->fast = !state->fast;
-            movement_request_tick_frequency(state->fast ? 8 : 2);
+            movement_request_tick_frequency(state->fast ? 4 : 2);
             break;
         case EVENT_LOW_ENERGY_UPDATE:
 
@@ -117,7 +116,7 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
                 if (event.subsecond % 2 == 0)
                     _party_face_init_lcd(state);
                 else if (state->text == 0){  // Clear only the bottom row when the party text is occurring
-                    watch_clear_bottom_row();
+                    watch_display_string("      ", 4);
                     watch_clear_indicator(WATCH_INDICATOR_BELL);
                 }
                 else
