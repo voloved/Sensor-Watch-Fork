@@ -67,6 +67,7 @@ static void _thermistor_logging_face_log_data(thermistor_logger_state_t *logger_
 
     logger_state->data[pos].timestamp.reg = date_time.reg;
     logger_state->data[pos].temperature_c = thermistor_driver_get_temperature();
+    g_temperature_c  = (int8_t)logger_state->data[pos].temperature_c;
     logger_state->data_points++;
 
     thermistor_driver_disable();

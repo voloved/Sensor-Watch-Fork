@@ -34,7 +34,6 @@
 #include "filesystem.h"
 #include "movement.h"
 #include "shell.h"
-#include "thermistor_driver.h"
 
 #ifndef MOVEMENT_FIRMWARE
 #include "movement_config.h"
@@ -136,6 +135,7 @@ watch_date_time scheduled_tasks[MOVEMENT_NUM_FACES];
 const int32_t movement_le_inactivity_deadlines[8] = {INT_MAX, 600, 3600, 7200, 21600, 43200, 86400, 604800};
 const int32_t movement_le_deep_sleep_deadline = 60; // In minutes (will trigger at the top of the minute, rounded up from the LE timeout tick)
 const int16_t movement_timeout_inactivity_deadlines[4] = {60, 120, 300, 1800};
+int8_t g_temperature_c = -128;
 movement_event_t event;
 
 const int16_t movement_timezone_offsets[] = {
@@ -216,6 +216,16 @@ static inline void _movement_disable_fast_tick_if_possible(void) {
     }
 }
 
+static void _decrement_deep_sleep_counter(void){
+    if(movement_state.le_mode_ticks != -1 || movement_state.le_deep_sleeping_ticks == -1) return;
+    if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
+    else{
+        if (g_temperature_c == -128) return; // Ignore when the temp is not first read without affecting the timer.
+        else if (g_temperature_c < 100) movement_state.le_deep_sleeping_ticks = -1;
+        else movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
+    }
+}
+
 static void _movement_handle_background_tasks(void) {
     for(uint8_t i = 0; i < MOVEMENT_NUM_FACES; i++) {
         // For each face, if the watch face wants a background task...
@@ -225,6 +235,7 @@ static void _movement_handle_background_tasks(void) {
             watch_faces[i].loop(background_event, &movement_state.settings, watch_face_contexts[i]);
         }
     }
+    _decrement_deep_sleep_counter();
     movement_state.needs_background_tasks_handled = false;
 }
 
@@ -503,18 +514,6 @@ void app_prepare_for_standby(void) {
 void app_wake_from_standby(void) {
 }
 
-static void _decrement_deep_sleep_counter(void){
-    if(movement_state.le_mode_ticks != -1 || movement_state.le_deep_sleeping_ticks == -1) return;
-    if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
-    else{
-        thermistor_driver_enable();
-        float temperature_c = thermistor_driver_get_temperature();
-        thermistor_driver_disable();
-        if (temperature_c < DEFAULT_TEMP_ASSUME_WEARING && temperature_c != 0) movement_state.le_deep_sleeping_ticks = -1;
-        else movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
-    }
-}
-
 static void _sleep_mode_app_loop(void) {
     movement_state.needs_wake = false;
     // as long as le_mode_ticks is -1 (i.e. we are in low energy mode), we wake up here, update the screen, and go right back to sleep.
@@ -720,7 +719,6 @@ void cb_alarm_btn_extwake(void) {
 }
 
 void cb_alarm_fired(void) {
-    _decrement_deep_sleep_counter();
     movement_state.needs_background_tasks_handled = true;
 }
 

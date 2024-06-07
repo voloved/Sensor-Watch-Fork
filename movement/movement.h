@@ -133,6 +133,7 @@ typedef struct {
 extern const int16_t movement_timezone_offsets[];
 extern const char movement_valid_position_0_chars[];
 extern const char movement_valid_position_1_chars[];
+extern int8_t g_temperature_c;
 
 /** @brief Perform setup for your watch face.
   * @details It's tempting to say this is 'one-time' setup, but technically this function is called more than
@@ -274,7 +275,7 @@ typedef struct {
 
     // low energy mode countdown
     int32_t le_mode_ticks;
-    int32_t le_deep_sleeping_ticks : 31;
+    int32_t le_deep_sleeping_ticks;
     bool ignore_alarm_after_sleep;
 
     // app resignation countdown (TODO: consolidate with LE countdown?)
