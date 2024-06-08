@@ -98,7 +98,9 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
                 print_tally(state);
             }
-            movement_illuminate_led();
+            else{
+                movement_illuminate_led();
+            }
             break;
         case EVENT_ACTIVATE:
             print_tally(state);

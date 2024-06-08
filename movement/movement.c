@@ -136,6 +136,7 @@ const int32_t movement_le_inactivity_deadlines[8] = {INT_MAX, 600, 3600, 7200, 2
 const int32_t movement_le_deep_sleep_deadline = 60; // In minutes (will trigger at the top of the minute, rounded up from the LE timeout tick)
 const int16_t movement_timeout_inactivity_deadlines[4] = {60, 120, 300, 1800};
 int8_t g_temperature_c = -128;
+uint8_t g_force_sleep; // 0 = no sleep forced; 1 = normal sleep; 2 = deep sleep
 movement_event_t event;
 
 const int16_t movement_timezone_offsets[] = {
@@ -197,6 +198,7 @@ static inline void _movement_reset_inactivity_countdown(void) {
     movement_state.le_mode_ticks = movement_le_inactivity_deadlines[movement_state.settings.bit.le_interval];
     movement_state.timeout_ticks = movement_timeout_inactivity_deadlines[movement_state.settings.bit.to_interval];
     movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
+    g_force_sleep = 0;
 }
 
 static inline void _movement_enable_fast_tick_if_needed(void) {
@@ -221,7 +223,7 @@ static void _decrement_deep_sleep_counter(void){
     if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
     else{
         if (g_temperature_c == -128) return; // Ignore when the temp is not first read without affecting the timer.
-        else if (g_temperature_c < 100) movement_state.le_deep_sleeping_ticks = -1;
+        else if (g_temperature_c < TEMPERATURE_ASSUME_WEARING) movement_state.le_deep_sleeping_ticks = -1;
         else movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
     }
 }
@@ -572,6 +574,17 @@ bool app_loop(void) {
     if (event.event_type == EVENT_TICK && movement_state.has_scheduled_background_task) _movement_handle_scheduled_tasks();
 
     // if we have timed out of our low energy mode countdown, enter low energy mode.
+
+    switch (g_force_sleep)
+    {
+    case 2:
+        movement_state.le_deep_sleeping_ticks = -1;
+        // fall through
+    case 1:
+        movement_state.le_mode_ticks = 0;
+        break;
+    }
+
     if (movement_state.le_mode_ticks == 0) {
         movement_state.le_mode_ticks = -1;
         watch_register_extwake_callback(BTN_ALARM, cb_alarm_btn_extwake, true);

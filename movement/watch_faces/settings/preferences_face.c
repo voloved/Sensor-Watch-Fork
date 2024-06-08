@@ -23,6 +23,7 @@
  */
 
 #include <stdlib.h>
+#include <string.h>
 #include "preferences_face.h"
 #include "watch.h"
 
@@ -46,12 +47,17 @@ const char preferences_face_titles[PREFERENCES_FACE_NUM_PREFERENCES][11] = {
 void preferences_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
-    if (*context_ptr == NULL) *context_ptr = malloc(sizeof(uint8_t));
+    if (*context_ptr == NULL) {
+        *context_ptr = malloc(sizeof(preferences_state_t));
+        memset(*context_ptr, 0, sizeof(preferences_state_t));
+    }
 }
 
 void preferences_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
-    *((uint8_t *)context) = 0;
+    (void) context;
+    preferences_state_t *state = (preferences_state_t *)context;
+    state->do_deepsleep = false;
     movement_request_tick_frequency(4); // we need to manually blink some pixels
 }
 
@@ -81,7 +87,7 @@ static void _watch_display_hourly_chime_string(movement_settings_t *settings, ui
 
 
 bool preferences_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
-    uint8_t current_page = *((uint8_t *)context);
+    preferences_state_t *state = (preferences_state_t *)context;
     switch (event.event_type) {
         case EVENT_TICK:
         case EVENT_ACTIVATE:
@@ -92,11 +98,11 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
             movement_move_to_next_face();
             return false;
         case EVENT_LIGHT_BUTTON_DOWN:
-            current_page = (current_page + 1) % PREFERENCES_FACE_NUM_PREFERENCES;
-            *((uint8_t *)context) = current_page;
+            if(state->do_deepsleep) g_force_sleep = 2;
+            else state->current_page = (state->current_page + 1) % PREFERENCES_FACE_NUM_PREFERENCES;
             break;
         case EVENT_ALARM_BUTTON_UP:
-            switch (current_page) {
+            switch (state->current_page) {
                 case 0:
                     settings->bit.button_should_sound = !(settings->bit.button_should_sound);
                     break;
@@ -107,7 +113,12 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                     settings->bit.le_interval = settings->bit.le_interval + 1;
                     break;
                 case 3:
-                    settings->bit.screen_off_after_le = !(settings->bit.screen_off_after_le);
+                    if (settings->bit.screen_off_after_le && !state->do_deepsleep)
+                        state->do_deepsleep = true;
+                    else{
+                        state->do_deepsleep = false;
+                        settings->bit.screen_off_after_le = !(settings->bit.screen_off_after_le);
+                    }
                     break;
                 case 4:
                     if (settings->bit.hourly_chime_always){
@@ -153,12 +164,12 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
             return movement_default_loop_handler(event, settings);
     }
 
-    watch_display_string((char *)preferences_face_titles[current_page], 0);
+    watch_display_string((char *)preferences_face_titles[state->current_page], 0);
 
     // blink active setting on even-numbered quarter-seconds
     if (event.subsecond % 2) {
         char buf[8];
-        switch (current_page) {
+        switch (state->current_page) {
             case 0:
                 if (settings->bit.button_should_sound) watch_display_string("y", 9);
                 else watch_display_string("n", 9);
@@ -208,7 +219,8 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 }
                 break;
             case 3:
-                if (settings->bit.screen_off_after_le) watch_display_string("60n&in", 4);
+                if(state->do_deepsleep) watch_display_string("Nowj", 6);
+                else if (settings->bit.screen_off_after_le) watch_display_string("60n&in", 4);
                 else watch_display_string(" Never", 4);
                 break;
             case 4:
@@ -236,11 +248,11 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
         }
     }
 
-    if (current_page != 4 && current_page != 5)
+    if (state->current_page != 4 && state->current_page != 5)
         watch_clear_indicator(WATCH_INDICATOR_PM);
 
     // on LED color select screns, preview the color.
-    if (current_page >= 7) {
+    if (state->current_page >= 7) {
         watch_set_led_color(settings->bit.led_red_color ? (0xF | settings->bit.led_red_color << 4) : 0,
                             settings->bit.led_green_color ? (0xF | settings->bit.led_green_color << 4) : 0);
         // return false so the watch stays awake (needed for the PWM driver to function).
@@ -254,6 +266,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
 void preferences_face_resign(movement_settings_t *settings, void *context) {
     (void) settings;
     (void) context;
+    memset(context, 0, sizeof(preferences_state_t));
     watch_set_led_off();
     watch_store_backup_data(settings->reg, 0);
 }

@@ -78,6 +78,15 @@
 
 #include "movement.h"
 
+typedef struct {
+    // Anything you need to keep track of, put it here!
+    uint8_t current_page : 7;
+    bool do_deepsleep;
+    
+} preferences_state_t;
+
+extern uint8_t g_force_sleep;
+
 void preferences_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
 void preferences_face_activate(movement_settings_t *settings, void *context);
 bool preferences_face_loop(movement_event_t event, movement_settings_t *settings, void *context);

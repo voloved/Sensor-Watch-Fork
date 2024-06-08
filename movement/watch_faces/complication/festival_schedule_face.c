@@ -299,27 +299,34 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             _display_act(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
+            if (state->curr_act < NUM_ACTS){
             _alarm_held = true;
             _ts_ticks = 2;
             _display_act_genre(state->curr_act);
             state->prev_act = NUM_ACTS + 1; // Forces the display to go back to the prev act.
+            }
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             break;
         case EVENT_LIGHT_LONG_PRESS:
             if (state->cyc_fest_not_occ){
-                state->curr_act = 0;
+                state->curr_act = 120; // Resets to non-existant act number
                 watch_clear_indicator(WATCH_INDICATOR_LAP);
                 state->cyc_fest_not_occ = false;
                 curr_time = watch_rtc_get_date_time();
                 festival_occurring(curr_time, true);
             }
-            movement_illuminate_led();
+            else{
+                movement_illuminate_led();
+            }
             break;
         case EVENT_TIMEOUT:
-            // Your watch face will receive this event after a period of inactivity. If it makes sense to resign,
-            // you may uncomment this line to move back to the first watch face in the list:
-            // movement_move_to_face(0);
+            if (state->cyc_fest_not_occ){
+                state->cyc_fest_not_occ = false;
+                curr_time = watch_rtc_get_date_time();
+                festival_occurring(curr_time, true);
+                watch_clear_indicator(WATCH_INDICATOR_LAP);
+            }
             break;
         default:
             // Movement's default loop handler will step in for any cases you don't handle above:
@@ -344,6 +351,7 @@ void festival_schedule_face_resign(movement_settings_t *settings, void *context)
     festival_schedule_state_t *state = (festival_schedule_state_t *)context;
     state->curr_act = NUM_ACTS;
     state->cyc_fest_not_occ = false;
+    state->prev_act = NUM_ACTS + 1;
 
     // handle any cleanup before your watch face goes off-screen.
 }

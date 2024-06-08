@@ -139,6 +139,6 @@ const watch_face_t watch_faces[] = {
 
 #define MOVEMENT_DEFAULT_LE_DEEP_SLEEP true
 
-#define DEFAULT_TEMP_ASSUME_WEARING 27 //C
+#define TEMPERATURE_ASSUME_WEARING 27 //C
 
 #endif // MOVEMENT_CONFIG_H_
