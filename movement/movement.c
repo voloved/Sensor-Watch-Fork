@@ -34,6 +34,7 @@
 #include "filesystem.h"
 #include "movement.h"
 #include "shell.h"
+#include "thermistor_driver.h"
 
 #ifndef MOVEMENT_FIRMWARE
 #include "movement_config.h"
@@ -198,7 +199,6 @@ static inline void _movement_reset_inactivity_countdown(void) {
     movement_state.le_mode_ticks = movement_le_inactivity_deadlines[movement_state.settings.bit.le_interval];
     movement_state.timeout_ticks = movement_timeout_inactivity_deadlines[movement_state.settings.bit.to_interval];
     movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
-    g_force_sleep = 0;
 }
 
 static inline void _movement_enable_fast_tick_if_needed(void) {
@@ -223,8 +223,18 @@ static void _decrement_deep_sleep_counter(void){
     if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
     else{
         if (g_temperature_c == -128) return; // Ignore when the temp is not first read without affecting the timer.
-        else if (g_temperature_c < TEMPERATURE_ASSUME_WEARING) movement_state.le_deep_sleeping_ticks = -1;
-        else movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
+        else if (g_temperature_c < TEMPERATURE_ASSUME_WEARING){
+            // Do one more check of the temperature before turning off in case a use placed
+            // the watch on their wrist in between the last thermistor log and now
+            thermistor_driver_enable();
+            g_temperature_c = thermistor_driver_get_temperature();
+            thermistor_driver_disable();
+            if (g_temperature_c < TEMPERATURE_ASSUME_WEARING){
+                movement_state.le_deep_sleeping_ticks = -1;
+                return;
+            } 
+        }
+        movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
     }
 }
 
@@ -518,12 +528,12 @@ void app_wake_from_standby(void) {
 
 static void _sleep_mode_app_loop(void) {
     movement_state.needs_wake = false;
+    movement_state.ignore_alarm_btn_after_sleep = true;
     // as long as le_mode_ticks is -1 (i.e. we are in low energy mode), we wake up here, update the screen, and go right back to sleep.
     while (movement_state.le_mode_ticks == -1) {
         // we also have to handle background tasks here in the mini-runloop
         if (movement_state.needs_background_tasks_handled) _movement_handle_background_tasks();
 
-        movement_state.ignore_alarm_after_sleep = true;
         event.event_type = EVENT_LOW_ENERGY_UPDATE;
         watch_faces[movement_state.current_face_idx].loop(event, &movement_state.settings, watch_face_contexts[movement_state.current_face_idx]);
 
@@ -574,17 +584,6 @@ bool app_loop(void) {
     if (event.event_type == EVENT_TICK && movement_state.has_scheduled_background_task) _movement_handle_scheduled_tasks();
 
     // if we have timed out of our low energy mode countdown, enter low energy mode.
-
-    switch (g_force_sleep)
-    {
-    case 2:
-        movement_state.le_deep_sleeping_ticks = -1;
-        // fall through
-    case 1:
-        movement_state.le_mode_ticks = 0;
-        break;
-    }
-
     if (movement_state.le_mode_ticks == 0) {
         movement_state.le_mode_ticks = -1;
         watch_register_extwake_callback(BTN_ALARM, cb_alarm_btn_extwake, true);
@@ -719,8 +718,8 @@ void cb_alarm_btn_interrupt(void) {
     bool pin_level = watch_get_pin_level(BTN_ALARM);
     _movement_reset_inactivity_countdown();
     uint8_t event_type = _figure_out_button_event(pin_level, EVENT_ALARM_BUTTON_DOWN, &movement_state.alarm_down_timestamp);
-    if  (movement_state.ignore_alarm_after_sleep){
-        if (event_type == EVENT_ALARM_BUTTON_UP || event_type == EVENT_ALARM_BUTTON_UP) movement_state.ignore_alarm_after_sleep = false;
+    if  (movement_state.ignore_alarm_btn_after_sleep){
+        if (event_type == EVENT_ALARM_BUTTON_UP || event_type == EVENT_ALARM_BUTTON_UP) movement_state.ignore_alarm_btn_after_sleep = false;
         return;
     }
     event.event_type = event_type;
@@ -764,7 +763,19 @@ void cb_tick(void) {
     watch_date_time date_time = watch_rtc_get_date_time();
     if (date_time.unit.second != movement_state.last_second) {
         // TODO: can we consolidate these two ticks?
-        if (movement_state.settings.bit.le_interval && movement_state.le_mode_ticks > 0) movement_state.le_mode_ticks--;
+        if (g_force_sleep){
+            switch (g_force_sleep)
+            {
+            case 2:
+                movement_state.le_deep_sleeping_ticks = -1;
+                // fall through
+            case 1:
+                movement_state.le_mode_ticks = 0;
+                g_force_sleep = 0;
+                break;
+            }
+        }
+        else if (movement_state.settings.bit.le_interval && movement_state.le_mode_ticks > 0) movement_state.le_mode_ticks--;
         if (movement_state.timeout_ticks > 0) movement_state.timeout_ticks--;
 
         movement_state.last_second = date_time.unit.second;

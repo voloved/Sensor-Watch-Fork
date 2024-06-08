@@ -57,7 +57,7 @@ void preferences_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     (void) context;
     preferences_state_t *state = (preferences_state_t *)context;
-    state->do_deepsleep = false;
+    state->do_deepsleep = 0;
     movement_request_tick_frequency(4); // we need to manually blink some pixels
 }
 
@@ -98,8 +98,22 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
             movement_move_to_next_face();
             return false;
         case EVENT_LIGHT_BUTTON_DOWN:
-            if(state->do_deepsleep) g_force_sleep = 2;
-            else state->current_page = (state->current_page + 1) % PREFERENCES_FACE_NUM_PREFERENCES;
+            switch (state->do_deepsleep)
+            {
+            case 1:
+                g_force_sleep = 2;
+                state->do_deepsleep = 2;
+                // fall through
+            case 2: // Don't update anything when in state 2; It's waiting to go to sleep at this point.
+                break;
+            case 0:
+            default:
+                state->current_page = (state->current_page + 1) % PREFERENCES_FACE_NUM_PREFERENCES;
+                break;
+            }
+            break;
+        case EVENT_ALARM_LONG_PRESS:
+            state->current_page = 0;
             break;
         case EVENT_ALARM_BUTTON_UP:
             switch (state->current_page) {
@@ -113,10 +127,10 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                     settings->bit.le_interval = settings->bit.le_interval + 1;
                     break;
                 case 3:
-                    if (settings->bit.screen_off_after_le && !state->do_deepsleep)
-                        state->do_deepsleep = true;
+                    if (settings->bit.screen_off_after_le && state->do_deepsleep == 0)
+                        state->do_deepsleep = 1;
                     else{
-                        state->do_deepsleep = false;
+                        state->do_deepsleep = 0;
                         settings->bit.screen_off_after_le = !(settings->bit.screen_off_after_le);
                     }
                     break;
@@ -158,6 +172,8 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
             }
             break;
         case EVENT_TIMEOUT:
+            if (state->current_page == 3)
+                break;
             movement_move_to_face(0);
             break;
         default:
@@ -219,7 +235,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 }
                 break;
             case 3:
-                if(state->do_deepsleep) watch_display_string("Nowj", 6);
+                if(state->do_deepsleep != 0) watch_display_string("Nowj", 6);
                 else if (settings->bit.screen_off_after_le) watch_display_string("60n&in", 4);
                 else watch_display_string(" Never", 4);
                 break;

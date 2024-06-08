@@ -80,8 +80,8 @@
 
 typedef struct {
     // Anything you need to keep track of, put it here!
-    uint8_t current_page : 7;
-    bool do_deepsleep;
+    uint8_t current_page : 6;
+    uint8_t do_deepsleep : 2;  // 0 = don't sleep; 1 = do sleep; 2 = sleep already requested, don't update screen
     
 } preferences_state_t;
 
