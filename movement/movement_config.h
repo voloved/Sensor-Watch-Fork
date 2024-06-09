@@ -29,8 +29,8 @@
 
 const watch_face_t watch_faces[] = {
     simple_clock_face,
-    party_face,
     festival_schedule_face,
+    party_face,
     stock_stopwatch_face,
     countdown_face,
     alarm_face,

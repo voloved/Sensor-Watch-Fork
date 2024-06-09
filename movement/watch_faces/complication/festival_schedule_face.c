@@ -180,7 +180,7 @@ static bool festival_occurring(watch_date_time curr_time, bool update_display){
     if (_compare_dates_times(_starting_time, curr_time) > 0){
         if (update_display){
             int16_t days_until = _get_days_until(_starting_time, curr_time);
-            if (days_until < 999 && days_until >= 0){
+            if (days_until <= 999 && days_until >= 0){
                 if (days_until > 99) sprintf(buf, "%.2s  %3dday", festival_name, days_until);
                 else sprintf(buf, "%.2s  %2d day", festival_name, days_until);
             }
@@ -199,6 +199,17 @@ static bool festival_occurring(watch_date_time curr_time, bool update_display){
     return true;
 }
 
+static void display_curr_day(watch_date_time curr_time){  // Assumes festival_occurring function was run before it.
+    char buf[13];
+    int16_t days_until = _get_days_until(curr_time, _starting_time) + 1;
+    if (days_until < 100 && days_until >= 0)
+        sprintf(buf, "%.2s   day%2d", festival_name, days_until);
+    else 
+        sprintf(buf, "%.2s   LONg ", festival_name);
+    watch_display_string(buf , 0);
+    return;
+}
+
 void festival_schedule_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -209,7 +220,7 @@ void festival_schedule_face_setup(movement_settings_t *settings, uint8_t watch_f
         state->curr_act = NUM_ACTS;
         state->prev_act = NUM_ACTS + 1;
         state -> prev_day = 0;
-        state->cyc_fest_not_occ = false;
+        state->cyc_through_all_acts = false;
         // Do any one-time tasks in here; the inside of this conditional happens only at boot.
     }
     // Do any pin or peripheral setup here; this will be called whenever the watch wakes from deep sleep.
@@ -231,15 +242,14 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
     }
     switch (event.event_type) {
         case EVENT_ACTIVATE:
-            if (state->cyc_fest_not_occ){
+            if (state->cyc_through_all_acts){
                 _display_act(state);
                 break;
             }
             curr_time = watch_rtc_get_date_time();
             if (!festival_occurring(curr_time, true)) break;
-            state->curr_act = _find_first_available_act(0, curr_time, false);
-            state->curr_stage = festival_acts[state->curr_act].stage;
-            _display_act(state);
+            display_curr_day(curr_time);
+            state -> showing_title = true;
             state -> prev_day = (curr_time.reg >> 17);
             break;
         case EVENT_TICK:
@@ -251,7 +261,11 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             }
             bool newDay = ((curr_time.reg >> 17) != (state -> prev_day));
             state -> prev_day = (curr_time.reg >> 17);
-            if (!festival_occurring(curr_time, (newDay && !state->cyc_fest_not_occ))) break;
+            if (!festival_occurring(curr_time, (newDay && !state->cyc_through_all_acts))) break;
+            if(state->showing_title){
+                if (newDay) display_curr_day(curr_time);
+                break;
+            }
             if (!_act_is_playing(state->curr_act, curr_time)){
                 if (SHOW_EMPTY_STAGES)   
                     state->curr_act = NUM_ACTS;
@@ -265,16 +279,16 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
         case EVENT_LIGHT_BUTTON_UP:
             _ts_ticks = 0;
             curr_time = watch_rtc_get_date_time();
-            if (!festival_occurring(curr_time, false)){
-                state->cyc_fest_not_occ = true;
+            if (!festival_occurring(curr_time, false) || state->cyc_through_all_acts){
+                state->cyc_through_all_acts = true;
                 watch_set_indicator(WATCH_INDICATOR_LAP);
-                
                 state->curr_act = get_next_act_num(state->curr_act, true);
                 state->curr_stage = festival_acts[state->curr_act].stage;
                 _display_act(state);
                 break;
             }
-            state->curr_stage = (state->curr_stage - 1 + STAGE_COUNT) % STAGE_COUNT;
+            if (!state->showing_title) state->curr_stage = (state->curr_stage - 1 + STAGE_COUNT) % STAGE_COUNT;
+            else state->showing_title = false;
             if (SHOW_EMPTY_STAGES)
                 state->curr_act = _act_performing_on_stage(state->curr_stage, curr_time);
             else{
@@ -286,15 +300,16 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
         case EVENT_ALARM_BUTTON_UP:
             _ts_ticks = 0;
             curr_time = watch_rtc_get_date_time();
-            if (!festival_occurring(curr_time, false)){
-                state->cyc_fest_not_occ = true;
+            if (!festival_occurring(curr_time, false) || state->cyc_through_all_acts){
+                state->cyc_through_all_acts = true;
                 watch_set_indicator(WATCH_INDICATOR_LAP);
                 state->curr_act = get_next_act_num(state->curr_act, false);
                 state->curr_stage = festival_acts[state->curr_act].stage;
                 _display_act(state);
                 break;
             }
-            state->curr_stage = (state->curr_stage + 1) % STAGE_COUNT;
+            if (!state->showing_title) state->curr_stage = (state->curr_stage + 1) % STAGE_COUNT;
+            else state->showing_title = false;
             if (SHOW_EMPTY_STAGES)
                 state->curr_act = _act_performing_on_stage(state->curr_stage, curr_time);
             else{
@@ -304,32 +319,42 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             _display_act(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
+            if (state -> showing_title){
+                state->cyc_through_all_acts = true;
+                watch_set_indicator(WATCH_INDICATOR_LAP);
+                state->curr_act = get_next_act_num(state->curr_act, false);
+                state->curr_stage = festival_acts[state->curr_act].stage;
+                _display_act(state);
+                break;
+            }
             if (state->curr_act < NUM_ACTS){
-            _alarm_held = true;
-            _ts_ticks = 2;
-            _display_act_genre(state->curr_act);
-            state->prev_act = NUM_ACTS + 1; // Forces the display to go back to the prev act.
+                _alarm_held = true;
+                _ts_ticks = 2;
+                _display_act_genre(state->curr_act);
+                state->prev_act = NUM_ACTS + 1; // Forces the display to go back to the prev act.
             }
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             break;
         case EVENT_LIGHT_LONG_PRESS:
-            if (state->cyc_fest_not_occ){
+            if (state->cyc_through_all_acts){
                 state->curr_act = 120; // Resets to non-existant act number
                 watch_clear_indicator(WATCH_INDICATOR_LAP);
-                state->cyc_fest_not_occ = false;
+                state->cyc_through_all_acts = false;
                 curr_time = watch_rtc_get_date_time();
-                festival_occurring(curr_time, true);
+                if (festival_occurring(curr_time, true))
+                    display_curr_day(curr_time);
             }
             else{
                 movement_illuminate_led();
             }
             break;
         case EVENT_TIMEOUT:
-            if (state->cyc_fest_not_occ){
-                state->cyc_fest_not_occ = false;
+            if (state->cyc_through_all_acts){
+                state->cyc_through_all_acts = false;
                 curr_time = watch_rtc_get_date_time();
-                festival_occurring(curr_time, true);
+                if (festival_occurring(curr_time, true))
+                    display_curr_day(curr_time);
                 watch_clear_indicator(WATCH_INDICATOR_LAP);
             }
             break;
@@ -355,7 +380,7 @@ void festival_schedule_face_resign(movement_settings_t *settings, void *context)
     (void) settings;
     festival_schedule_state_t *state = (festival_schedule_state_t *)context;
     state->curr_act = NUM_ACTS;
-    state->cyc_fest_not_occ = false;
+    state->cyc_through_all_acts = false;
     state->prev_act = NUM_ACTS + 1;
 
     // handle any cleanup before your watch face goes off-screen.

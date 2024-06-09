@@ -73,7 +73,8 @@ typedef struct {
     uint8_t curr_act;
     uint8_t prev_act;
     uint16_t prev_day : 15;
-    bool cyc_fest_not_occ;
+    bool cyc_through_all_acts;
+    bool showing_title;
     
 } festival_schedule_state_t;
 
