@@ -4,175 +4,207 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
 {
     {
         .artist = "ACRAZE",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},  
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 10
+        .popularity = 12
+    },
+    {
+        .artist = "AK SPO",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DnB,
+        .popularity = 107
     },
     {
         .artist = "ALLEYC",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 74
+        .genre = DUBSTEP,
+        .popularity = 76
     },
     {
         .artist = "ATLIEN",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
+        .genre = DUBSTEP,
         .popularity = 56
     },
     {
-        .artist = "AYYBO",
-        .stage = STAGE_COUNT,
+        .artist = "AYYBO ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 28
+        .popularity = 40
     },
     {
-        .artist = "BAGGI",
-        .stage = STAGE_COUNT,
+        .artist = "BAGGI ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 94
+        .popularity = 106
     },
     {
         .artist = "BARCLA",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 78
+        .genre = DUBSTEP,
+        .popularity = 85
     },
     {
         .artist = "BEN BO",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 103
+        .popularity = 8
     },
     {
         .artist = "BLACK ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 52
+        .genre = DUBSTEP,
+        .popularity = 53
+    },
+    {
+        .artist = "BLASTO",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TECHNO,
+        .popularity = 54
     },
     {
         .artist = "BOOGIE",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 59
+        .genre = DUBSTEP,
+        .popularity = 60
+    },
+    {
+        .artist = "BOOGIE",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 60
+    },
+    {
+        .artist = "BOOGIE",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 96
     },
     {
         .artist = "BRANDI",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 25, .unit.hour = 22, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 25, .unit.hour = 23, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 104
+        .popularity = 118
     },
     {
         .artist = "CALUSS",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 79
+    },
+    {
+        .artist = "CANABL",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 88
+    },
+    {
+        .artist = "CANNON",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP,
+        .popularity = 19
+    },
+    {
+        .artist = "CASPA ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 90
+    },
+    {
+        .artist = "CASSIA",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 44
+    },
+    {
+        .artist = "CHAOS ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
         .popularity = 55
     },
     {
-        .artist = "CANNAB",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 102
-    },
-    {
-        .artist = "CANNON",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = POP,
-        .popularity = 17
-    },
-    {
-        .artist = "CASPA",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 82
-    },
-    {
-        .artist = "CASSIA",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 37
-    },
-    {
-        .artist = "CHAOS ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 53
-    },
-    {
         .artist = "CHARLO",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 18
-    },
-    {
-        .artist = "CHASE ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 4
-    },
-    {
-        .artist = "COCO &",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 58
-    },
-    {
-        .artist = "CUCO",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = INDIE,
-        .popularity = 6
-    },
-    {
-        .artist = "DIMENS",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
+        .genre = TECHNO,
         .popularity = 15
     },
     {
+        .artist = "CHASE ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DnB,
+        .popularity = 3
+    },
+    {
+        .artist = "COCO &",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DANCE,
+        .popularity = 78
+    },
+    {
+        .artist = "CUCO  ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE,
+        .popularity = 98
+    },
+    {
+        .artist = "DIMENS",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DnB,
+        .popularity = 22
+    },
+    {
         .artist = "DIRTWI",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = JAM,
@@ -180,255 +212,295 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
     },
     {
         .artist = "DISCO ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = JAM,
-        .popularity = 80
+        .popularity = 84
     },
     {
         .artist = "DIXON'",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .stage = OBSERVATORY,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 26, .unit.hour = 0, .unit.minute = 45},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 26, .unit.hour = 1, .unit.minute = 45},
         .genre = SOUL,
-        .popularity = 99
+        .popularity = 113
+    },
+    {
+        .artist = "DJ BRO",
+        .stage = OBSERVATORY,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 18, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 19, .unit.minute = 30},
+        .genre = HOUSE,
+        .popularity = 115
     },
     {
         .artist = "DJ SUS",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 83
+        .genre = DANCE,
+        .popularity = 92
     },
     {
-        .artist = "DJ TEN",
-        .stage = STAGE_COUNT,
+        .artist = "DRAMA ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 64
-    },
-    {
-        .artist = "DRAMA",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 25
+        .genre = DANCE,
+        .popularity = 21
     },
     {
         .artist = "DUMPST",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = JAM,
-        .popularity = 85
-    },
-    {
-        .artist = "EGGY",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = JAM,
         .popularity = 91
     },
     {
+        .artist = "EGGY  ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 102
+    },
+    {
         .artist = "EMO NI",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = INDIE,
-        .popularity = 105
+        .popularity = 119
     },
     {
         .artist = "EQUANI",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = INDIE,
-        .popularity = 54
+        .popularity = 63
     },
     {
         .artist = "EVERYT",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 4
+    },
+    {
+        .artist = "EXCISI",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 16
+    },
+    {
+        .artist = "G JONE",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DnB,
+        .popularity = 82
+    },
+    {
+        .artist = "GIGANT",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 35
+    },
+    {
+        .artist = "GOODBO",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE,
+        .popularity = 14
+    },
+    {
+        .artist = "GREEN ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 36
+    },
+    {
+        .artist = "H&RRY ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 120
+    },
+    {
+        .artist = "HAMDI ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 43
+    },
+    {
+        .artist = "HIATUS",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL,
+        .popularity = 17
+    },
+    {
+        .artist = "HYPERB",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 52
+    },
+    {
+        .artist = "INZO  ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP,
+        .popularity = 42
+    },
+    {
+        .artist = "IT'S M",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DANCE,
+        .popularity = 34
+    },
+    {
+        .artist = "IVY LA",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DnB,
+        .popularity = 68
+    },
+    {
+        .artist = "JASON ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DANCE,
+        .popularity = 103
+    },
+    {
+        .artist = "JJUUJJ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 105
+    },
+    {
+        .artist = "JOHN S",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
         .popularity = 5
     },
     {
-        .artist = "EXCISI",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 19
-    },
-    {
-        .artist = "G JONE",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 77
-    },
-    {
-        .artist = "GIGANT",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 50
-    },
-    {
-        .artist = "GREEN ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 39
-    },
-    {
-        .artist = "H&RRY",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 106
-    },
-    {
-        .artist = "HAMDI",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 38
-    },
-    {
-        .artist = "HIATUS",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = RAP,
-        .popularity = 30
-    },
-    {
-        .artist = "INZO",
-        .stage = STAGE_COUNT,
+        .artist = "JUELZ ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = TRAP,
-        .popularity = 43
-    },
-    {
-        .artist = "IT'S M",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 21
-    },
-    {
-        .artist = "IVY LA",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
         .popularity = 72
     },
     {
-        .artist = "JJUUJJ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = JAM,
-        .popularity = 93
-    },
-    {
-        .artist = "JOHN S",
-        .stage = STAGE_COUNT,
+        .artist = "KALLAG",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 3
-    },
-    {
-        .artist = "JUELZ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = TRAP,
-        .popularity = 61
+        .popularity = 111
     },
     {
         .artist = "KENNY ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = RAP,
-        .popularity = 14
+        .popularity = 20
     },
     {
         .artist = "KILTRO",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = INDIE,
-        .popularity = 65
+        .popularity = 74
     },
     {
         .artist = "KNOCK2",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 26
+        .popularity = 28
     },
     {
         .artist = "LAYTON",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 27
+        .genre = TECHNO,
+        .popularity = 32
     },
     {
         .artist = "LE YOU",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 40
+        .popularity = 38
     },
     {
-        .artist = "LETTUC",
-        .stage = STAGE_COUNT,
+        .artist = "LEAGUE",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = JAM,
-        .popularity = 67
+        .popularity = 121
+    },
+    {
+        .artist = "LETTUC",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 59
     },
     {
         .artist = "LEVEL ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 60
+        .genre = DUBSTEP,
+        .popularity = 71
     },
     {
         .artist = "LEVITY",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 57
+        .genre = DUBSTEP,
+        .popularity = 70
     },
     {
         .artist = "LIBIAN",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = RAP,
@@ -436,433 +508,466 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
     },
     {
         .artist = "LITTLE",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = RAP,
-        .popularity = 47
+        .popularity = 51
     },
     {
         .artist = "LP GIO",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 20
+        .genre = DANCE,
+        .popularity = 29
     },
     {
-        .artist = "LSZEE",
-        .stage = STAGE_COUNT,
+        .artist = "LSZEE ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 45
+        .genre = DUBSTEP,
+        .popularity = 48
     },
     {
-        .artist = "LUCII",
-        .stage = STAGE_COUNT,
+        .artist = "LUCII ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 63
+        .genre = DUBSTEP,
+        .popularity = 65
     },
     {
         .artist = "LUDACR",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = RAP,
         .popularity = 2
     },
     {
-        .artist = "LYNY",
-        .stage = STAGE_COUNT,
+        .artist = "LYNY  ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 70
+        .genre = DUBSTEP,
+        .popularity = 81
     },
     {
         .artist = "MADDY ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = TRAP,
-        .popularity = 79
+        .popularity = 87
     },
     {
         .artist = "MAJOR ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 44
+        .popularity = 46
     },
     {
-        .artist = "MARSH",
-        .stage = STAGE_COUNT,
+        .artist = "MARSH ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 41
+        .popularity = 39
     },
     {
         .artist = "MASCOL",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = POP,
-        .popularity = 76
+        .popularity = 89
     },
     {
         .artist = "MASONI",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 100
+        .popularity = 117
     },
     {
         .artist = "MATROD",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
         .popularity = 23
     },
     {
-        .artist = "MAU P",
-        .stage = STAGE_COUNT,
+        .artist = "MAU P ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 12
+        .popularity = 13
     },
     {
         .artist = "MICHAE",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 48
+        .genre = DANCE,
+        .popularity = 57
     },
     {
         .artist = "MOJAVE",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 92
+        .popularity = 104
+    },
+    {
+        .artist = "MOONTR",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL,
+        .popularity = 64
     },
     {
         .artist = "NEIL F",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = INDIE,
-        .popularity = 8
+        .popularity = 11
     },
     {
         .artist = "NELLY ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = POP,
         .popularity = 1
     },
     {
-        .artist = "NEOMA",
-        .stage = STAGE_COUNT,
+        .artist = "NEOMA ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = POP,
-        .popularity = 90
+        .popularity = 101
     },
     {
         .artist = "ODD MO",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 24
-    },
-    {
-        .artist = "ODEN &",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 34
-    },
-    {
-        .artist = "ONLY F",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 75
-    },
-    {
-        .artist = "PAPERW",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = RAP,
-        .popularity = 95
-    },
-    {
-        .artist = "PEACH ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = INDIE,
-        .popularity = 35
-    },
-    {
-        .artist = "POLYRH",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = SOUL,
-        .popularity = 84
-    },
-    {
-        .artist = "PRETTY",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = JAM,
-        .popularity = 49
-    },
-    {
-        .artist = "PROXIM",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = JAM,
-        .popularity = 46
-    },
-    {
-        .artist = "RANGER",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 81
-    },
-    {
-        .artist = "RAWAYA",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = SOUL,
-        .popularity = 7
-    },
-    {
-        .artist = "RAYBEN",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 73
-    },
-    {
-        .artist = "REDRUM",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = TRAP,
-        .popularity = 98
-    },
-    {
-        .artist = "SAMMY ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 16
-    },
-    {
-        .artist = "SARA L",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 42
-    },
-    {
-        .artist = "SEVEN ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 22
-    },
-    {
-        .artist = "SHAE D",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 97
-    },
-    {
-        .artist = "SLAYYY",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = POP,
-        .popularity = 36
-    },
-    {
-        .artist = "STRING",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = JAM,
-        .popularity = 66
-    },
-    {
-        .artist = "SUBTRO",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 13
-    },
-    {
-        .artist = "SULTAN",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
         .popularity = 31
     },
     {
-        .artist = "SUPER ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 87
-    },
-    {
-        .artist = "SWAYLO",
-        .stage = STAGE_COUNT,
+        .artist = "ODEN &",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 101
+        .popularity = 45
     },
     {
-        .artist = "THOUGH",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = TRAP,
-        .popularity = 88
-    },
-    {
-        .artist = "TRIPP ",
-        .stage = STAGE_COUNT,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = TRAP,
-        .popularity = 86
-    },
-    {
-        .artist = "TSHA",
-        .stage = STAGE_COUNT,
+        .artist = "ONLY F",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 51
+        .popularity = 80
     },
     {
-        .artist = "UMPHRE",
-        .stage = STAGE_COUNT,
+        .artist = "PAPERW",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = RAP,
+        .popularity = 108
+    },
+    {
+        .artist = "PEACH ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = INDIE,
+        .popularity = 26
+    },
+    {
+        .artist = "POLITI",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 16, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 17, .unit.minute = 30},
+        .genre = TRAP,
+        .popularity = 114
+    },
+    {
+        .artist = "POLYRH",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL,
+        .popularity = 93
+    },
+    {
+        .artist = "PRETTY",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = JAM,
-        .popularity = 71
+        .popularity = 47
     },
     {
-        .artist = "UNUSUA",
-        .stage = STAGE_COUNT,
+        .artist = "PRETTY",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 66
+    },
+    {
+        .artist = "PROXIM",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 49
+    },
+    {
+        .artist = "RANGER",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 94
+    },
+    {
+        .artist = "RAWAYA",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL,
+        .popularity = 6
+    },
+    {
+        .artist = "RAYBEN",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 77
+    },
+    {
+        .artist = "REDRUM",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP,
+        .popularity = 112
+    },
+    {
+        .artist = "SAMMY ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DnB,
+        .popularity = 25
+    },
+    {
+        .artist = "SARA L",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TECHNO,
+        .popularity = 37
+    },
+    {
+        .artist = "SEVEN ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 18
+    },
+    {
+        .artist = "SHAE D",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 110
+    },
+    {
+        .artist = "SHAUN ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DANCE,
+        .popularity = 83
+    },
+    {
+        .artist = "SLAYYY",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = POP,
-        .popularity = 69
+        .popularity = 30
+    },
+    {
+        .artist = "STRING",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 19, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 23, .unit.minute = 30},
+        .genre = JAM,
+        .popularity = 58
+    },
+    {
+        .artist = "SUBTRO",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DUBSTEP,
+        .popularity = 10
+    },
+    {
+        .artist = "SULTAN",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 24
+    },
+    {
+        .artist = "SUPER ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = DnB,
+        .popularity = 97
+    },
+    {
+        .artist = "SWAYLO",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 116
+    },
+    {
+        .artist = "THOUGH",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP,
+        .popularity = 99
+    },
+    {
+        .artist = "TRIPP ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = TRAP,
+        .popularity = 95
+    },
+    {
+        .artist = "TSHA  ",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 50
+    },
+    {
+        .artist = "UMPHRE",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 67
+    },
+    {
+        .artist = "UNUSUA",
+        .stage = NO_STAGE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = POP,
+        .popularity = 75
     },
     {
         .artist = "VENBEE",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
+        .genre = DnB,
         .popularity = 33
     },
     {
         .artist = "VINI V",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 11
+        .popularity = 7
     },
     {
         .artist = "VNSSA ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 107
+        .popularity = 86
     },
     {
         .artist = "WESTEN",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 29
+        .popularity = 41
     },
     {
         .artist = "WHYTE ",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 89
+        .genre = DUBSTEP,
+        .popularity = 100
     },
     {
         .artist = "WILL C",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 68
+        .popularity = 69
     },
     {
-        .artist = "WOOLI",
-        .stage = STAGE_COUNT,
+        .artist = "WOOLI ",
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 32
+        .genre = DnB,
+        .popularity = 27
     },
     {
         .artist = "ZEN SE",
-        .stage = STAGE_COUNT,
+        .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
-        .genre = BASS,
-        .popularity = 96
+        .genre = DnB,
+        .popularity = 109
     },
     [NUM_ACTS]  = { //Fall back
         .artist = "No Act",
         .stage = STAGE_COUNT,
         .start_time = {.unit.year = 0, .unit.month = 0, .unit.day = 0, .unit.hour = 0, .unit.minute = 0},
         .end_time = {.unit.year = 63, .unit.month = 15, .unit.day = 31, .unit.hour = 31, .unit.minute = 63},
-        .genre = BASS,
+        .genre = GENRE_COUNT,
+        .popularity = 0
     }
 };

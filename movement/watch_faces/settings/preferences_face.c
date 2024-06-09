@@ -112,9 +112,6 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 break;
             }
             break;
-        case EVENT_ALARM_LONG_PRESS:
-            state->current_page = 0;
-            break;
         case EVENT_ALARM_BUTTON_UP:
             switch (state->current_page) {
                 case 0:

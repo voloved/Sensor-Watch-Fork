@@ -29,7 +29,8 @@
 
 
 typedef enum FestivalStage {
-    RANCH_ARENA = 0,
+    NO_STAGE = 0,
+    RANCH_ARENA,
     SHERWOOD_COURT,
     TRIPOLEE,
     CAROUSEL_CLUB,
@@ -39,8 +40,11 @@ typedef enum FestivalStage {
 } FestivalStage;
 
 typedef enum FestivalGenre {
-    BASS = 0,
+    DUBSTEP = 0,
+    DnB,
     HOUSE,
+    DANCE,
+    TECHNO,
     INDIE,
     POP,
     JAM,
@@ -59,7 +63,7 @@ typedef struct {
     uint8_t popularity;
 } schedule_t;
 
-#define NUM_ACTS 120
+#define NUM_ACTS 140
 #define SHOW_EMPTY_STAGES false
 
 typedef struct {

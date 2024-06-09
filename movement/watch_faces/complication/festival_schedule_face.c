@@ -32,6 +32,7 @@ const char festival_name[2] = "EF";
 
 const char festival_stage[STAGE_COUNT + 1][2] =
 {
+    [NO_STAGE] = "  ",
     [RANCH_ARENA] = "Rn",
     [SHERWOOD_COURT] = "SH",
     [TRIPOLEE] = "TR",
@@ -43,13 +44,16 @@ const char festival_stage[STAGE_COUNT + 1][2] =
 
 const char festival_genre[GENRE_COUNT + 1][6] =
 {
-    [BASS] = " BASS ",
-    [HOUSE] = " HousE",
+    [DUBSTEP] = "DUBStP",
+    [DnB] = " dnB  ",
+    [HOUSE] = " HOUSE",
+    [DANCE] = "DaNCE",
+    [TECHNO] = " tECNO",
     [INDIE] = " INdIE",
     [POP] = " POP  ",
     [JAM] = " Jan& ",
-    [TRAP] = " Trap ",
-    [RAP] = " RAP  ",
+    [TRAP] = " trAP ",
+    [RAP] = "  rAP ",
     [SOUL] = " SOUL ",
     [GENRE_COUNT] = "      "
 };
@@ -153,7 +157,8 @@ static void _display_act_genre(uint8_t act_num){
 static watch_date_time get_starting_time(void){
     watch_date_time date_oldest = festival_acts[0].start_time;
     for (int i = 1; i < NUM_ACTS; i++) {
-        watch_date_time date_check = festival_acts[0].start_time;
+        if (festival_acts[i].artist[0] == 0) continue;
+        watch_date_time date_check = festival_acts[i].start_time;
         if (_compare_dates_times(date_check, date_oldest) < 0)
             date_oldest= date_check;
     }
@@ -163,8 +168,8 @@ static watch_date_time get_starting_time(void){
 static watch_date_time get_ending_time(void){
     watch_date_time date_newest = festival_acts[0].end_time;
     for (int i = 1; i < NUM_ACTS; i++) {
-        watch_date_time date_check = festival_acts[0].end_time;
-        if (_compare_dates_times(date_check, date_newest) < 0)
+        watch_date_time date_check = festival_acts[i].end_time;
+        if (_compare_dates_times(date_check, date_newest) > 0)
             date_newest= date_check;
     }
     return date_newest;
