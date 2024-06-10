@@ -1,7 +1,7 @@
-#include "festival_schedule_face.h"
-
 // Genre - https://old.reddit.com/r/ElectricForest/comments/1bqbwlv/electric_forest_2024_lineup_broken_down_by_genre/
 // Line-up - https://clashfinder.com/m/electricforest2024settimepredictions/?user=152rg1.te
+#include "festival_schedule_face.h"
+
 const schedule_t festival_acts[NUM_ACTS + 1]=
 {
     {
@@ -10,7 +10,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 12
+        .popularity = 18
     },
     {
         .artist = "AK SPO",
@@ -18,7 +18,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 15},
         .genre = DnB,
-        .popularity = 106
+        .popularity = 100
     },
     {
         .artist = "ALLEYC",
@@ -26,7 +26,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 17, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 18, .unit.minute = 30},
         .genre = DUBSTEP,
-        .popularity = 75
+        .popularity = 73
     },
     {
         .artist = "ATLIEN",
@@ -34,7 +34,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 0, .unit.minute = 45},
         .genre = DUBSTEP,
-        .popularity = 53
+        .popularity = 51
     },
     {
         .artist = "AYYBO ",
@@ -42,7 +42,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 21, .unit.minute = 30},
         .genre = HOUSE,
-        .popularity = 42
+        .popularity = 35
     },
     {
         .artist = "BAGGI ",
@@ -50,15 +50,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 19, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 20, .unit.minute = 30},
         .genre = HOUSE,
-        .popularity = 105
+        .popularity = 99
     },
     {
         .artist = "BARCLA",
         .stage = SHERWOOD_COURT,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 21, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 22, .unit.minute = 30},
-        .genre = DUBSTEP,
-        .popularity = 85
+        .genre = BASS,
+        .popularity = 79
     },
     {
         .artist = "BEN BO",
@@ -66,7 +66,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 0, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 1, .unit.minute = 45},
         .genre = HOUSE,
-        .popularity = 8
+        .popularity = 10
     },
     {
         .artist = "BLACK ",
@@ -74,7 +74,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 2, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 3, .unit.minute = 15},
         .genre = DUBSTEP,
-        .popularity = 50
+        .popularity = 46
     },
     {
         .artist = "BLASTO",
@@ -82,7 +82,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 30},
         .genre = TECHNO,
-        .popularity = 51
+        .popularity = 55
     },
     {
         .artist = "BOOGIE",
@@ -90,15 +90,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 21, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 15},
         .genre = DUBSTEP,
-        .popularity = 60
-    },
-    {
-        .artist = "BOOGIE",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 21, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 15},
-        .genre = DUBSTEP,
-        .popularity = 60
+        .popularity = 59
     },
     {
         .artist = "BOOGIE",
@@ -106,7 +98,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 0, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 1, .unit.minute = 15},
         .genre = JAM,
-        .popularity = 95
+        .popularity = 90
+    },
+    {
+        .artist = "BRANDI",
+        .stage = CAROUSEL_CLUB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 20, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 21, .unit.minute = 30},
+        .genre = HOUSE,
+        .popularity = 112
     },
     {
         .artist = "BRANDI",
@@ -114,7 +114,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 21, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 117
+        .popularity = 112
     },
     {
         .artist = "CALUSS",
@@ -122,7 +122,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 17, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 78
+        .popularity = 60
     },
     {
         .artist = "CANABL",
@@ -130,15 +130,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 16, .unit.minute = 0},
         .genre = DUBSTEP,
-        .popularity = 87
+        .popularity = 82
     },
     {
         .artist = "CANNON",
         .stage = SHERWOOD_COURT,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 21, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 0},
-        .genre = POP,
-        .popularity = 20
+        .genre = INDIE,
+        .popularity = 16
     },
     {
         .artist = "CASPA ",
@@ -146,7 +146,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 19, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 21, .unit.minute = 0},
         .genre = DUBSTEP,
-        .popularity = 89
+        .popularity = 83
     },
     {
         .artist = "CASSIA",
@@ -154,7 +154,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 21, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 22, .unit.minute = 45},
         .genre = HOUSE,
-        .popularity = 46
+        .popularity = 42
     },
     {
         .artist = "CHAOS ",
@@ -162,7 +162,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 22, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 23, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 52
+        .popularity = 50
     },
     {
         .artist = "CHARLO",
@@ -170,7 +170,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 0, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 1, .unit.minute = 45},
         .genre = TECHNO,
-        .popularity = 15
+        .popularity = 4
     },
     {
         .artist = "CHASE ",
@@ -184,9 +184,9 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .artist = "COCO &",
         .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = DANCE,
-        .popularity = 77
+        .popularity = 64
     },
     {
         .artist = "CUCO  ",
@@ -194,7 +194,23 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 15},
         .genre = INDIE,
-        .popularity = 92
+        .popularity = 85
+    },
+    {
+        .artist = "DAVE Y",
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 0, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 1, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 108
+    },
+    {
+        .artist = "DAVE Y",
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 15, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 16, .unit.minute = 30},
+        .genre = JAM,
+        .popularity = 108
     },
     {
         .artist = "DAVE Y",
@@ -202,7 +218,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 15},
         .genre = JAM,
-        .popularity = 5
+        .popularity = 108
     },
     {
         .artist = "DIMENS",
@@ -210,15 +226,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 30},
         .genre = DnB,
-        .popularity = 23
-    },
-    {
-        .artist = "DISCOV",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 17, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 0},
-        .genre = GENRE_COUNT,
-        .popularity = 0
+        .popularity = 24
     },
     {
         .artist = "DIRTWI",
@@ -234,7 +242,31 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 0},
         .genre = JAM,
-        .popularity = 84
+        .popularity = 80
+    },
+    {
+        .artist = "DIXON'",
+        .stage = OBSERVATORY,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL,
+        .popularity = 106
+    },
+    {
+        .artist = "DIXON'",
+        .stage = OBSERVATORY,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 16, .unit.minute = 0},
+        .genre = SOUL,
+        .popularity = 106
+    },
+    {
+        .artist = "DIXON'",
+        .stage = OBSERVATORY,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 15, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 16, .unit.minute = 30},
+        .genre = SOUL,
+        .popularity = 106
     },
     {
         .artist = "DIXON'",
@@ -242,7 +274,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 0, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 1, .unit.minute = 45},
         .genre = SOUL,
-        .popularity = 112
+        .popularity = 106
+    },
+    {
+        .artist = "DJ BRO",
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 19, .unit.minute = 15},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 20, .unit.minute = 15},
+        .genre = HOUSE,
+        .popularity = 109
     },
     {
         .artist = "DJ BRO",
@@ -250,7 +290,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 22, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 23, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 114
+        .popularity = 109
     },
     {
         .artist = "DJ SUS",
@@ -258,7 +298,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 21, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 22, .unit.minute = 0},
         .genre = DANCE,
-        .popularity = 91
+        .popularity = 86
     },
     {
         .artist = "DRAMA ",
@@ -266,7 +306,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 20, .unit.minute = 0},
         .genre = DANCE,
-        .popularity = 22
+        .popularity = 28
     },
     {
         .artist = "DUMPST",
@@ -274,7 +314,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 17, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 45},
         .genre = JAM,
-        .popularity = 90
+        .popularity = 88
     },
     {
         .artist = "EGGY  ",
@@ -282,7 +322,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 17, .unit.minute = 30},
         .genre = JAM,
-        .popularity = 101
+        .popularity = 95
     },
     {
         .artist = "EMO NI",
@@ -290,7 +330,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 30},
         .genre = INDIE,
-        .popularity = 118
+        .popularity = 113
+    },
+    {
+        .artist = "EQUANI",
+        .stage = OBSERVATORY,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 45},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 45},
+        .genre = INDIE,
+        .popularity = 53
     },
     {
         .artist = "EQUANI",
@@ -298,7 +346,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 1, .unit.minute = 30},
         .genre = INDIE,
-        .popularity = 63
+        .popularity = 53
     },
     {
         .artist = "EVERYT",
@@ -306,23 +354,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 1, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 4
-    },
-    {
-        .artist = "EX6For",
-        .stage = CAROUSEL_CLUB,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 13, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 14, .unit.minute = 30},
-        .genre = GENRE_COUNT,
-        .popularity = 0
-    },
-    {
-        .artist = "FURY  ",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 14, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 15, .unit.minute = 0},
-        .genre = GENRE_COUNT,
-        .popularity = 0
+        .popularity = 72
     },
     {
         .artist = "EXCISI",
@@ -330,7 +362,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 23, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 1, .unit.minute = 0},
         .genre = DUBSTEP,
-        .popularity = 16
+        .popularity = 6
+    },
+    {
+        .artist = "EX6For",
+        .stage = CAROUSEL_CLUB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 13, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 14, .unit.minute = 30},
+        .genre = NO_GENRE,
+        .popularity = 0
     },
     {
         .artist = "G JONE",
@@ -338,7 +378,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 20, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 45},
         .genre = DnB,
-        .popularity = 81
+        .popularity = 77
     },
     {
         .artist = "GIGANT",
@@ -346,7 +386,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 0, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 1, .unit.minute = 30},
         .genre = DUBSTEP,
-        .popularity = 19
+        .popularity = 118
     },
     {
         .artist = "GOODBO",
@@ -354,7 +394,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 20, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 45},
         .genre = INDIE,
-        .popularity = 14
+        .popularity = 17
     },
     {
         .artist = "GREEN ",
@@ -362,7 +402,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 1, .unit.minute = 45},
         .genre = HOUSE,
-        .popularity = 36
+        .popularity = 31
     },
     {
         .artist = "H&RRY ",
@@ -370,7 +410,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 119
+        .popularity = 115
     },
     {
         .artist = "HAMDI ",
@@ -378,7 +418,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 23, .unit.minute = 0},
         .genre = DUBSTEP,
-        .popularity = 45
+        .popularity = 39
     },
     {
         .artist = "HIATUS",
@@ -386,7 +426,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 1, .unit.minute = 30},
         .genre = SOUL,
-        .popularity = 17
+        .popularity = 11
     },
     {
         .artist = "HYPERB",
@@ -394,15 +434,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 22, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 23, .unit.minute = 0},
         .genre = DUBSTEP,
-        .popularity = 41
+        .popularity = 121
     },
     {
         .artist = "INZO  ",
         .stage = SHERWOOD_COURT,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 22, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 23, .unit.minute = 30},
-        .genre = TRAP,
-        .popularity = 44
+        .genre = CHILL,
+        .popularity = 43
     },
     {
         .artist = "IT'S M",
@@ -410,7 +450,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 45},
         .genre = DANCE,
-        .popularity = 35
+        .popularity = 29
     },
     {
         .artist = "IVY LA",
@@ -418,7 +458,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 16, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 17, .unit.minute = 15},
         .genre = DnB,
-        .popularity = 68
+        .popularity = 69
+    },
+    {
+        .artist = "JASON ",
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 20, .unit.minute = 30},
+        .genre = DANCE,
+        .popularity = 96
     },
     {
         .artist = "JASON ",
@@ -426,7 +474,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 17, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 18, .unit.minute = 0},
         .genre = DANCE,
-        .popularity = 102
+        .popularity = 96
+    },
+    {
+        .artist = "JJUUJJ",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 16, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 17, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 98
     },
     {
         .artist = "JJUUJJ",
@@ -434,7 +490,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 23, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 0},
         .genre = JAM,
-        .popularity = 104
+        .popularity = 98
     },
     {
         .artist = "JOHN S",
@@ -442,23 +498,23 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 1, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 3, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 5
+        .popularity = 7
     },
     {
         .artist = "JUELZ ",
         .stage = TRIPOLEE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 30},
-        .genre = TRAP,
-        .popularity = 72
+        .genre = CHILL,
+        .popularity = 66
     },
     {
         .artist = "KALLAG",
         .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 110
+        .popularity = 104
     },
     {
         .artist = "KENNY ",
@@ -466,15 +522,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 0, .unit.minute = 15},
         .genre = RAP,
-        .popularity = 21
+        .popularity = 19
     },
     {
         .artist = "KILTRO",
         .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = INDIE,
-        .popularity = 73
+        .popularity = 68
     },
     {
         .artist = "KNOCK2",
@@ -482,7 +538,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 0, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 1, .unit.minute = 30},
         .genre = HOUSE,
-        .popularity = 29
+        .popularity = 30
     },
     {
         .artist = "LAYTON",
@@ -490,15 +546,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 1, .unit.minute = 0},
         .genre = TECHNO,
-        .popularity = 33
+        .popularity = 34
     },
     {
         .artist = "LE YOU",
         .stage = SHERWOOD_COURT,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 19, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 20, .unit.minute = 0},
-        .genre = HOUSE,
-        .popularity = 39
+        .genre = CHILL,
+        .popularity = 41
     },
     {
         .artist = "LEAGUE",
@@ -506,7 +562,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 17, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 0},
         .genre = JAM,
-        .popularity = 120
+        .popularity = 116
     },
     {
         .artist = "LETTUC",
@@ -514,7 +570,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 17, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 18, .unit.minute = 45},
         .genre = JAM,
-        .popularity = 59
+        .popularity = 56
     },
     {
         .artist = "LEVEL ",
@@ -522,7 +578,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 18, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 19, .unit.minute = 45},
         .genre = DUBSTEP,
-        .popularity = 71
+        .popularity = 61
     },
     {
         .artist = "LEVITY",
@@ -530,7 +586,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 45},
         .genre = DUBSTEP,
-        .popularity = 70
+        .popularity = 57
     },
     {
         .artist = "LIBIAN",
@@ -538,7 +594,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 17, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 18, .unit.minute = 0},
         .genre = RAP,
-        .popularity = 9
+        .popularity = 8
     },
     {
         .artist = "LITTLE",
@@ -546,15 +602,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 0, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 1, .unit.minute = 0},
         .genre = RAP,
-        .popularity = 56
-    },
-    {
-        .artist = "LP GIO",
-        .stage = CAROUSEL_CLUB,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 0, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 2, .unit.minute = 0},
-        .genre = DANCE,
-        .popularity = 30
+        .popularity = 47
     },
     {
         .artist = "LP GIO",
@@ -562,15 +610,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 2, .unit.minute = 0},
         .genre = DANCE,
-        .popularity = 30
+        .popularity = 25
     },
     {
         .artist = "LSZEE ",
         .stage = SHERWOOD_COURT,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 1, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 3, .unit.minute = 0},
-        .genre = DUBSTEP,
-        .popularity = 37
+        .genre = BASS,
+        .popularity = 119
     },
     {
         .artist = "LUCII ",
@@ -594,15 +642,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 30},
         .genre = DUBSTEP,
-        .popularity = 80
+        .popularity = 70
     },
     {
         .artist = "MADDY ",
         .stage = SHERWOOD_COURT,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 17, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
-        .genre = TRAP,
-        .popularity = 86
+        .genre = CHILL,
+        .popularity = 81
     },
     {
         .artist = "MAJOR ",
@@ -610,15 +658,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 30},
         .genre = HOUSE,
-        .popularity = 48
+        .popularity = 12
     },
     {
         .artist = "MARSH ",
         .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 40
+        .popularity = 44
     },
     {
         .artist = "MASCOL",
@@ -626,7 +674,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 18, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 30},
         .genre = POP,
-        .popularity = 88
+        .popularity = 78
     },
     {
         .artist = "MASONI",
@@ -634,7 +682,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 19, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 20, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 116
+        .popularity = 110
     },
     {
         .artist = "MATROD",
@@ -642,7 +690,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 22, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 24
+        .popularity = 26
     },
     {
         .artist = "MAU P ",
@@ -650,7 +698,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 0, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 13
+        .popularity = 21
     },
     {
         .artist = "MICHAE",
@@ -658,7 +706,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 23, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 30},
         .genre = DANCE,
-        .popularity = 57
+        .popularity = 48
     },
     {
         .artist = "MOJAVE",
@@ -666,7 +714,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 30},
         .genre = HOUSE,
-        .popularity = 103
+        .popularity = 97
     },
     {
         .artist = "MOONTR",
@@ -674,7 +722,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 0},
         .genre = SOUL,
-        .popularity = 64
+        .popularity = 63
     },
     {
         .artist = "NEIL F",
@@ -682,7 +730,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 2, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 3, .unit.minute = 15},
         .genre = INDIE,
-        .popularity = 11
+        .popularity = 14
     },
     {
         .artist = "NELLY ",
@@ -694,11 +742,19 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
     },
     {
         .artist = "NEOMA ",
+        .stage = CAROUSEL_CLUB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 23, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 0},
+        .genre = POP,
+        .popularity = 94
+    },
+    {
+        .artist = "NEOMA ",
         .stage = HONEYCOMB,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 30},
         .genre = POP,
-        .popularity = 100
+        .popularity = 94
     },
     {
         .artist = "ODEN &",
@@ -706,7 +762,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 47
+        .popularity = 40
     },
     {
         .artist = "ONLY F",
@@ -714,7 +770,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 79
+        .popularity = 76
     },
     {
         .artist = "PAPERW",
@@ -722,7 +778,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = RAP,
-        .popularity = 107
+        .popularity = 101
     },
     {
         .artist = "PEACH ",
@@ -737,8 +793,8 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .stage = HONEYCOMB,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 2, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 3, .unit.minute = 0},
-        .genre = TRAP,
-        .popularity = 113
+        .genre = CHILL,
+        .popularity = 107
     },
     {
         .artist = "POLYRH",
@@ -746,15 +802,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 21, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 22, .unit.minute = 15},
         .genre = SOUL,
-        .popularity = 92
+        .popularity = 87
     },
     {
         .artist = "PRETYL",
         .stage = RANCH_ARENA,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 0, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 1, .unit.minute = 45},
-        .genre = JAM,
-        .popularity = 32
+        .genre = BASS,
+        .popularity = 20
     },
     {
         .artist = "PRETYP",
@@ -762,15 +818,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 20, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 66
-    },
-    {
-        .artist = "PRIDE ",
-        .stage = CAROUSEL_CLUB,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 20},
-        .genre = GENRE_COUNT,
-        .popularity = 15
+        .popularity = 54
     },
     {
         .artist = "PROXIM",
@@ -778,7 +826,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 15},
         .genre = JAM,
-        .popularity = 54
+        .popularity = 45
     },
     {
         .artist = "RANGER",
@@ -786,7 +834,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 16, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 17, .unit.minute = 45},
         .genre = HOUSE,
-        .popularity = 93
+        .popularity = 84
     },
     {
         .artist = "RAWAYA",
@@ -794,7 +842,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 17, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 18, .unit.minute = 30},
         .genre = SOUL,
-        .popularity = 6
+        .popularity = 5
     },
     {
         .artist = "RAYBEN",
@@ -802,15 +850,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 45},
         .genre = HOUSE,
-        .popularity = 76
+        .popularity = 74
     },
     {
         .artist = "REDRUM",
         .stage = OBSERVATORY,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 0},
-        .genre = TRAP,
-        .popularity = 111
+        .genre = CHILL,
+        .popularity = 105
     },
     {
         .artist = "SAMMY ",
@@ -818,7 +866,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 23, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 0, .unit.minute = 15},
         .genre = DnB,
-        .popularity = 26
+        .popularity = 23
     },
     {
         .artist = "SARA L",
@@ -832,9 +880,17 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .artist = "SEVEN ",
         .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .genre = DUBSTEP,
-        .popularity = 18
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
+        .genre = BASS,
+        .popularity = 13
+    },
+    {
+        .artist = "SHAE D",
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 0},
+        .genre = HOUSE,
+        .popularity = 103
     },
     {
         .artist = "SHAE D",
@@ -842,7 +898,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 16, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 17, .unit.minute = 30},
         .genre = HOUSE,
-        .popularity = 109
+        .popularity = 103
     },
     {
         .artist = "SHAUN ",
@@ -850,7 +906,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 22, .unit.minute = 30},
         .genre = DANCE,
-        .popularity = 83
+        .popularity = 75
     },
     {
         .artist = "SLAYYY",
@@ -858,7 +914,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 23, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 24, .unit.hour = 0, .unit.minute = 0},
         .genre = POP,
-        .popularity = 31
+        .popularity = 22
+    },
+    {
+        .artist = "STRING",
+        .stage = RANCH_ARENA,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 21, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 0},
+        .genre = JAM,
+        .popularity = 52
     },
     {
         .artist = "STRING",
@@ -866,7 +930,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 23, .unit.minute = 30},
         .genre = JAM,
-        .popularity = 58
+        .popularity = 52
     },
     {
         .artist = "SUBTRO",
@@ -874,15 +938,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 0, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 1, .unit.minute = 45},
         .genre = DUBSTEP,
-        .popularity = 10
+        .popularity = 15
     },
     {
         .artist = "SULTAN",
         .stage = CAROUSEL_CLUB,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 20, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 30},
-        .genre = HOUSE,
-        .popularity = 25
+        .genre = CHILL,
+        .popularity = 32
     },
     {
         .artist = "SUPER ",
@@ -890,7 +954,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 0, .unit.minute = 0},
         .genre = DnB,
-        .popularity = 96
+        .popularity = 91
+    },
+    {
+        .artist = "SWAYLO",
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 15},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 15},
+        .genre = HOUSE,
+        .popularity = 111
     },
     {
         .artist = "SWAYLO",
@@ -898,23 +970,31 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 18, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 19, .unit.minute = 15},
         .genre = HOUSE,
-        .popularity = 115
+        .popularity = 111
     },
     {
         .artist = "THOUGH",
         .stage = TRIPOLEE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 19, .unit.minute = 15},
-        .genre = TRAP,
-        .popularity = 98
+        .genre = CHILL,
+        .popularity = 92
     },
     {
         .artist = "TRIPP ",
         .stage = OBSERVATORY,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 21, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 30},
-        .genre = TRAP,
-        .popularity = 94
+        .genre = CHILL,
+        .popularity = 89
+    },
+    {
+        .artist = "TSHA  ",
+        .stage = TRIPOLEE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 15},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 20, .unit.minute = 30},
+        .genre = HOUSE,
+        .popularity = 49
     },
     {
         .artist = "TSHA  ",
@@ -922,7 +1002,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 23, .unit.minute = 30},
         .genre = HOUSE,
-        .popularity = 55
+        .popularity = 49
     },
     {
         .artist = "UMPHRE",
@@ -930,7 +1010,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 21, .unit.minute = 15},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 22, .unit.minute = 45},
         .genre = JAM,
-        .popularity = 67
+        .popularity = 58
+    },
+    {
+        .artist = "UNUSUA",
+        .stage = HONEYCOMB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 15},
+        .genre = POP,
+        .popularity = 71
     },
     {
         .artist = "UNUSUA",
@@ -938,23 +1026,23 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 18, .unit.minute = 45},
         .genre = POP,
-        .popularity = 74
+        .popularity = 71
     },
     {
         .artist = "VENBEE",
         .stage = NO_STAGE,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 0},
         .genre = DnB,
-        .popularity = 34
+        .popularity = 37
     },
     {
         .artist = "VINI V",
         .stage = OBSERVATORY,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 1, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 2, .unit.minute = 30},
-        .genre = HOUSE,
-        .popularity = 7
+        .genre = TECHNO,
+        .popularity = 9
     },
     {
         .artist = "VNSSA ",
@@ -962,7 +1050,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 82
+        .popularity = 120
+    },
+    {
+        .artist = "WESTEN",
+        .stage = TRIPOLEE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 15},
+        .genre = HOUSE,
+        .popularity = 36
     },
     {
         .artist = "WESTEN",
@@ -970,15 +1066,15 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 21, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 22, .unit.minute = 0},
         .genre = HOUSE,
-        .popularity = 43
+        .popularity = 36
     },
     {
         .artist = "WHYTE ",
         .stage = SHERWOOD_COURT,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 23, .unit.minute = 30},
-        .genre = DUBSTEP,
-        .popularity = 99
+        .genre = BASS,
+        .popularity = 93
     },
     {
         .artist = "WILL C",
@@ -986,31 +1082,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 15, .unit.minute = 30},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 16, .unit.minute = 45},
         .genre = HOUSE,
-        .popularity = 69
-    },
-    {
-        .artist = " YOGA1",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 12, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 13, .unit.minute = 15},
-        .genre = GENRE_COUNT,
-        .popularity = 0
-    },
-    {
-        .artist = " YOGA2",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 12, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 13, .unit.minute = 15},
-        .genre = GENRE_COUNT,
-        .popularity = 0
-    },
-    {
-        .artist = " YOGA3",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 12, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 13, .unit.minute = 15},
-        .genre = GENRE_COUNT,
-        .popularity = 0
+        .popularity = 67
     },
     {
         .artist = "WOOLI ",
@@ -1018,7 +1090,31 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 0, .unit.minute = 45},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 2, .unit.minute = 0},
         .genre = DnB,
-        .popularity = 28
+        .popularity = 33
+    },
+    {
+        .artist = " YOGA1",
+        .stage = TRIPOLEE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 12, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 21, .unit.hour = 13, .unit.minute = 15},
+        .genre = NO_GENRE,
+        .popularity = 0
+    },
+    {
+        .artist = " YOGA2",
+        .stage = TRIPOLEE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 12, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 13, .unit.minute = 15},
+        .genre = NO_GENRE,
+        .popularity = 0
+    },
+    {
+        .artist = " YOGA3",
+        .stage = TRIPOLEE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 12, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 13, .unit.minute = 15},
+        .genre = NO_GENRE,
+        .popularity = 0
     },
     {
         .artist = "ZEN SE",
@@ -1026,7 +1122,7 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 18, .unit.minute = 0},
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 19, .unit.minute = 30},
         .genre = DnB,
-        .popularity = 108
+        .popularity = 102
     },
     [NUM_ACTS]  = { //Fall back
         .artist = "No Act",

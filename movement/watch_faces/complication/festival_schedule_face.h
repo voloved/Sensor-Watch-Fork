@@ -40,7 +40,9 @@ typedef enum FestivalStage {
 } FestivalStage;
 
 typedef enum FestivalGenre {
-    DUBSTEP = 0,
+    NO_GENRE = 0,
+    BASS,
+    DUBSTEP,
     DnB,
     HOUSE,
     DANCE,
@@ -48,7 +50,7 @@ typedef enum FestivalGenre {
     INDIE,
     POP,
     JAM,
-    TRAP,
+    CHILL,
     RAP,
     SOUL,
     GENRE_COUNT

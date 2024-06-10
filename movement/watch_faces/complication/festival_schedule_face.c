@@ -44,6 +44,8 @@ const char festival_stage[STAGE_COUNT + 1][2] =
 
 const char festival_genre[GENRE_COUNT + 1][6] =
 {
+    [NO_GENRE] = "      ",
+    [BASS] = " BASS ",
     [DUBSTEP] = "DUBStP",
     [DnB] = " dnB  ",
     [HOUSE] = " HOUSE",
@@ -52,7 +54,7 @@ const char festival_genre[GENRE_COUNT + 1][6] =
     [INDIE] = " INdIE",
     [POP] = " POP  ",
     [JAM] = " Jan& ",
-    [TRAP] = " trAP ",
+    [CHILL] = " Chill",
     [RAP] = "  rAP ",
     [SOUL] = " SOUL ",
     [GENRE_COUNT] = "      "
