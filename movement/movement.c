@@ -93,7 +93,7 @@
 
 // Default to 1 second led duration
 #ifndef MOVEMENT_DEFAULT_LED_DURATION
-#define MOVEMENT_DEFAULT_LED_DURATION 1
+#define MOVEMENT_DEFAULT_LED_DURATION 2
 #endif
 
 // Default to no set location latitude
@@ -219,6 +219,7 @@ static inline void _movement_disable_fast_tick_if_possible(void) {
 }
 
 static void _decrement_deep_sleep_counter(void){
+    if(!movement_state.settings.bit.screen_off_after_le) return;
     if(movement_state.le_mode_ticks != -1 || movement_state.le_deep_sleeping_ticks == -1) return;
     if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
     else{
@@ -298,7 +299,18 @@ void movement_illuminate_led(void) {
     if (movement_state.settings.bit.led_duration) {
         watch_set_led_color(movement_state.settings.bit.led_red_color ? (0xF | movement_state.settings.bit.led_red_color << 4) : 0,
                             movement_state.settings.bit.led_green_color ? (0xF | movement_state.settings.bit.led_green_color << 4) : 0);
-        movement_state.light_ticks = (movement_state.settings.bit.led_duration * 2 - 1) * 128;
+        switch (movement_state.settings.bit.led_duration)
+        {
+        case 1:
+            movement_state.light_ticks = 8; //62ms; to avoid bounce
+            break;
+        case 2:
+            movement_state.light_ticks = 128;
+            break;
+        case 3:
+            movement_state.light_ticks = 384;
+            break;
+        }
         _movement_enable_fast_tick_if_needed();
     }
 }

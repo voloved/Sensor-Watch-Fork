@@ -46,6 +46,7 @@ void party_face_activate(movement_settings_t *settings, void *context) {
     state->blink = false;
     state->led = false;
     state->fast = false;
+    state->prev_text = -1;
     // Handle any tasks related to your watch face coming on screen.
 }
 
@@ -53,10 +54,19 @@ static void _party_face_init_lcd(party_state_t *state) {
     char text[11];
     const int partyTextNum = 3;
     const char partyTime[][7] = {" It's","Party", "Tin&e"};
+    uint8_t disp_loc = 0;
     switch (state->text)
     {
     case 1:
-        sprintf(text, "     Pron&");
+        if (state->prev_text == state->text)
+        {
+            disp_loc = 5;
+            sprintf(text, "Pron&");
+        }
+        else{
+            watch_clear_indicator(WATCH_INDICATOR_BELL);
+            sprintf(text, "     Pron&");
+        }
         break;
     case 0:
     default:
@@ -68,10 +78,16 @@ static void _party_face_init_lcd(party_state_t *state) {
             state->party_text = (state->party_text + 1)  % partyTextNum;
             watch_set_indicator(WATCH_INDICATOR_BELL);
         }
-        sprintf(text, "EF%02d %s", state->curr_year + 20, partyTime[state->party_text]);
+        if (state->prev_text == state->text){
+            disp_loc = 5;
+            sprintf(text, "%s",partyTime[state->party_text]);
+        }
+        else
+            sprintf(text, "EF%02d %s", state->curr_year + 20, partyTime[state->party_text]);
         break;
     }
-    watch_display_string(text, 0);
+    watch_display_string(text, disp_loc);
+    state->prev_text = state->text;
 
 }
 

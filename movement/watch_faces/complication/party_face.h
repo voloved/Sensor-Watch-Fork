@@ -42,6 +42,7 @@ typedef struct {
     uint8_t color : 2;
     uint8_t party_text : 2;
     uint8_t curr_year : 6;  // 0-63 (representing 2020-2083)
+    int8_t prev_text;
 } party_state_t;
 
 void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);

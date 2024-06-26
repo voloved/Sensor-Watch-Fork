@@ -62,8 +62,9 @@ void preferences_face_activate(movement_settings_t *settings, void *context) {
 }
 
 static void _watch_display_hourly_chime_string(movement_settings_t *settings, uint8_t hour){
-    char buf[4];
+    char buf[6];
     if (settings->bit.hourly_chime_always){
+        watch_clear_indicator(WATCH_INDICATOR_PM);
         watch_display_string(" Always", 4);
     }
     else{
@@ -78,10 +79,11 @@ static void _watch_display_hourly_chime_string(movement_settings_t *settings, ui
             if (hour == 0) hour = 12;
         }
         if (hour > 9)
-            sprintf(buf, "%2d", hour);
+            sprintf(buf, "%2d00", hour);
         else
-            sprintf(buf, " %d", hour);
-        watch_display_string(buf, 6);
+            sprintf(buf, " %d00", hour);
+        watch_set_colon();
+        watch_display_string(buf, 4);
     }
 }
 
@@ -101,6 +103,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
             switch (state->do_deepsleep)
             {
             case 1:
+                settings->bit.screen_off_after_le = state->prev_screen_off_pref;
                 g_force_sleep = 2;
                 state->do_deepsleep = 2;
                 // fall through
@@ -178,6 +181,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
     }
 
     watch_display_string((char *)preferences_face_titles[state->current_page], 0);
+    watch_clear_colon();
 
     // blink active setting on even-numbered quarter-seconds
     if (event.subsecond % 2) {
@@ -233,8 +237,8 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 break;
             case 3:
                 if(state->do_deepsleep != 0) watch_display_string("Nowj", 6);
-                else if (settings->bit.screen_off_after_le) watch_display_string("60n&in", 4);
-                else watch_display_string(" Never", 4);
+                else if (settings->bit.screen_off_after_le) watch_display_string("ON", 7);
+                else watch_display_string("OFF", 7);
                 break;
             case 4:
                 _watch_display_hourly_chime_string(settings, Hourly_Chime_Start[settings->bit.hourly_chime_start]);
@@ -243,11 +247,20 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 _watch_display_hourly_chime_string(settings, Hourly_Chime_End[settings->bit.hourly_chime_end]);
                 break;
             case 6:
-                if (settings->bit.led_duration) {
-                    sprintf(buf, " %1d SeC", settings->bit.led_duration * 2 - 1);
-                    watch_display_string(buf, 4);
-                } else {
+                switch (settings->bit.led_duration)
+                {
+                case 0:
                     watch_display_string("no LEd", 4);
+                    break;
+                case 1:
+                    watch_display_string(" 0 SeC", 4);
+                    break;
+                case 2:
+                    watch_display_string(" 1 SeC", 4);
+                    break;
+                case 3:
+                    watch_display_string(" 3 SeC", 4);
+                    break;
                 }
                 break;
             case 7:
@@ -260,6 +273,8 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 break;
         }
     }
+    if (state->current_page == 0)
+        state->prev_screen_off_pref = settings->bit.screen_off_after_le;
 
     if (state->current_page != 4 && state->current_page != 5)
         watch_clear_indicator(WATCH_INDICATOR_PM);
