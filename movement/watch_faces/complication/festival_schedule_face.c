@@ -44,7 +44,7 @@ const char festival_stage[STAGE_COUNT + 1][2] =
 
 const char festival_genre[GENRE_COUNT + 1][6] =
 {
-    [NO_GENRE] = "      ",
+    [NO_GENRE] = " NONE ",
     [BASS] = " BASS ",
     [DUBSTEP] = "DUBStP",
     [DnB] = " dnB  ",
@@ -150,10 +150,42 @@ static void _display_act(festival_schedule_state_t *state){
     watch_display_string(buf , 0);
 }
 
-static void _display_act_genre(uint8_t act_num){
-    char buf[9];
-    sprintf(buf, " G%.6s", festival_genre[festival_acts[act_num].genre]);
-    watch_display_string(buf , 2);
+static void _display_act_genre(uint8_t act_num, bool show_weekday){
+    char buf[11];
+    if (show_weekday){
+        watch_date_time start_time = festival_acts[act_num].start_time;
+        if (start_time.unit.hour < 5)
+            start_time.reg = start_time.reg - (1<<17); // Subtract a day if the act starts before 5am.
+        sprintf(buf, "%s G%.6s", watch_utility_get_weekday(start_time), festival_genre[festival_acts[act_num].genre]);
+        watch_display_string(buf , 0);
+    }
+    else{
+        sprintf(buf, " G%.6s", festival_genre[festival_acts[act_num].genre]);
+        watch_display_string(buf , 2);
+    }
+}
+
+static void _display_act_time(uint8_t act_num, bool clock_mode_24h){
+    char buf[11];
+    watch_date_time start_time = festival_acts[act_num].start_time;
+    watch_set_colon();
+    if (clock_mode_24h){
+        watch_set_indicator(WATCH_INDICATOR_24H);
+
+    }
+    else{
+        watch_clear_indicator(WATCH_INDICATOR_24H);
+        // if we are in 12 hour mode, do some cleanup.
+        if (start_time.unit.hour < 12) {
+            watch_clear_indicator(WATCH_INDICATOR_PM);
+        } else {
+            watch_set_indicator(WATCH_INDICATOR_PM);
+        }
+        start_time.unit.hour %= 12;
+        if (start_time.unit.hour == 0) start_time.unit.hour = 12;
+    }
+    sprintf(buf, "%s%2d%2d%.2d  ", watch_utility_get_weekday(start_time), start_time.unit.day, start_time.unit.hour, start_time.unit.minute);
+    watch_display_string(buf, 0);
 }
 
 static watch_date_time get_starting_time(void){
@@ -256,11 +288,18 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             break;
         case EVENT_TICK:
         case EVENT_LOW_ENERGY_UPDATE:
-            curr_time = watch_rtc_get_date_time();
             if (_ts_ticks != 0){
                 if(--_ts_ticks != 0) break;
-                else _display_act(state);
+                else{
+                    watch_clear_colon();
+                    watch_clear_indicator(WATCH_INDICATOR_24H);
+                    watch_clear_indicator(WATCH_INDICATOR_PM);
+                    _display_act(state);
+                    break;
+                }
             }
+            if (state->cyc_through_all_acts) break;
+            curr_time = watch_rtc_get_date_time();
             bool newDay = ((curr_time.reg >> 17) != (state -> prev_day));
             state -> prev_day = (curr_time.reg >> 17);
             if (!festival_occurring(curr_time, (newDay && !state->cyc_through_all_acts))) break;
@@ -279,7 +318,12 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             _display_act(state);
             break;
         case EVENT_LIGHT_BUTTON_UP:
-            _ts_ticks = 0;
+            if (_ts_ticks != 0){
+                watch_clear_colon();
+                watch_clear_indicator(WATCH_INDICATOR_24H);
+                watch_clear_indicator(WATCH_INDICATOR_PM);
+                _ts_ticks = 0;
+            }
             curr_time = watch_rtc_get_date_time();
             if (!festival_occurring(curr_time, false) || state->cyc_through_all_acts){
                 state->cyc_through_all_acts = true;
@@ -287,6 +331,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                 state->curr_act = get_next_act_num(state->curr_act, true);
                 state->curr_stage = festival_acts[state->curr_act].stage;
                 _display_act(state);
+                state->showing_title = false;
                 break;
             }
             if (!state->showing_title) state->curr_stage = (state->curr_stage - 1 + STAGE_COUNT) % STAGE_COUNT;
@@ -300,7 +345,12 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             _display_act(state);
             break;
         case EVENT_ALARM_BUTTON_UP:
-            _ts_ticks = 0;
+            if (_ts_ticks != 0){
+                watch_clear_colon();
+                watch_clear_indicator(WATCH_INDICATOR_24H);
+                watch_clear_indicator(WATCH_INDICATOR_PM);
+                _ts_ticks = 0;
+            }
             curr_time = watch_rtc_get_date_time();
             if (!festival_occurring(curr_time, false) || state->cyc_through_all_acts){
                 state->cyc_through_all_acts = true;
@@ -308,6 +358,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                 state->curr_act = get_next_act_num(state->curr_act, false);
                 state->curr_stage = festival_acts[state->curr_act].stage;
                 _display_act(state);
+                state->showing_title = false;
                 break;
             }
             if (!state->showing_title) state->curr_stage = (state->curr_stage + 1) % STAGE_COUNT;
@@ -327,12 +378,21 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                 state->curr_act = get_next_act_num(state->curr_act, false);
                 state->curr_stage = festival_acts[state->curr_act].stage;
                 _display_act(state);
+                state->showing_title = false;
                 break;
             }
-            if (state->curr_act < NUM_ACTS){
+            if (state->curr_act >= NUM_ACTS) break;
+            if (_ts_ticks != 0){
                 _alarm_held = true;
                 _ts_ticks = 2;
-                _display_act_genre(state->curr_act);
+                _display_act_time(state->curr_act, settings->bit.clock_mode_24h);
+                state->prev_act = NUM_ACTS + 1; // Forces the display to go back to the prev act.
+
+            }
+            else{
+                _alarm_held = true;
+                _ts_ticks = 2;
+                _display_act_genre(state->curr_act, state->cyc_through_all_acts);
                 state->prev_act = NUM_ACTS + 1; // Forces the display to go back to the prev act.
             }
             break;
@@ -340,7 +400,8 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             break;
         case EVENT_LIGHT_LONG_PRESS:
             if (state->cyc_through_all_acts){
-                state->curr_act = 120; // Resets to non-existant act number
+                state->showing_title = true;
+                state->curr_act = NUM_ACTS;
                 watch_clear_indicator(WATCH_INDICATOR_LAP);
                 state->cyc_through_all_acts = false;
                 curr_time = watch_rtc_get_date_time();

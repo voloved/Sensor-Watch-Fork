@@ -65,7 +65,6 @@ typedef struct {
     uint8_t popularity;
 } schedule_t;
 
-#define NUM_ACTS 140
 #define SHOW_EMPTY_STAGES false
 
 typedef struct {
