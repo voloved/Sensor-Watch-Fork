@@ -27,8 +27,8 @@
 #include "tally_face.h"
 #include "watch.h"
 
-static const uint32_t _tally_default[] = {0, 40, 20};
-static const uint8_t _tally_default_size = sizeof(_tally_default) / sizeof(uint32_t);
+static const int16_t _tally_default[] = {0, 40, 20};
+static const uint8_t _tally_default_size = sizeof(_tally_default) / sizeof(int16_t);
 
 void tally_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
@@ -55,7 +55,7 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
         case EVENT_ALARM_BUTTON_UP:
             // increment tally index
             state->tally_idx++;
-            if (state->tally_idx > 999999) { //0-999,999
+            if (state->tally_idx > 9999) { //0-9,999
                 //reset tally index and play a reset tune
                 state->tally_idx = _tally_default[state->tally_default_idx];
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
@@ -81,7 +81,7 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
         case EVENT_LIGHT_BUTTON_UP:
             // decrement tally index
-            if (state->tally_idx != 0){
+            if (state->tally_idx > -99){
                 state->tally_idx--;
                 print_tally(state);
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_C6SHARP_D6FLAT, 30);
@@ -123,7 +123,10 @@ void print_tally(tally_state_t *state) {
         watch_set_indicator(WATCH_INDICATOR_BELL);
     else
         watch_clear_indicator(WATCH_INDICATOR_BELL);
-    sprintf(buf, "TA  %06d", (int)(state->tally_idx)); // center of LCD display
+    if (state->tally_idx >= 0)
+        sprintf(buf, "TA  %4d  ", (int)(state->tally_idx)); // center of LCD display
+    else
+        sprintf(buf, "TA     %-2d", (int)(state->tally_idx)); // center of LCD display
     watch_display_string(buf, 0);
 }
 
