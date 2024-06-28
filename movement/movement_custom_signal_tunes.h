@@ -97,4 +97,15 @@ int8_t signal_tune[] = {
 };
 #endif // SIGNAL_TUNE_DEEP_COVER
 
+#ifdef SIGNAL_TUNE_SONG_OF_STORMS
+int8_t signal_tune[] = {
+    BUZZER_NOTE_D7, 5,
+    BUZZER_NOTE_REST, 4,
+    BUZZER_NOTE_F7, 5,
+    BUZZER_NOTE_REST, 4,
+    BUZZER_NOTE_A7, 8,
+    0
+};
+#endif // SIGNAL_TUNE_SONG_OF_STORMS
+
 #endif // MOVEMENT_CUSTOM_SIGNAL_TUNES_H_
