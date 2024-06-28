@@ -114,14 +114,19 @@ bool wyoscan_face_loop(movement_event_t event, movement_settings_t *settings, vo
     watch_date_time date_time;
     switch (event.event_type) {
         case EVENT_ACTIVATE:
+            state->animate = 0;
             break;
         case EVENT_TICK:            
-            if (!state->animate) {
+            if (state->animate == 0) {
                 date_time = watch_rtc_get_date_time();
                 state->start = 0; 
                 state->end = 0;
                 state->animation = 0;
-                state->animate = true;
+                state->animate = 1;
+                if (!settings->bit.clock_mode_24h) {
+                    date_time.unit.hour %= 12;
+                    if (date_time.unit.hour == 0) date_time.unit.hour = 12;
+                }
                 state->time_digits[0] = date_time.unit.hour / 10;
                 state->time_digits[1] = date_time.unit.hour % 10;
                 state->time_digits[2] = date_time.unit.minute / 10;
@@ -129,7 +134,7 @@ bool wyoscan_face_loop(movement_event_t event, movement_settings_t *settings, vo
                 state->time_digits[4] = date_time.unit.second / 10;
                 state->time_digits[5] = date_time.unit.second % 10;
             }
-            if ( state->animate ) {
+            if ( state->animate == 1) {
                 // if we have reached the max number of illuminated segments, we clear the oldest one
                 if ((state->end + 1) % MAX_ILLUMINATED_SEGMENTS == state->start) {
                     // clear the oldest pixel if it's not 'X'
@@ -186,7 +191,15 @@ bool wyoscan_face_loop(movement_event_t event, movement_settings_t *settings, vo
                     state->animate = false;
                 }
                 state->animation = (state->animation + 1);
+                if (state->do_deep_sleep && state->animation >= state->total_frames){
+                    watch_clear_colon();
+                    g_force_sleep = 2;
+                    state->animate = 2;
+                }
             } 
+            break;
+        case EVENT_ALARM_BUTTON_UP:
+            state->do_deep_sleep = !state->do_deep_sleep;
             break;
         case EVENT_LOW_ENERGY_UPDATE:
             break;
@@ -203,7 +216,8 @@ bool wyoscan_face_loop(movement_event_t event, movement_settings_t *settings, vo
 
 void wyoscan_face_resign(movement_settings_t *settings, void *context) {
     (void) settings;
-    (void) context;
+    wyoscan_state_t *state = (wyoscan_state_t *)context;
+    state->do_deep_sleep = false;
 
     // handle any cleanup before your watch face goes off-screen.
 }
