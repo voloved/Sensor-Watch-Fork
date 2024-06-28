@@ -56,6 +56,21 @@ typedef enum FestivalGenre {
     GENRE_COUNT
 } FestivalGenre;
 
+typedef enum FestivalScreens {
+    SCREEN_ACT = 0,
+    SCREEN_GENRE,
+    SCREEN_START_TIME,
+    SCREEN_END_TIME,    
+    SCREENS_COUNT
+} FestivalScreens;
+
+typedef enum FestivalTickReason {
+    TICK_NONE = 0,
+    TICK_SCREEN,
+    TICK_LEAVE,
+    TICK_CYCLE
+} FestivalTickReason;
+
 typedef struct {
     char artist[6];
     FestivalStage stage;
@@ -74,8 +89,10 @@ typedef struct {
     uint8_t curr_act;
     uint8_t prev_act;
     uint16_t prev_day : 15;
+    FestivalScreens curr_screen;
     bool cyc_through_all_acts;
     bool showing_title;
+    bool festival_occurring;
     
 } festival_schedule_state_t;
 

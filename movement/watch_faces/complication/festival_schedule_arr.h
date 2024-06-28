@@ -1,5 +1,5 @@
 // Genre - https://old.reddit.com/r/ElectricForest/comments/1bqbwlv/electric_forest_2024_lineup_broken_down_by_genre/
-// Line-up - https://clashfinder.com/m/electricforest2024settimepredictions/?user=152rg1.te
+// Line-up - https://clashfinder.com/m/elecfor24/
 #include "festival_schedule_face.h"
 
 #define NUM_ACTS 146
@@ -359,14 +359,6 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .popularity = 7
     },
     {
-        .artist = "EX6For",
-        .stage = CAROUSEL_CLUB,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 12, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 13, .unit.minute = 0},
-        .genre = NO_GENRE,
-        .popularity = 0
-    },
-    {
         .artist = "FEMME ",
         .stage = HONEYCOMB,
         .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 14, .unit.minute = 30},
@@ -453,22 +445,6 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 20, .unit.minute = 30},
         .genre = CHILL,
         .popularity = 47
-    },
-    {
-        .artist = "MURPH",
-        .stage = CAROUSEL_CLUB,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 1, .unit.minute = 0},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 2, .unit.minute = 15},
-        .genre = DANCE,
-        .popularity = 31
-    },
-    {
-        .artist = "MURPH",
-        .stage = TRIPOLEE,
-        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 30},
-        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 45},
-        .genre = DANCE,
-        .popularity = 31
     },
     {
         .artist = "IVY LA",
@@ -757,6 +733,22 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 17, .unit.minute = 0},
         .genre = SOUL,
         .popularity = 68
+    },
+    {
+        .artist = "MURPH",
+        .stage = CAROUSEL_CLUB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 1, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 2, .unit.minute = 15},
+        .genre = DANCE,
+        .popularity = 31
+    },
+    {
+        .artist = "MURPH",
+        .stage = TRIPOLEE,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 19, .unit.minute = 30},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 22, .unit.hour = 20, .unit.minute = 45},
+        .genre = DANCE,
+        .popularity = 31
     },
     {
         .artist = "NEIL F",
@@ -1173,6 +1165,14 @@ const schedule_t festival_acts[NUM_ACTS + 1]=
         .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 20, .unit.hour = 22, .unit.minute = 0},
         .genre = BASS,
         .popularity = 61
+    },
+    {
+        .artist = "6,nFor",
+        .stage = CAROUSEL_CLUB,
+        .start_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 12, .unit.minute = 0},
+        .end_time = {.unit.year = 4, .unit.month = 6, .unit.day = 23, .unit.hour = 13, .unit.minute = 0},
+        .genre = NO_GENRE,
+        .popularity = 0
     },
     [NUM_ACTS]  = { //Fall back
         .artist = "No Act",
