@@ -118,7 +118,6 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
                 }
                 pos = 0;
                 if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
-                    if (!watch_tick_animation_is_running()) watch_start_tick_animation(500);
                     sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
                 } else {
                     sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
@@ -132,6 +131,25 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             state->signal_enabled = !state->signal_enabled;
             if (state->signal_enabled) watch_set_indicator(WATCH_INDICATOR_BELL);
             else watch_clear_indicator(WATCH_INDICATOR_BELL);
+            break; 
+        case EVENT_ALARM_BUTTON_UP:
+            settings->bit.clock_mode_24h = !settings->bit.clock_mode_24h;
+            if (settings->bit.clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
+            else watch_clear_indicator(WATCH_INDICATOR_24H);
+            date_time = watch_rtc_get_date_time();
+            if (!settings->bit.clock_mode_24h) {
+                // if we are in 12 hour mode, do some cleanup.
+                if (date_time.unit.hour < 12) {
+                    watch_clear_indicator(WATCH_INDICATOR_PM);
+                } else {
+                    watch_set_indicator(WATCH_INDICATOR_PM);
+                }
+                date_time.unit.hour %= 12;
+                if (date_time.unit.hour == 0) date_time.unit.hour = 12;
+            }
+            else watch_clear_indicator(WATCH_INDICATOR_PM);
+            sprintf(buf, "%2d", date_time.unit.hour);
+            watch_display_string(buf, 4);
             break;
         case EVENT_BACKGROUND_TASK:
             // uncomment this line to snap back to the clock face when the hour signal sounds:
@@ -156,6 +174,10 @@ bool simple_clock_face_wants_background_task(movement_settings_t *settings, void
     if (!state->signal_enabled) return false;
 
     watch_date_time date_time = watch_rtc_get_date_time();
+    uint8_t chime_start = Hourly_Chime_Start[settings->bit.hourly_chime_start];
+    uint8_t chime_end = Hourly_Chime_End[settings->bit.hourly_chime_end];
+    if (chime_end == 0) chime_end = 24;
+    if (!settings->bit.hourly_chime_always && (date_time.unit.hour < chime_start || date_time.unit.hour >= chime_end)) return false;
 
     return date_time.unit.minute == 0;
 }

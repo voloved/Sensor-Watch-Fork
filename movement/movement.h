@@ -62,7 +62,10 @@ typedef union {
         bool clock_mode_24h : 1;            // indicates whether clock should use 12 or 24 hour mode.
         bool use_imperial_units : 1;        // indicates whether to use metric units (the default) or imperial.
         bool alarm_enabled : 1;             // indicates whether there is at least one alarm enabled.
-        uint8_t reserved : 6;               // room for more preferences if needed.
+        bool hourly_chime_always : 1;       // if true, then ignore the 
+        uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm; 
+        uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
+        bool screen_off_after_le;           // If true and we're in LE mode and it's the top of the hour and the temp is below #DEFAULT_TEMP_ASSUME_WEARING but not zero, then turn off the screen and other tasks.
     } bit;
     uint32_t reg;
 } movement_settings_t;
@@ -130,6 +133,7 @@ typedef struct {
 extern const int16_t movement_timezone_offsets[];
 extern const char movement_valid_position_0_chars[];
 extern const char movement_valid_position_1_chars[];
+extern int8_t g_temperature_c;
 
 /** @brief Perform setup for your watch face.
   * @details It's tempting to say this is 'one-time' setup, but technically this function is called more than
@@ -242,6 +246,7 @@ typedef struct {
 typedef struct {
     // properties stored in BACKUP register
     movement_settings_t settings;
+    movement_location_t location;
 
     // transient properties
     int16_t current_face_idx;
@@ -270,6 +275,8 @@ typedef struct {
 
     // low energy mode countdown
     int32_t le_mode_ticks;
+    int32_t le_deep_sleeping_ticks;
+    bool ignore_alarm_btn_after_sleep;
 
     // app resignation countdown (TODO: consolidate with LE countdown?)
     int16_t timeout_ticks;
@@ -311,5 +318,21 @@ void movement_play_alarm(void);
 void movement_play_alarm_beeps(uint8_t rounds, BuzzerNote alarm_note);
 
 uint8_t movement_claim_backup_register(void);
+
+static const uint8_t Hourly_Chime_Start[] =
+{
+    6,  // 6am
+    7,  // 7am
+    10, // 10am
+    12  // 12pm
+};
+
+static const uint8_t Hourly_Chime_End[] =
+{
+    20, // 8pm
+    21, // 9pm
+    22, // 10pm
+    00  // 12am
+};
 
 #endif // MOVEMENT_H_

@@ -161,7 +161,6 @@ bool simple_clock_bin_led_face_loop(movement_event_t event, movement_settings_t 
                     }
                     pos = 0;
                     if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
-                        if (!watch_tick_animation_is_running()) watch_start_tick_animation(500);
                         sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
                     } else {
                         sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
@@ -217,6 +216,10 @@ bool simple_clock_bin_led_face_wants_background_task(movement_settings_t *settin
     if (!state->signal_enabled) return false;
 
     watch_date_time date_time = watch_rtc_get_date_time();
+    uint8_t chime_start = Hourly_Chime_Start[settings->bit.hourly_chime_start];
+    uint8_t chime_end = Hourly_Chime_End[settings->bit.hourly_chime_end];
+    if (chime_end == 0) chime_end = 24;
+    if (!settings->bit.hourly_chime_always && (date_time.unit.hour < chime_start || date_time.unit.hour >= chime_end)) return false;
 
     return date_time.unit.minute == 0;
 }

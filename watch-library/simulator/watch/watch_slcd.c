@@ -35,7 +35,7 @@
 static char blink_character;
 static bool blink_state;
 static long blink_interval_id = - 1;
-static bool tick_state;
+static uint8_t tick_state;
 static long tick_interval_id = -1;
 
 void watch_enable_display(void) {
@@ -86,13 +86,26 @@ void watch_stop_blink(void) {
 }
 
 static void watch_invoke_tick_callback(void *userData) {
-    tick_state = !tick_state;
-    if (tick_state) {
-        watch_clear_pixel(0, 2);
+    tick_state = (tick_state + 1) % 4;
+    switch (tick_state)
+    {
+    case 0:
+    default:
+        watch_clear_pixel(0, 4);
         watch_set_pixel(0, 3);
-    } else {
+        break;
+    case 1:
         watch_clear_pixel(0, 3);
         watch_set_pixel(0, 2);
+        break;
+    case 2:
+        watch_clear_pixel(0, 2);
+        watch_set_pixel(1, 3);
+        break;
+    case 3:
+        watch_clear_pixel(1, 3);
+        watch_set_pixel(0, 4);
+        break;
     }
 }
 

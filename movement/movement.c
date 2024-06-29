@@ -34,6 +34,7 @@
 #include "filesystem.h"
 #include "movement.h"
 #include "shell.h"
+#include "thermistor_driver.h"
 
 #ifndef MOVEMENT_FIRMWARE
 #include "movement_config.h"
@@ -92,7 +93,37 @@
 
 // Default to 1 second led duration
 #ifndef MOVEMENT_DEFAULT_LED_DURATION
-#define MOVEMENT_DEFAULT_LED_DURATION 1
+#define MOVEMENT_DEFAULT_LED_DURATION 2
+#endif
+
+// Default to no set location latitude
+#ifndef MOVEMENT_DEFAULT_LATITUDE
+#define MOVEMENT_DEFAULT_LATITUDE 0
+#endif
+
+// Default to no set location longitude
+#ifndef MOVEMENT_DEFAULT_LONGITUDE
+#define MOVEMENT_DEFAULT_LONGITUDE 0
+#endif
+
+// Default to not always chiming every hour
+#ifndef MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS 0
+#endif
+
+// Default to beginning a chime at 7am
+#ifndef MOVEMENT_DEFAULT_HOURLY_CHIME_START
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_START 1
+#endif
+
+// Default to beginning a chime at 9pm
+#ifndef MOVEMENT_DEFAULT_HOURLY_CHIME_END
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_END 1
+#endif
+
+// Default to having deep sleep be on
+#ifndef MOVEMENT_DEFAULT_LE_DEEP_SLEEP
+#define MOVEMENT_DEFAULT_LE_DEEP_SLEEP true
 #endif
 
 #if __EMSCRIPTEN__
@@ -103,7 +134,10 @@ movement_state_t movement_state;
 void * watch_face_contexts[MOVEMENT_NUM_FACES];
 watch_date_time scheduled_tasks[MOVEMENT_NUM_FACES];
 const int32_t movement_le_inactivity_deadlines[8] = {INT_MAX, 600, 3600, 7200, 21600, 43200, 86400, 604800};
+const int32_t movement_le_deep_sleep_deadline = 60; // In minutes (will trigger at the top of the minute, rounded up from the LE timeout tick)
 const int16_t movement_timeout_inactivity_deadlines[4] = {60, 120, 300, 1800};
+int8_t g_temperature_c = -128;
+uint8_t g_force_sleep; // 0 = no sleep forced; 1 = normal sleep; 2 = deep sleep
 movement_event_t event;
 
 const int16_t movement_timezone_offsets[] = {
@@ -164,6 +198,7 @@ void cb_tick(void);
 static inline void _movement_reset_inactivity_countdown(void) {
     movement_state.le_mode_ticks = movement_le_inactivity_deadlines[movement_state.settings.bit.le_interval];
     movement_state.timeout_ticks = movement_timeout_inactivity_deadlines[movement_state.settings.bit.to_interval];
+    movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
 }
 
 static inline void _movement_enable_fast_tick_if_needed(void) {
@@ -183,6 +218,27 @@ static inline void _movement_disable_fast_tick_if_possible(void) {
     }
 }
 
+static void _decrement_deep_sleep_counter(void){
+    if(!movement_state.settings.bit.screen_off_after_le) return;
+    if(movement_state.le_mode_ticks != -1 || movement_state.le_deep_sleeping_ticks == -1) return;
+    if (movement_state.le_deep_sleeping_ticks > 0) movement_state.le_deep_sleeping_ticks--;
+    else{
+        if (g_temperature_c == -128) return; // Ignore when the temp is not first read without affecting the timer.
+        else if (g_temperature_c < TEMPERATURE_ASSUME_WEARING){
+            // Do one more check of the temperature before turning off in case a use placed
+            // the watch on their wrist in between the last thermistor log and now
+            thermistor_driver_enable();
+            g_temperature_c = thermistor_driver_get_temperature();
+            thermistor_driver_disable();
+            if (g_temperature_c < TEMPERATURE_ASSUME_WEARING){
+                movement_state.le_deep_sleeping_ticks = -1;
+                return;
+            } 
+        }
+        movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
+    }
+}
+
 static void _movement_handle_background_tasks(void) {
     for(uint8_t i = 0; i < MOVEMENT_NUM_FACES; i++) {
         // For each face, if the watch face wants a background task...
@@ -192,6 +248,7 @@ static void _movement_handle_background_tasks(void) {
             watch_faces[i].loop(background_event, &movement_state.settings, watch_face_contexts[i]);
         }
     }
+    _decrement_deep_sleep_counter();
     movement_state.needs_background_tasks_handled = false;
 }
 
@@ -242,7 +299,18 @@ void movement_illuminate_led(void) {
     if (movement_state.settings.bit.led_duration) {
         watch_set_led_color(movement_state.settings.bit.led_red_color ? (0xF | movement_state.settings.bit.led_red_color << 4) : 0,
                             movement_state.settings.bit.led_green_color ? (0xF | movement_state.settings.bit.led_green_color << 4) : 0);
-        movement_state.light_ticks = (movement_state.settings.bit.led_duration * 2 - 1) * 128;
+        switch (movement_state.settings.bit.led_duration)
+        {
+        case 1:
+            movement_state.light_ticks = 8; //62ms; to avoid bounce
+            break;
+        case 2:
+            movement_state.light_ticks = 128;
+            break;
+        case 3:
+            movement_state.light_ticks = 384;
+            break;
+        }
         _movement_enable_fast_tick_if_needed();
     }
 }
@@ -330,6 +398,7 @@ static void end_buzzing_and_disable_buzzer(void) {
 
 void movement_play_signal(void) {
     void *maybe_disable_buzzer = end_buzzing_and_disable_buzzer;
+    if (movement_state.le_deep_sleeping_ticks == -1) return;
     if (watch_is_buzzer_or_led_enabled()) {
         maybe_disable_buzzer = end_buzzing;
     } else {
@@ -384,6 +453,13 @@ void app_init(void) {
     movement_state.settings.bit.to_interval = MOVEMENT_DEFAULT_TIMEOUT_INTERVAL;
     movement_state.settings.bit.le_interval = MOVEMENT_DEFAULT_LOW_ENERGY_INTERVAL;
     movement_state.settings.bit.led_duration = MOVEMENT_DEFAULT_LED_DURATION;
+    movement_state.location.bit.latitude = MOVEMENT_DEFAULT_LATITUDE;
+    movement_state.location.bit.longitude = MOVEMENT_DEFAULT_LONGITUDE;
+    movement_state.settings.bit.hourly_chime_always = MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS;
+    movement_state.settings.bit.hourly_chime_start = MOVEMENT_DEFAULT_HOURLY_CHIME_START;
+    movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
+    movement_state.settings.bit.screen_off_after_le = MOVEMENT_DEFAULT_LE_DEEP_SLEEP;
+    movement_state.settings.bit.time_zone = 35;  // Atlantic Time as default
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
     movement_state.next_available_backup_register = 4;
@@ -406,10 +482,12 @@ void app_init(void) {
 
 void app_wake_from_backup(void) {
     movement_state.settings.reg = watch_get_backup_data(0);
+    movement_state.location.reg = watch_get_backup_data(1);
 }
 
 void app_setup(void) {
     watch_store_backup_data(movement_state.settings.reg, 0);
+    watch_store_backup_data(movement_state.location.reg, 1);
 
     static bool is_first_launch = true;
 
@@ -462,6 +540,7 @@ void app_wake_from_standby(void) {
 
 static void _sleep_mode_app_loop(void) {
     movement_state.needs_wake = false;
+    movement_state.ignore_alarm_btn_after_sleep = true;
     // as long as le_mode_ticks is -1 (i.e. we are in low energy mode), we wake up here, update the screen, and go right back to sleep.
     while (movement_state.le_mode_ticks == -1) {
         // we also have to handle background tasks here in the mini-runloop
@@ -473,6 +552,7 @@ static void _sleep_mode_app_loop(void) {
         // if we need to wake immediately, do it!
         if (movement_state.needs_wake) return;
         // otherwise enter sleep mode, and when the extwake handler is called, it will reset le_mode_ticks and force us out at the next loop.
+        if (movement_state.le_deep_sleeping_ticks == -1) watch_enter_deep_sleep_mode();
         else watch_enter_sleep_mode();
     }
 }
@@ -649,7 +729,12 @@ void cb_mode_btn_interrupt(void) {
 void cb_alarm_btn_interrupt(void) {
     bool pin_level = watch_get_pin_level(BTN_ALARM);
     _movement_reset_inactivity_countdown();
-    event.event_type = _figure_out_button_event(pin_level, EVENT_ALARM_BUTTON_DOWN, &movement_state.alarm_down_timestamp);
+    uint8_t event_type = _figure_out_button_event(pin_level, EVENT_ALARM_BUTTON_DOWN, &movement_state.alarm_down_timestamp);
+    if  (movement_state.ignore_alarm_btn_after_sleep){
+        if (event_type == EVENT_ALARM_BUTTON_UP || event_type == EVENT_ALARM_BUTTON_UP) movement_state.ignore_alarm_btn_after_sleep = false;
+        return;
+    }
+    event.event_type = event_type;
 }
 
 void cb_alarm_btn_extwake(void) {
@@ -690,7 +775,19 @@ void cb_tick(void) {
     watch_date_time date_time = watch_rtc_get_date_time();
     if (date_time.unit.second != movement_state.last_second) {
         // TODO: can we consolidate these two ticks?
-        if (movement_state.settings.bit.le_interval && movement_state.le_mode_ticks > 0) movement_state.le_mode_ticks--;
+        if (g_force_sleep){
+            switch (g_force_sleep)
+            {
+            case 2:
+                movement_state.le_deep_sleeping_ticks = -1;
+                // fall through
+            case 1:
+                movement_state.le_mode_ticks = 0;
+                g_force_sleep = 0;
+                break;
+            }
+        }
+        else if (movement_state.settings.bit.le_interval && movement_state.le_mode_ticks > 0) movement_state.le_mode_ticks--;
         if (movement_state.timeout_ticks > 0) movement_state.timeout_ticks--;
 
         movement_state.last_second = date_time.unit.second;

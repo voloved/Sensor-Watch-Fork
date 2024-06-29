@@ -53,6 +53,7 @@ typedef struct {
     uint8_t active_digit;
     bool location_changed;
     watch_date_time rise_set_expires;
+    uint8_t longLatToUse;
     sunrise_sunset_lat_lon_settings_t working_latitude;
     sunrise_sunset_lat_lon_settings_t working_longitude;
 } sunrise_sunset_state_t;
@@ -69,5 +70,15 @@ void sunrise_sunset_face_resign(movement_settings_t *settings, void *context);
     sunrise_sunset_face_resign, \
     NULL, \
 })
+
+// For longLatToUse
+#define COORDS_MAX 1
+static const char longLatToUseName[COORDS_MAX + 1][2] = {
+        "  ",  // Display for showing the lat and long that th ewatch is set to
+        "EF",
+    };
+static const int16_t longLatToUseCoord[COORDS_MAX * 2] = {
+        4354, -8636,  //Double JJ Ranch 
+    };
 
 #endif // SUNRISE_SUNSET_FACE_H_

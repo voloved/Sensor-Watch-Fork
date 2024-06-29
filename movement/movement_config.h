@@ -29,14 +29,22 @@
 
 const watch_face_t watch_faces[] = {
     simple_clock_face,
-    world_clock_face,
+    festival_schedule_face,
+    party_face,
+    stock_stopwatch_face,
+    countdown_face,
+    alarm_face,
     sunrise_sunset_face,
     moon_phase_face,
-    stopwatch_face,
+    tarot_face,
+    probability_face,
+    tally_face,
+    simon_face,
+    wyoscan_face,
     preferences_face,
     set_time_face,
-    thermistor_readout_face,
-    voltage_face
+    thermistor_logging_face,
+    voltage_face,
 };
 
 #define MOVEMENT_NUM_FACES (sizeof(watch_faces) / sizeof(watch_face_t))
@@ -47,10 +55,10 @@ const watch_face_t watch_faces[] = {
  * Some folks also like to use this to hide the preferences and time set faces from the normal rotation.
  * If you don't want any faces to be excluded, set this to 0 and a long Mode press will have no effect.
  */
-#define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_NUM_FACES - 2) // or (0)
+#define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_NUM_FACES - 4) // or (0)
 
 /* Custom hourly chime tune. Check movement_custom_signal_tunes.h for options. */
-#define SIGNAL_TUNE_DEFAULT
+#define SIGNAL_TUNE_SONG_OF_STORMS
 
 /* Determines the intensity of the led colors
  * Set a hex value 0-15 with 0x0 being off and 0xF being max intensity
@@ -62,7 +70,7 @@ const watch_face_t watch_faces[] = {
 #define MOVEMENT_DEFAULT_24H_MODE false
 
 /* Enable or disable the sound on mode button press */
-#define MOVEMENT_DEFAULT_BUTTON_SOUND true
+#define MOVEMENT_DEFAULT_BUTTON_SOUND false
 
 /* Set the timeout before switching back to the main watch face
  * Valid values are:
@@ -89,10 +97,47 @@ const watch_face_t watch_faces[] = {
 /* Set the led duration
  * Valid values are:
  * 0: No LED
- * 1: 1 second
- * 2: 3 seconds
- * 3: 5 seconds
+ * 1: 0.5 seconds
+ * 2: 1 second
+ * 3: 3 seconds
  */
-#define MOVEMENT_DEFAULT_LED_DURATION 1
+#define MOVEMENT_DEFAULT_LED_DURATION 2
+
+/* The latitude and longitude used for the wearers location
+ * Set signed values in 1/100ths of a degree
+ * Set lat and long for Raleigh (3578, -7864)
+ * Double JJ Ranch (4354, -8636)
+ */
+#define MOVEMENT_DEFAULT_LATITUDE 3578
+#define MOVEMENT_DEFAULT_LONGITUDE -7864
+
+/* Set if the watch will chime every hour and ignorethe start and end chimes
+ * Valid values are:
+ * 0: Use the Start and End values
+ * 1: Chime every hour
+ */
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS 0
+
+/* When hourly chiming should begin (MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS must be 0)
+ * Valid values are:
+ * 0: 6am
+ * 1: 7am
+ * 2: 10am
+ * 3: 12pm
+ */
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_START 1
+
+/* When hourly chiming should end (MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS must be 0)
+ * Valid values are:
+ * 0: 8pm
+ * 1: 9pm
+ * 2: 10pm
+ * 3: 12am
+ */
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_END 1
+
+#define MOVEMENT_DEFAULT_LE_DEEP_SLEEP true
+
+#define TEMPERATURE_ASSUME_WEARING 27 //C
 
 #endif // MOVEMENT_CONFIG_H_

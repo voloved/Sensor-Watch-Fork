@@ -233,7 +233,7 @@ bool invaders_face_loop(movement_event_t event, movement_settings_t *settings, v
     switch (event.event_type) {
         case EVENT_ACTIVATE:
             // show highscore
-            _display_score("GA", state->highscore);
+            _display_score("IN", state->highscore);
             break;
         case EVENT_TICK:
             _ticks++;
@@ -259,7 +259,7 @@ bool invaders_face_loop(movement_event_t event, movement_settings_t *settings, v
                                 // start current wave over
                                 _defense_lines++;
                                 _display_defense_lines();
-                                _display_score("GA", _score);
+                                _display_score("IN", _score);
                                 _current_state = invaders_state_in_wave_break;
                                 movement_request_tick_frequency(1);
                                 _play_sequence(state, (int8_t *)_sound_seq_def_gone);
@@ -283,7 +283,7 @@ bool invaders_face_loop(movement_event_t event, movement_settings_t *settings, v
                         // switch to next wave
                         _ticks = 0;
                         movement_request_tick_frequency(1);
-                        _display_score("GA", _score);
+                        _display_score("IN", _score);
                         watch_set_pixel(1, 9);
                         watch_display_character((_waves % INVADERS_FACE_WAVES_PER_STAGE) + 49, 3);
                         _current_state = invaders_state_next_wave;

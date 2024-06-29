@@ -60,11 +60,12 @@ typedef struct {
     bool signal_enabled;
     bool battery_low;
     bool alarm_enabled;
-    uint8_t animation;
-    bool animate;
+    uint8_t animation:7;
+    uint8_t animate:2;
     uint32_t start;
     uint32_t end;
-    uint32_t total_frames;
+    uint32_t total_frames:7;
+    bool do_deep_sleep;
     bool colon;
     uint8_t position, segment;
     char *segments;
@@ -72,6 +73,8 @@ typedef struct {
     uint32_t time_digits[6];
     uint32_t illuminated_segments[MAX_ILLUMINATED_SEGMENTS][2]; 
 } wyoscan_state_t;
+
+extern uint8_t g_force_sleep;
 
 void wyoscan_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
 void wyoscan_face_activate(movement_settings_t *settings, void *context);

@@ -55,7 +55,7 @@ static const uint8_t Character_Set[] =
     0b00000111, // 7
     0b01111111, // 8
     0b01101111, // 9
-    0b00000000, // : (unused)
+    0b01011101, // ö (: is unused, so this is taking over)
     0b00000000, // ; (unused)
     0b01011000, // <
     0b01001000, // =
@@ -85,7 +85,7 @@ static const uint8_t Character_Set[] =
     0b00111110, // U
     0b00111110, // V
     0b10111110, // W (only works in position 0)
-    0b01111110, // X
+    0b01110110, // X
     0b01101110, // Y
     0b00011011, // Z
     0b00111001, // [
@@ -117,7 +117,7 @@ static const uint8_t Character_Set[] =
     0b01100010, // u (appears in (u)pper half to work in more positions)
     0b00011100, // v (looks like u but in the lower half)
     0b10111110, // w (only works in position 0)
-    0b01111110, // x
+    0b01110110, // x
     0b01101110, // y
     0b00011011, // z
     0b00010110, // { (open brace doesn't really work; overriden to represent the two character ligature "il")
