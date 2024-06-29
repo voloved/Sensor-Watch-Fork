@@ -71,6 +71,13 @@ typedef enum SimonPlayingState {
     SIMON_READY_FOR_NEXT_NOTE
 } SimonPlayingState;
 
+typedef enum SimonMode {
+    SIMON_MODE_NORMAL = 0,  // 5 Second timeout if nothing is input
+    SIMON_MODE_EASY,  // There is no timeout in this mode
+    SIMON_MODE_HARD,  // The speed of the teaching is doubled and th etimeout is halved
+    SIMON_MODE_TOTAL
+} SimonMode;
+
 typedef struct {
     uint8_t best_score;
     SimonNote sequence[MAX_SEQUENCE];
@@ -79,7 +86,7 @@ typedef struct {
     uint8_t listen_index;
     bool soundOff;
     bool lightOff;
-    uint8_t mode:6;  // 0 = Normal ; 1 = No Timeout; 2 = Double speed
+    uint8_t mode:6;
     SimonPlayingState playing_state;
 } simon_state_t;
 
@@ -97,13 +104,6 @@ void simon_face_resign(movement_settings_t *settings, void *context);
      NULL,                                                                    \
      })
 
-/*
-    Max time in seconds before the game says you fail.
-    Iterates once per tick (so it'll be off by at most -1 seconds since 
-    the last tick have occurred just before we our turn begins).
-*/
-
-#define TOTAL_MODES 3
 #define TIMER_MAX 5
 #define SIMON_FACE_FREQUENCY 8
 #define DELAY_FOR_TONE_MS 300

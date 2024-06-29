@@ -70,11 +70,11 @@ static void _simon_not_playing_display(simon_state_t *state) {
     watch_display_string(_simon_display_buf, 0);
     switch (state->mode)
     {
-    case 1:
-        watch_display_string("E", 9); // E for easy mode.
+    case SIMON_MODE_EASY:
+        watch_display_string("E", 9);
         break;
-    case 2:
-        watch_display_string("H", 9); // H for hard mode.
+    case SIMON_MODE_HARD:
+        watch_display_string("H", 9);
         break;
     default:
         break;
@@ -188,7 +188,7 @@ static void _simon_begin_listening(simon_state_t *state) {
 static void _simon_change_speed(simon_state_t *state){
       switch (state->mode)
   {
-  case 2:
+  case SIMON_MODE_HARD:
         _delay_beep = DELAY_FOR_TONE_MS / 2;
         _secSub = SIMON_FACE_FREQUENCY / 2;
         _timeout = (TIMER_MAX * SIMON_FACE_FREQUENCY) / 2;
@@ -239,7 +239,7 @@ bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
             _simon_reset(state);
             break;
         case EVENT_TICK:
-            if (state->playing_state == SIMON_LISTENING_BACK && state->mode != 1)
+            if (state->playing_state == SIMON_LISTENING_BACK && state->mode != SIMON_MODE_EASY)
             {
                 _timer++;
                 if(_timer >= (_timeout)){
@@ -310,7 +310,7 @@ bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
                 _simon_listen(SIMON_ALARM_NOTE, state);
             }
             else if (state->playing_state == SIMON_NOT_PLAYING){
-                state->mode = (state->mode + 1) % TOTAL_MODES;
+                state->mode = (state->mode + 1) % SIMON_MODE_TOTAL;
                 _simon_change_speed(state);
                 _simon_not_playing_display(state);
             }
