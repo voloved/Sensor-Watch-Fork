@@ -301,10 +301,11 @@ static void _cyc_all_acts(festival_schedule_state_t *state, bool clock_mode_24h,
 static void _handle_btn_up(festival_schedule_state_t *state, bool clock_mode_24h, bool handling_light){
     _ts_ticks = 0;
     _ts_ticks_purpose = TICK_NONE;
-    if (!state->festival_occurring || state->cyc_through_all_acts){
+    if (state->cyc_through_all_acts){
         _cyc_all_acts(state, clock_mode_24h, handling_light);
         return;
     }
+    if (!state->festival_occurring) return;
     watch_date_time curr_time = watch_rtc_get_date_time();
     if (!state->showing_title) state->curr_stage = handling_light ? (state->curr_stage - 1 + STAGE_COUNT) % STAGE_COUNT : (state->curr_stage + 1) % STAGE_COUNT;
     else state->showing_title = false;
@@ -321,12 +322,69 @@ static void _handle_btn_up(festival_schedule_state_t *state, bool clock_mode_24h
 static void _show_title(festival_schedule_state_t *state){
     state->showing_title = true;
     state->curr_act = NUM_ACTS;
+    watch_clear_colon();
+    watch_clear_indicator(WATCH_INDICATOR_24H);
+    watch_clear_indicator(WATCH_INDICATOR_PM);
     watch_clear_indicator(WATCH_INDICATOR_LAP);
     state->cyc_through_all_acts = false;
     watch_date_time curr_time = watch_rtc_get_date_time();
     state -> prev_day = (curr_time.reg >> 17);
     state -> festival_occurring = _festival_occurring(curr_time, true);
     if (state -> festival_occurring) _display_curr_day(curr_time);
+}
+
+static void start_quick_cyc(void){
+    _quick_ticks_running = true;
+    movement_request_tick_frequency(8);
+}
+
+static bool _light_held;
+static void handle_ts_ticks(festival_schedule_state_t *state, bool clock_mode_24h){
+    if (_light_held){
+        if (!watch_get_pin_level(BTN_LIGHT)) _light_held = false;
+        else return;
+    }
+    if (_ts_ticks != 0){
+        --_ts_ticks;
+        switch (_ts_ticks_purpose){
+            case TICK_NONE:
+                _ts_ticks = 0;
+                break;
+            case TICK_SCREEN:
+                if (state->showing_title || state->curr_screen == SCREEN_ACT){
+                    _ts_ticks = 0;
+                }
+                else if (_ts_ticks == 0){
+                    if(watch_get_pin_level(BTN_LIGHT)){
+                        _ts_ticks = 1; // Give one extra second of delay when the light is on
+                        _light_held = true;
+                    }
+                    else{
+                        _ts_ticks_purpose = TICK_NONE;
+                        state->curr_screen = SCREEN_ACT;
+                        _display_screen(state, clock_mode_24h);
+                    }
+                }
+                break;
+            case TICK_LEAVE:
+                if (!watch_get_pin_level(BTN_MODE))_ts_ticks = 0;
+                else if (_ts_ticks == 0){
+                    if(state -> showing_title) movement_move_to_face(0);
+                    else{
+                        _ts_ticks_purpose = TICK_LEAVE;  // This is unneeded, but explicit that we remain in TICK_LEAVE
+                        _ts_ticks = 2;
+                        _show_title(state);
+                    }
+                }
+                break;
+            case TICK_CYCLE:
+                if (_ts_ticks == 0){
+                    _ts_ticks_purpose = TICK_NONE;
+                    start_quick_cyc();
+                }
+                break;
+        }
+    }
 }
 
 void festival_schedule_face_activate(movement_settings_t *settings, void *context) {
@@ -356,38 +414,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
                     movement_request_tick_frequency(1);
                 }
             }
-            if (_ts_ticks != 0){
-                --_ts_ticks;
-                switch (_ts_ticks_purpose){
-                    case TICK_NONE:
-                        _ts_ticks = 0;
-                        break;
-                    case TICK_SCREEN:
-                        if (state->showing_title || state->curr_screen == SCREEN_ACT){
-                            _ts_ticks = 0;
-                        }
-                        else if (_ts_ticks == 0){
-                            if(watch_get_pin_level(BTN_LIGHT)){
-                                _ts_ticks = 1; // Give one extra second of delay when the light is on
-                            }
-                            else{
-                                state->curr_screen = SCREEN_ACT;
-                                _display_screen(state, settings->bit.clock_mode_24h);
-                            }
-                        }
-                        break;
-                    case TICK_LEAVE:
-                        if (!watch_get_pin_level(BTN_MODE))_ts_ticks = 0;
-                        else if (_ts_ticks == 0) movement_move_to_face(0);
-                        break;
-                    case TICK_CYCLE:
-                        if (_ts_ticks == 0){
-                            _quick_ticks_running = true;
-                            movement_request_tick_frequency(8);
-                        }
-                        break;
-                }
-            }
+            handle_ts_ticks(state, settings->bit.clock_mode_24h);
 
             if (state->cyc_through_all_acts) break;
             curr_time = watch_rtc_get_date_time();
@@ -419,36 +446,32 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             _handle_btn_up(state, settings->bit.clock_mode_24h, false);
             break;
         case EVENT_ALARM_LONG_PRESS:
-            if (state->showing_title && state->festival_occurring){
+            if (state->showing_title){
                 _cyc_all_acts(state, settings->bit.clock_mode_24h, false);
                 _ts_ticks = 2;
                 _ts_ticks_purpose = TICK_CYCLE;
             }
             else if (state->festival_occurring && !state->cyc_through_all_acts) break;
-            else{
-                _quick_ticks_running = true;
-                movement_request_tick_frequency(8);
-            }
+            else start_quick_cyc();
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             break;  // To overwrite the default LED on
         case EVENT_LIGHT_LONG_PRESS:
-            if (state->showing_title && state->festival_occurring){
+            if (state->showing_title){
                 _cyc_all_acts(state, settings->bit.clock_mode_24h, true);
                 _ts_ticks = 2;
                 _ts_ticks_purpose = TICK_CYCLE;
             }
             else if (state->curr_screen != SCREEN_ACT || (state->festival_occurring && !state->cyc_through_all_acts))
                 movement_illuminate_led(); // Will allow led for see acts' genre and times
-            else {
-                _quick_ticks_running = true;
-                movement_request_tick_frequency(8);
-            }
+            else start_quick_cyc();
             break;
         case EVENT_MODE_LONG_PRESS:
             if (state->curr_screen != SCREEN_ACT){
                 state->curr_screen = SCREEN_ACT;
                 _display_screen(state, settings->bit.clock_mode_24h);
+                _ts_ticks = 2;
+                _ts_ticks_purpose = TICK_LEAVE;
             }
             else if (!state->showing_title){
                 _ts_ticks = 2;
