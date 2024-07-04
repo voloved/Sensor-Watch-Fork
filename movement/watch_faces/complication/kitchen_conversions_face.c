@@ -464,6 +464,9 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
         movement_move_to_face(0);
         break;
 
+    case EVENT_LIGHT_BUTTON_DOWN:
+        break;
+
     default:
         return movement_default_loop_handler(event, settings);
     }

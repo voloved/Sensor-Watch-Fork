@@ -199,8 +199,12 @@ bool wyoscan_face_loop(movement_event_t event, movement_settings_t *settings, vo
             } 
             break;
         case EVENT_ALARM_BUTTON_UP:
-            state->do_deep_sleep = !state->do_deep_sleep;
+            state->do_deep_sleep = true;
             break;
+        case EVENT_LIGHT_BUTTON_DOWN:
+            state->do_deep_sleep = false;
+            movement_illuminate_led();
+            break;       
         case EVENT_LOW_ENERGY_UPDATE:
             break;
         case EVENT_ALARM_LONG_PRESS:
@@ -216,8 +220,7 @@ bool wyoscan_face_loop(movement_event_t event, movement_settings_t *settings, vo
 
 void wyoscan_face_resign(movement_settings_t *settings, void *context) {
     (void) settings;
-    wyoscan_state_t *state = (wyoscan_state_t *)context;
-    state->do_deep_sleep = false;
+    (void) context;
 
     // handle any cleanup before your watch face goes off-screen.
 }

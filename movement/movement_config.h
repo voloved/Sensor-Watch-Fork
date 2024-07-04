@@ -39,6 +39,7 @@ const watch_face_t watch_faces[] = {
     tarot_face,
     probability_face,
     tally_face,
+    kitchen_conversions_face,
     simon_face,
     wyoscan_face,
     preferences_face,
