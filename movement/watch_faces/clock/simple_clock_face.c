@@ -41,7 +41,7 @@ void simple_clock_face_setup(movement_settings_t *settings, uint8_t watch_face_i
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(simple_clock_state_t));
         simple_clock_state_t *state = (simple_clock_state_t *)*context_ptr;
-        state->signal_enabled = false;
+        state->signal_enabled = true;
         state->watch_face_index = watch_face_index;
     }
 }
@@ -64,6 +64,7 @@ void simple_clock_face_activate(movement_settings_t *settings, void *context) {
 
     // this ensures that none of the timestamp fields will match, so we can re-render them all.
     state->previous_date_time = 0xFFFFFFFF;
+    state->showingLogo = false;
 }
 
 bool simple_clock_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -73,6 +74,27 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
 
     watch_date_time date_time;
     uint32_t previous_date_time;
+
+    if (state->showingLogo){
+        if (event.event_type == EVENT_ALARM_LONG_UP){
+            state->showingLogo = false;
+            state->signal_enabled = !state->signal_enabled;
+            date_time = watch_rtc_get_date_time();
+            state->previous_date_time = date_time.reg;
+            if (state->signal_enabled) watch_set_indicator(WATCH_INDICATOR_BELL);
+            if (settings->bit.clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
+            else {
+                if (date_time.unit.hour >= 12) watch_set_indicator(WATCH_INDICATOR_PM);
+                date_time.unit.hour %= 12;
+                if (date_time.unit.hour == 0) date_time.unit.hour = 12;
+            }
+            watch_set_colon();
+            sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
+            watch_display_string(buf, 0);
+        }
+        return true;
+    }
+
     switch (event.event_type) {
         case EVENT_ACTIVATE:
         case EVENT_TICK:
@@ -126,6 +148,12 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             watch_display_string(buf, pos);
             // handle alarm indicator
             if (state->alarm_enabled != settings->bit.alarm_enabled) _update_alarm_indicator(settings->bit.alarm_enabled, state);
+            break;
+        case EVENT_ALARM_LONGER_PRESS:
+            state->showingLogo = true;
+            watch_clear_all_indicators();
+            watch_clear_colon();
+            watch_display_string("     CHUFF", 0);
             break;
         case EVENT_ALARM_LONG_PRESS:
             state->signal_enabled = !state->signal_enabled;

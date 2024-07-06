@@ -123,6 +123,7 @@ typedef enum {
     EVENT_ALARM_BUTTON_UP,      // The alarm button was pressed for less than half a second, and released.
     EVENT_ALARM_LONG_PRESS,     // The alarm button was held for over half a second, but not yet released.
     EVENT_ALARM_LONG_UP,        // The alarm button was held for over half a second, and released.
+    EVENT_ALARM_LONGER_PRESS,   // The alarm button was held for over 3 seconds, but not yet released.
 } movement_event_type_t;
 
 typedef struct {

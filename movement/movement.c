@@ -759,9 +759,12 @@ void cb_fast_tick(void) {
     if (movement_state.mode_down_timestamp > 0)
         if (movement_state.fast_ticks - movement_state.mode_down_timestamp == MOVEMENT_LONG_PRESS_TICKS + 1)
             event.event_type = EVENT_MODE_LONG_PRESS;
-    if (movement_state.alarm_down_timestamp > 0)
-        if (movement_state.fast_ticks - movement_state.alarm_down_timestamp == MOVEMENT_LONG_PRESS_TICKS + 1)
+    if (movement_state.alarm_down_timestamp > 0){
+        if (movement_state.fast_ticks - movement_state.alarm_down_timestamp == (6 * MOVEMENT_LONG_PRESS_TICKS) + 1)
+            event.event_type = EVENT_ALARM_LONGER_PRESS;
+        else if (movement_state.fast_ticks - movement_state.alarm_down_timestamp == MOVEMENT_LONG_PRESS_TICKS + 1)
             event.event_type = EVENT_ALARM_LONG_PRESS;
+    }
     // this is just a fail-safe; fast tick should be disabled as soon as the button is up, the LED times out, and/or the alarm finishes.
     // but if for whatever reason it isn't, this forces the fast tick off after 20 seconds.
     if (movement_state.fast_ticks >= 128 * 20) {
