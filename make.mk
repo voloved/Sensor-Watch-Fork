@@ -205,19 +205,15 @@ SRCS += \
 
 endif
 
+ifeq (,$(filter clean,$(MAKECMDGOALS))) # The below logic doesn't run if we're running a make clean
+
 ifeq ($(LED), BLUE)
 CFLAGS += -DWATCH_IS_BLUE_BOARD
 endif
 
 ifndef COLOR
 COLOR := RED
-$(info COLOR is set to RED by default.)
-endif
-
-COLOR_VALID := $(filter $(COLOR),RED BLUE GREEN)
-
-ifeq ($(COLOR_VALID),)
-$(error COLOR must be RED, BLUE, or GREEN)
+$(info COLOR is set to $(COLOR) by default.)
 endif
 
 COLOR_VALID := $(filter $(COLOR),RED BLUE GREEN)
@@ -248,4 +244,32 @@ endif
 
 ifdef CLOCK_FACE_24H_ONLY
 CFLAGS += -DCLOCK_FACE_24H_ONLY
+endif
+
+CURRENT_YEAR := $(shell date +"%Y")
+CFLAGS += -DMAKEFILE_CURR_YEAR=$(shell echo $$(($(CURRENT_YEAR) - 2020)))
+ifdef DATE  # If 1: Set the default day to the current day; if 2: Also set the time to the current time
+ifeq ($(DATE), 1)
+CURRENT_MONTH := $(shell date +"%m")
+CURRENT_DAY := $(shell date +"%d")
+CFLAGS += -DMAKEFILE_CURR_MONTH=$(CURRENT_MONTH)
+CFLAGS += -DMAKEFILE_CURR_DAY=$(CURRENT_DAY)
+$(info Default date set to $(CURRENT_MONTH)/$(CURRENT_DAY)/$(CURRENT_YEAR).)
+else ifeq ($(DATE), 2)
+CURRENT_MONTH := $(shell date +"%m")
+CURRENT_DAY := $(shell date +"%d")
+CURRENT_HOUR := $(shell date +"%H")
+CURRENT_MINUTE := $(shell date +"%M")
+CFLAGS += -DMAKEFILE_CURR_MONTH=$(CURRENT_MONTH)
+CFLAGS += -DMAKEFILE_CURR_DAY=$(CURRENT_DAY)
+CFLAGS += -DMAKEFILE_CURR_HOUR=$(CURRENT_HOUR)
+CFLAGS += -DMAKEFILE_CURR_MINUTE=$(CURRENT_MINUTE)
+$(info Default time set to $(CURRENT_HOUR):$(CURRENT_MINUTE) on $(CURRENT_MONTH)/$(CURRENT_DAY)/$(CURRENT_YEAR).)
+else
+$(info Default year set to $(CURRENT_YEAR).)
+endif
+else
+$(info Default year set to $(CURRENT_YEAR).)
+endif
+
 endif
