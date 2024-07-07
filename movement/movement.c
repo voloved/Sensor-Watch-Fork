@@ -459,7 +459,17 @@ void app_init(void) {
     movement_state.settings.bit.hourly_chime_start = MOVEMENT_DEFAULT_HOURLY_CHIME_START;
     movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
     movement_state.settings.bit.screen_off_after_le = MOVEMENT_DEFAULT_LE_DEEP_SLEEP;
+
+#ifdef MAKEFILE_TIMEZONE
+    for (int i = 0, count = sizeof(movement_timezone_offsets) / sizeof(movement_timezone_offsets[0]); i < count; i++) {
+        if (movement_timezone_offsets[i] == MAKEFILE_TIMEZONE) {
+            movement_state.settings.bit.time_zone = i;
+            break;
+        }
+    }
+#else
     movement_state.settings.bit.time_zone = 35;  // Atlantic Time as default
+#endif
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
     movement_state.next_available_backup_register = 4;

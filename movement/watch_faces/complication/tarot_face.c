@@ -282,7 +282,6 @@ bool tarot_face_loop(movement_event_t event, movement_settings_t *settings, void
             movement_request_tick_frequency(TAROT_ANIMATION_TICK_FREQUENCY);
             break;
         case EVENT_LOW_ENERGY_UPDATE:
-            watch_display_string("SLEEP ", 4);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             // don't light up every time light is hit

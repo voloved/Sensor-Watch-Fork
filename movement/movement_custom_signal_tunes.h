@@ -34,6 +34,15 @@ int8_t signal_tune[] = {
 };
 #endif // SIGNAL_TUNE_DEFAULT
 
+#ifdef SIGNAL_TUNE_CUSTOM
+int8_t signal_tune[] = {
+    BUZZER_NOTE_C8, 5,
+    BUZZER_NOTE_REST, 6,
+    BUZZER_NOTE_F7SHARP_G7FLAT, 7,
+    0
+};
+#endif // SIGNAL_TUNE_CUSTOM
+
 #ifdef SIGNAL_TUNE_ZELDA_SECRET
 int8_t signal_tune[] = {
     BUZZER_NOTE_G5, 8,
@@ -100,9 +109,9 @@ int8_t signal_tune[] = {
 #ifdef SIGNAL_TUNE_SONG_OF_STORMS
 int8_t signal_tune[] = {
     BUZZER_NOTE_D7, 5,
-    BUZZER_NOTE_REST, 4,
+    BUZZER_NOTE_REST, 2,
     BUZZER_NOTE_F7, 5,
-    BUZZER_NOTE_REST, 4,
+    BUZZER_NOTE_REST, 2,
     BUZZER_NOTE_A7, 8,
     0
 };

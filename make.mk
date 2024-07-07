@@ -205,7 +205,7 @@ SRCS += \
 
 endif
 
-ifeq (,$(filter clean,$(MAKECMDGOALS))) # The below logic doesn't run if we're running a make clean
+ifeq ($(filter $(MAKECMDGOALS),clean analyze size directory install),)
 
 ifeq ($(LED), BLUE)
 CFLAGS += -DWATCH_IS_BLUE_BOARD
@@ -246,30 +246,37 @@ ifdef CLOCK_FACE_24H_ONLY
 CFLAGS += -DCLOCK_FACE_24H_ONLY
 endif
 
-CURRENT_YEAR := $(shell date +"%Y")
-CFLAGS += -DMAKEFILE_CURR_YEAR=$(shell echo $$(($(CURRENT_YEAR) - 2020)))
-ifdef DATE  # If 1: Set the default day to the current day; if 2: Also set the time to the current time
-ifeq ($(DATE), 1)
-CURRENT_MONTH := $(shell date +"%m")
-CURRENT_DAY := $(shell date +"%d")
-CFLAGS += -DMAKEFILE_CURR_MONTH=$(CURRENT_MONTH)
-CFLAGS += -DMAKEFILE_CURR_DAY=$(CURRENT_DAY)
-$(info Default date set to $(CURRENT_MONTH)/$(CURRENT_DAY)/$(CURRENT_YEAR).)
-else ifeq ($(DATE), 2)
+# DATE = X
+#  0,None = Sets the year and timezone to the PC's
+#  1 = Sets the date (year, month, day, timezone)
+#  2 = Sets the time and date  (year, month, day, timezone, hour, minute)
+TIMEZONE := $(shell date +%z | awk '{print substr($$0, 1, 3) * 60 + substr($$0, 4, 2)}')
+CURRENT_YEAR := $(shell echo $$(($(shell date +"%Y") - 2020)))
 CURRENT_MONTH := $(shell date +"%m")
 CURRENT_DAY := $(shell date +"%d")
 CURRENT_HOUR := $(shell date +"%H")
 CURRENT_MINUTE := $(shell date +"%M")
+ifndef DATE
+DATE := 0
+endif
+ifeq ($(DATE), 0)
+CFLAGS += -DMAKEFILE_TIMEZONE=$(TIMEZONE)
+CFLAGS += -DMAKEFILE_CURR_YEAR=$(CURRENT_YEAR)
+$(info Default year and timezone are set to $(shell date +"%Y") $(shell date +%Z))
+else ifeq ($(DATE), 1)
+CFLAGS += -DMAKEFILE_TIMEZONE=$(TIMEZONE)
+CFLAGS += -DMAKEFILE_CURR_YEAR=$(CURRENT_YEAR)
+CFLAGS += -DMAKEFILE_CURR_MONTH=$(CURRENT_MONTH)
+CFLAGS += -DMAKEFILE_CURR_DAY=$(CURRENT_DAY)
+$(info Default date set to $(CURRENT_MONTH)/$(CURRENT_DAY)/$(shell date +"%Y") $(shell date +%Z))
+else ifeq ($(DATE), 2)
+CFLAGS += -DMAKEFILE_TIMEZONE=$(TIMEZONE)
+CFLAGS += -DMAKEFILE_CURR_YEAR=$(CURRENT_YEAR)
 CFLAGS += -DMAKEFILE_CURR_MONTH=$(CURRENT_MONTH)
 CFLAGS += -DMAKEFILE_CURR_DAY=$(CURRENT_DAY)
 CFLAGS += -DMAKEFILE_CURR_HOUR=$(CURRENT_HOUR)
 CFLAGS += -DMAKEFILE_CURR_MINUTE=$(CURRENT_MINUTE)
-$(info Default time set to $(CURRENT_HOUR):$(CURRENT_MINUTE) on $(CURRENT_MONTH)/$(CURRENT_DAY)/$(CURRENT_YEAR).)
-else
-$(info Default year set to $(CURRENT_YEAR).)
-endif
-else
-$(info Default year set to $(CURRENT_YEAR).)
+$(info Default time set to $(CURRENT_HOUR):$(CURRENT_MINUTE) on $(CURRENT_MONTH)/$(CURRENT_DAY)/$(shell date +"%Y") $(shell date +%Z))
 endif
 
 endif

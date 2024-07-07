@@ -301,7 +301,6 @@ void sunrise_sunset_face_setup(movement_settings_t *settings, uint8_t watch_face
 
 void sunrise_sunset_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
-    if (watch_tick_animation_is_running()) watch_stop_tick_animation();
 
 #if __EMSCRIPTEN__
     int16_t browser_lat = EM_ASM_INT({
@@ -335,8 +334,6 @@ bool sunrise_sunset_face_loop(movement_event_t event, movement_settings_t *setti
         case EVENT_LOW_ENERGY_UPDATE:
         case EVENT_TICK:
             if (state->page == 0) {
-                // if entering low energy mode, start tick animation
-                if (event.event_type == EVENT_LOW_ENERGY_UPDATE && !watch_tick_animation_is_running()) watch_start_tick_animation(1000);
                 // check if we need to update the display
                 watch_date_time date_time = watch_rtc_get_date_time();
                 if (date_time.reg >= state->rise_set_expires.reg) {
