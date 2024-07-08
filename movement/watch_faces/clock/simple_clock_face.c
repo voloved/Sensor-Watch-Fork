@@ -76,7 +76,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
     uint32_t previous_date_time;
 
     if (state->showingLogo){
-        if (event.event_type == EVENT_ALARM_LONG_UP){
+        if (!watch_get_pin_level(BTN_LIGHT)){
             state->showingLogo = false;
             state->signal_enabled = !state->signal_enabled;
             date_time = watch_rtc_get_date_time();
