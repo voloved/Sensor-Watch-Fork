@@ -162,20 +162,17 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             break; 
         case EVENT_ALARM_BUTTON_UP:
             settings->bit.clock_mode_24h = !settings->bit.clock_mode_24h;
-            if (settings->bit.clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
-            else watch_clear_indicator(WATCH_INDICATOR_24H);
             date_time = watch_rtc_get_date_time();
-            if (!settings->bit.clock_mode_24h) {
-                // if we are in 12 hour mode, do some cleanup.
-                if (date_time.unit.hour < 12) {
-                    watch_clear_indicator(WATCH_INDICATOR_PM);
-                } else {
-                    watch_set_indicator(WATCH_INDICATOR_PM);
-                }
+            if (settings->bit.clock_mode_24h) {
+                watch_set_indicator(WATCH_INDICATOR_24H);
+                watch_clear_indicator(WATCH_INDICATOR_PM);
+            }
+            else {
+                watch_clear_indicator(WATCH_INDICATOR_24H);
+                if (date_time.unit.hour >= 12) watch_set_indicator(WATCH_INDICATOR_PM);
                 date_time.unit.hour %= 12;
                 if (date_time.unit.hour == 0) date_time.unit.hour = 12;
             }
-            else watch_clear_indicator(WATCH_INDICATOR_PM);
             sprintf(buf, "%2d", date_time.unit.hour);
             watch_display_string(buf, 4);
             break;
