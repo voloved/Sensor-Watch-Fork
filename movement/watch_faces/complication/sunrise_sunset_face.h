@@ -71,14 +71,17 @@ void sunrise_sunset_face_resign(movement_settings_t *settings, void *context);
     NULL, \
 })
 
-// For longLatToUse
-#define COORDS_MAX 1
-static const char longLatToUseName[COORDS_MAX + 1][2] = {
-        "  ",  // Display for showing the lat and long that th ewatch is set to
-        "EF",
-    };
-static const int16_t longLatToUseCoord[COORDS_MAX * 2] = {
-        4354, -8636,  //Double JJ Ranch 
-    };
+typedef struct {
+    char name[2];
+    int16_t latitude;
+    int16_t longitude;
+} long_lat_presets_t;
+
+static const long_lat_presets_t longLatPresets[] =
+{
+    { .name = "  ", .latitude = 0, .longitude = 0 }, // Default, the long and lat get replaced by what's set on the clock
+    { .name = "EF", .latitude = 4354, .longitude = -8636 },
+    { .name = "RA", .latitude = 3578, .longitude = -7864 },
+};
 
 #endif // SUNRISE_SUNSET_FACE_H_

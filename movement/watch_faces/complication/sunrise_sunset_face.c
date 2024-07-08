@@ -37,6 +37,8 @@
 #include <emscripten.h>
 #endif
 
+static const uint8_t _location_count = sizeof(longLatPresets) / sizeof(long_lat_presets_t);
+
 static void _sunrise_sunset_set_expiration(sunrise_sunset_state_t *state, watch_date_time next_rise_set) {
     uint32_t timestamp = watch_utility_date_time_to_unix_time(next_rise_set, 0);
     state->rise_set_expires = watch_utility_date_time_from_unix_time(timestamp + 60, 0);
@@ -47,12 +49,11 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
     double rise, set, minutes, seconds;
     bool show_next_match = false;
     movement_location_t movement_location;
-    if (state->longLatToUse == 0 || state->longLatToUse > COORDS_MAX)
+    if (state->longLatToUse == 0)
         movement_location = (movement_location_t) watch_get_backup_data(1);
     else{
-        uint8_t longLat = 2 * (state->longLatToUse - 1);
-        movement_location.bit.latitude = longLatToUseCoord[longLat];
-        movement_location.bit.longitude = longLatToUseCoord[longLat + 1];
+        movement_location.bit.latitude = longLatPresets[state->longLatToUse].latitude;
+        movement_location.bit.longitude = longLatPresets[state->longLatToUse].longitude;
     }
 
     if (movement_location.reg == 0) {
@@ -116,7 +117,7 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
                     if (watch_utility_convert_to_12_hour(&scratch_time)) watch_set_indicator(WATCH_INDICATOR_PM);
                     else watch_clear_indicator(WATCH_INDICATOR_PM);
                 }
-                sprintf(buf, "rI%2d%2d%02d%s", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute,longLatToUseName[state->longLatToUse]);
+                sprintf(buf, "rI%2d%2d%02d%s", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute,longLatPresets[state->longLatToUse].name);
                 watch_display_string(buf, 0);
                 return;
             } else {
@@ -143,7 +144,7 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
                     if (watch_utility_convert_to_12_hour(&scratch_time)) watch_set_indicator(WATCH_INDICATOR_PM);
                     else watch_clear_indicator(WATCH_INDICATOR_PM);
                 }
-                sprintf(buf, "SE%2d%2d%02d%s", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute, longLatToUseName[state->longLatToUse]);
+                sprintf(buf, "SE%2d%2d%02d%s", scratch_time.unit.day, scratch_time.unit.hour, scratch_time.unit.minute, longLatPresets[state->longLatToUse].name);
                 watch_display_string(buf, 0);
                 return;
             } else {
@@ -365,7 +366,7 @@ bool sunrise_sunset_face_loop(movement_event_t event, movement_settings_t *setti
             break;
         case EVENT_ALARM_LONG_PRESS:
             if (state->page == 0) {
-                state->longLatToUse = (state->longLatToUse + 1) % (COORDS_MAX + 1);
+                state->longLatToUse = (state->longLatToUse + 1) % _location_count;
                 _sunrise_sunset_face_update(settings, state);
             }
             break;
