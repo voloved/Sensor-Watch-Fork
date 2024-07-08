@@ -79,9 +79,10 @@ typedef struct {
 
 static const long_lat_presets_t longLatPresets[] =
 {
-    { .name = "  ", .latitude = 0, .longitude = 0 }, // Default, the long and lat get replaced by what's set on the clock
-    { .name = "EF", .latitude = 4354, .longitude = -8636 },
-    { .name = "RA", .latitude = 3578, .longitude = -7864 },
+    { .name = "  "},  // Default, the long and lat get replaced by what's set in the watch
+    { .name = "dE", .latitude = 4221, .longitude = -8305 },  // Detroit, MI
+//    { .name = "EF", .latitude = 4354, .longitude = -8636 },  // Electric Forest
+//    { .name = "RA", .latitude = 3578, .longitude = -7864 },  // Raleigh, NC
 };
 
 #endif // SUNRISE_SUNSET_FACE_H_
