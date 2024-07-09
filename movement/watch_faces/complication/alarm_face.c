@@ -31,17 +31,17 @@
 #include "watch_private_display.h"
 
 typedef enum {
-    alarm_setting_idx_alarm,
-    alarm_setting_idx_day,
     alarm_setting_idx_hour,
     alarm_setting_idx_minute,
+    alarm_setting_idx_day,
     alarm_setting_idx_pitch,
-    alarm_setting_idx_beeps
+    alarm_setting_idx_beeps,
+    alarm_setting_idx_count,
 } alarm_setting_idx_t;
 
-static const char _dow_strings[ALARM_DAY_STATES + 1][2] ={"AL", "MO", "TU", "WE", "TH", "FR", "SA", "SO", "ED", "1t", "MF", "WN"};
-static const uint8_t _blink_idx[ALARM_SETTING_STATES] = {2, 0, 4, 6, 8, 9};
-static const uint8_t _blink_idx2[ALARM_SETTING_STATES] = {3, 1, 5, 7, 8, 9};
+static const char _dow_strings[ALARM_DAY_STATES + 1][2] ={"AL", "MO", "TU", "WE", "TH", "FR", "SA", "SU", "ED", "1t", "MF", "WN"};
+static const uint8_t _blink_idx[alarm_setting_idx_count] = {4, 6, 0, 8, 9};
+static const uint8_t _blink_idx2[alarm_setting_idx_count] = {5, 7, 1, 8, 9};
 static const BuzzerNote _buzzer_notes[3] = {BUZZER_NOTE_B6, BUZZER_NOTE_C8, BUZZER_NOTE_A8};
 static const uint8_t _buzzer_segdata[3][2] = {{0, 3}, {1, 3}, {2, 2}};
 
@@ -57,10 +57,14 @@ static uint8_t _get_weekday_idx(watch_date_time date_time) {
 }
 
 static void _alarm_set_signal(alarm_state_t *state) {
-    if (state->alarm[state->alarm_idx].enabled)
+    if (state->alarm[state->alarm_idx].enabled) {
         watch_set_indicator(WATCH_INDICATOR_SIGNAL);
-    else
+        if (!state->is_setting) watch_display_string("on", 8);
+    }
+    else {
         watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
+        if (!state->is_setting) watch_display_string("--", 8);
+    }
 }
 
 static void _alarm_face_draw(movement_settings_t *settings, alarm_state_t *state, uint8_t subsecond) {
@@ -292,12 +296,15 @@ bool alarm_face_loop(movement_event_t event, movement_settings_t *settings, void
         break;
     case EVENT_LIGHT_BUTTON_UP:
         if (!state->is_setting) {
-            movement_illuminate_led();
-            _alarm_initiate_setting(settings, state, event.subsecond);
+            // stop wait ticks counter
+            _wait_ticks = -1;
+            // cycle through the alarms
+            state->alarm_idx = (state->alarm_idx + ALARM_ALARMS - 1) % (ALARM_ALARMS);
+            _alarm_face_draw(settings, state, event.subsecond);
             break;
         }
         state->setting_state += 1;
-        if (state->setting_state >= ALARM_SETTING_STATES) {
+        if (state->setting_state >= alarm_setting_idx_count) {
             // we have done a full settings cycle, so resume to normal
             _alarm_resume_setting(settings, state, event.subsecond);
         }
@@ -318,10 +325,6 @@ bool alarm_face_loop(movement_event_t event, movement_settings_t *settings, void
         } else {
             // handle the settings behaviour
             switch (state->setting_state) {
-            case alarm_setting_idx_alarm:
-                // alarm selection
-                state->alarm_idx = (state->alarm_idx + 1) % (ALARM_ALARMS);
-                break;
             case alarm_setting_idx_day:
                 // day selection
                 state->alarm[state->alarm_idx].day = (state->alarm[state->alarm_idx].day + 1) % (ALARM_DAY_STATES);
@@ -352,7 +355,7 @@ bool alarm_face_loop(movement_event_t event, movement_settings_t *settings, void
                 break;
             }
             // auto enable an alarm if user sets anything
-            if (state->setting_state > alarm_setting_idx_alarm) state->alarm[state->alarm_idx].enabled = true;
+            state->alarm[state->alarm_idx].enabled = true;
         }
         _alarm_face_draw(settings, state, event.subsecond);
         break;
@@ -365,10 +368,6 @@ bool alarm_face_loop(movement_event_t event, movement_settings_t *settings, void
         } else {
             // handle the long press settings behaviour
             switch (state->setting_state) {
-            case alarm_setting_idx_alarm:
-                // alarm selection
-                state->alarm_idx = 0;
-                break;
             case alarm_setting_idx_minute:
             case alarm_setting_idx_hour:
                 // initiate fast cycling for hour or minute settings
