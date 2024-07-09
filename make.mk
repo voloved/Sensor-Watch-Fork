@@ -252,10 +252,10 @@ endif
 #  2 = Sets the time and date  (year, month, day, timezone, hour, minute)
 TIMEZONE := $(shell date +%z | awk '{print substr($$0, 1, 3) * 60 + substr($$0, 4, 2)}')
 CURRENT_YEAR := $(shell echo $$(($(shell date +"%Y") - 2020)))
-CURRENT_MONTH := $(shell date +"%m")
-CURRENT_DAY := $(shell date +"%d")
-CURRENT_HOUR := $(shell date +"%H")
-CURRENT_MINUTE := $(shell date +"%M")
+CURRENT_MONTH := $(shell date +"%-m")
+CURRENT_DAY := $(shell date +"%-d")
+CURRENT_HOUR := $(shell date +"%-H")
+CURRENT_MINUTE := $(shell date +"%-M")
 ifndef DATE
 DATE := 0
 endif
