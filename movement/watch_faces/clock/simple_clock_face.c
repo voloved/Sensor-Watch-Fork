@@ -76,9 +76,8 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
     uint32_t previous_date_time;
 
     if (state->showingLogo){
-        if (!watch_get_pin_level(BTN_LIGHT)){
+        if (!watch_get_pin_level(BTN_ALARM)){
             state->showingLogo = false;
-            state->signal_enabled = !state->signal_enabled;
             date_time = watch_rtc_get_date_time();
             state->previous_date_time = date_time.reg;
             if (state->signal_enabled) watch_set_indicator(WATCH_INDICATOR_BELL);
@@ -151,6 +150,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             break;
         case EVENT_ALARM_LONGER_PRESS:
             state->showingLogo = true;
+            state->signal_enabled = !state->signal_enabled;
             watch_clear_all_indicators();
             watch_clear_colon();
             watch_display_string("     CHUFF", 0);

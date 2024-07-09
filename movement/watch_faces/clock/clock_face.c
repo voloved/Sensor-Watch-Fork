@@ -62,6 +62,7 @@ typedef struct {
     uint8_t watch_face_index;
     bool time_signal_enabled;
     bool battery_low;
+    bool showing_logo;
 } clock_state_t;
 
 static bool clock_is_in_24h_mode(movement_settings_t *settings) {
@@ -207,6 +208,26 @@ static void clock_display_clock(movement_settings_t *settings, clock_state_t *cl
     }
 }
 
+static void clock_display_logo(clock_state_t *clock) {
+    clock->showing_logo = true;
+    clock->time_signal_enabled = !clock->time_signal_enabled;
+    watch_clear_all_indicators();
+    watch_clear_colon();
+    watch_display_string("     CHUFF", 0);
+}
+
+static void clock_stop_logo(movement_settings_t *settings, clock_state_t *clock, watch_date_time current)  {
+    clock->showing_logo = false;
+
+    clock_indicate_time_signal(clock);
+    clock_indicate_alarm(settings);
+    clock_indicate_24h(settings);
+    watch_set_colon();
+
+    clock_display_all(current);
+    clock->date_time.previous = current;
+}
+
 static void clock_display_low_energy(watch_date_time date_time) {
     char buf[10 + 1];
 
@@ -266,6 +287,14 @@ bool clock_face_loop(movement_event_t event, movement_settings_t *settings, void
     clock_state_t *state = (clock_state_t *) context;
     watch_date_time current;
 
+    if (state->showing_logo){
+        if (!watch_get_pin_level(BTN_ALARM)){
+            current = watch_rtc_get_date_time();
+            clock_stop_logo(settings, state, current);
+        }
+        return true;
+    }
+
     switch (event.event_type) {
         case EVENT_LOW_ENERGY_UPDATE:
             clock_start_tick_tock_animation();
@@ -291,6 +320,9 @@ bool clock_face_loop(movement_event_t event, movement_settings_t *settings, void
                 clock_toggle_24h_mode(settings, current);
                 state->date_time.previous = current;
             }
+            break;
+        case EVENT_ALARM_LONGER_PRESS:
+            clock_display_logo(state);
             break;
         case EVENT_BACKGROUND_TASK:
             // uncomment this line to snap back to the clock face when the hour signal sounds:
