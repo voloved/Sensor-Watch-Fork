@@ -197,15 +197,13 @@ static bool clock_display_some(watch_date_time current, watch_date_time previous
     }
 }
 
-static void clock_display_clock(movement_settings_t *settings, clock_state_t *clock, watch_date_time current) {
-    if (!clock_display_some(current, clock->date_time.previous)) {
-        if (!clock_is_in_24h_mode(settings)) {
-            // if we are in 12 hour mode, do some cleanup.
-            clock_indicate_pm(settings, current);
-            current = clock_24h_to_12h(current);
-        }
-        clock_display_all(current);
+static void clock_display_clock(movement_settings_t *settings, watch_date_time current) {
+    if (!clock_is_in_24h_mode(settings)) {
+        // if we are in 12 hour mode, do some cleanup.
+        clock_indicate_pm(settings, current);
+        current = clock_24h_to_12h(current);
     }
+    clock_display_all(current);
 }
 
 static void clock_display_logo(clock_state_t *clock) {
@@ -224,7 +222,7 @@ static void clock_stop_logo(movement_settings_t *settings, clock_state_t *clock,
     clock_indicate_24h(settings);
     watch_set_colon();
 
-    clock_display_all(current);
+    clock_display_clock(settings, current);
     clock->date_time.previous = current;
 }
 
@@ -242,12 +240,6 @@ static void clock_display_low_energy(watch_date_time date_time) {
     );
 
     watch_display_string(buf, 0);
-}
-
-static void clock_start_tick_tock_animation(void) {
-    if (!watch_tick_animation_is_running()) {
-        watch_start_tick_animation(500);
-    }
 }
 
 static void clock_stop_tick_tock_animation(void) {
@@ -297,14 +289,14 @@ bool clock_face_loop(movement_event_t event, movement_settings_t *settings, void
 
     switch (event.event_type) {
         case EVENT_LOW_ENERGY_UPDATE:
-            clock_start_tick_tock_animation();
             clock_display_low_energy(watch_rtc_get_date_time());
             break;
         case EVENT_TICK:
         case EVENT_ACTIVATE:
             current = watch_rtc_get_date_time();
-
-            clock_display_clock(settings, state, current);
+            if (!clock_display_some(current, state->date_time.previous)) {
+                clock_display_clock(settings, current);
+            }
 
             clock_check_battery_periodically(state, current);
 
