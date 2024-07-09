@@ -42,6 +42,18 @@
 #define CLOCK_FACE_LOW_BATTERY_VOLTAGE_THRESHOLD 2200
 #endif
 
+#ifndef CLOCK_FACE_24H_ONLY
+#define CLOCK_FACE_24H_ONLY 0
+#else
+#define CLOCK_FACE_24H_ONLY 1
+#endif
+
+#ifndef CLOCK_FACE_24H_TOGGLE
+#define CLOCK_FACE_24H_TOGGLE 0
+#else
+#define CLOCK_FACE_24H_TOGGLE 1
+#endif
+
 typedef struct {
     struct {
         watch_date_time previous;
@@ -274,9 +286,11 @@ bool clock_face_loop(movement_event_t event, movement_settings_t *settings, void
             clock_toggle_time_signal(state);
             break;
         case EVENT_ALARM_BUTTON_UP:
-            current = watch_rtc_get_date_time();
-            clock_toggle_24h_mode(settings, current);
-            state->date_time.previous = current;
+            if (CLOCK_FACE_24H_TOGGLE && !CLOCK_FACE_24H_ONLY) {
+                current = watch_rtc_get_date_time();
+                clock_toggle_24h_mode(settings, current);
+                state->date_time.previous = current;
+            }
             break;
         case EVENT_BACKGROUND_TASK:
             // uncomment this line to snap back to the clock face when the hour signal sounds:

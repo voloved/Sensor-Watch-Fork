@@ -27,8 +27,9 @@
 #include "preferences_face.h"
 #include "watch.h"
 
-#define PREFERENCES_FACE_NUM_PREFERENCES (9)
+#define PREFERENCES_FACE_NUM_PREFERENCES (10)
 const char preferences_face_titles[PREFERENCES_FACE_NUM_PREFERENCES][11] = {
+    "CL        ",   // Clock: 12 or 24 hour
     "BT  Beep  ",   // Buttons: should they beep?
     "TO        ",   // Timeout: how long before we snap back to the clock face?
     "LE        ",   // Low Energy mode: how long before it engages?
@@ -118,15 +119,18 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
         case EVENT_ALARM_BUTTON_UP:
             switch (state->current_page) {
                 case 0:
-                    settings->bit.button_should_sound = !(settings->bit.button_should_sound);
+                    settings->bit.clock_mode_24h = !(settings->bit.clock_mode_24h);
                     break;
                 case 1:
-                    settings->bit.to_interval = settings->bit.to_interval + 1;
+                    settings->bit.button_should_sound = !(settings->bit.button_should_sound);
                     break;
                 case 2:
-                    settings->bit.le_interval = settings->bit.le_interval + 1;
+                    settings->bit.to_interval = settings->bit.to_interval + 1;
                     break;
                 case 3:
+                    settings->bit.le_interval = settings->bit.le_interval + 1;
+                    break;
+                case 4:
                     if (settings->bit.screen_off_after_le && state->do_deepsleep == 0)
                         state->do_deepsleep = 1;
                     else{
@@ -134,7 +138,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         settings->bit.screen_off_after_le = !(settings->bit.screen_off_after_le);
                     }
                     break;
-                case 4:
+                case 5:
                     if (settings->bit.hourly_chime_always){
                         settings->bit.hourly_chime_always = false;
                         settings->bit.hourly_chime_start = 0;
@@ -147,7 +151,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         settings->bit.hourly_chime_start = settings->bit.hourly_chime_start + 1;
                     }
                     break;
-                case 5:
+                case 6:
                     if (settings->bit.hourly_chime_always){
                         settings->bit.hourly_chime_always = false;
                         settings->bit.hourly_chime_end = 0;
@@ -160,13 +164,13 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         settings->bit.hourly_chime_end = settings->bit.hourly_chime_end + 1;
                     }
                     break;
-                case 6:
+                case 7:
                     settings->bit.led_duration = settings->bit.led_duration + 1;
                     break;
-                case 7:
+                case 8:
                     settings->bit.led_green_color = settings->bit.led_green_color + 1;
                     break;
-                case 8:
+                case 9:
                     settings->bit.led_red_color = settings->bit.led_red_color + 1;
                     break;
             }
@@ -180,6 +184,11 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
             return movement_default_loop_handler(event, settings);
     }
 
+    if (state->current_page == 0)
+        state->prev_screen_off_pref = settings->bit.screen_off_after_le;
+#if defined(CLOCK_FACE_24H_ONLY) || defined(CLOCK_FACE_24H_TOGGLE)
+    if (state->current_page == 0) state->current_page++;  // Skips past 12/24HR mode
+#endif
     watch_display_string((char *)preferences_face_titles[state->current_page], 0);
     watch_clear_colon();
 
@@ -188,10 +197,14 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
         char buf[8];
         switch (state->current_page) {
             case 0:
+                if (settings->bit.clock_mode_24h) watch_display_string("24h", 4);
+                else watch_display_string("12h", 4);
+                break;
+            case 1:
                 if (settings->bit.button_should_sound) watch_display_string("y", 9);
                 else watch_display_string("n", 9);
                 break;
-            case 1:
+            case 2:
                 switch (settings->bit.to_interval) {
                     case 0:
                         watch_display_string("60 SeC", 4);
@@ -207,7 +220,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         break;
                 }
                 break;
-            case 2:
+            case 3:
                 switch (settings->bit.le_interval) {
                     case 0:
                         watch_display_string(" Never", 4);
@@ -235,18 +248,18 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         break;
                 }
                 break;
-            case 3:
+            case 4:
                 if(state->do_deepsleep != 0) watch_display_string("Nowj", 6);
                 else if (settings->bit.screen_off_after_le) watch_display_string("ON", 7);
                 else watch_display_string("OFF", 7);
                 break;
-            case 4:
+            case 5:
                 _watch_display_hourly_chime_string(settings, Hourly_Chime_Start[settings->bit.hourly_chime_start]);
                 break;
-            case 5:
+            case 6:
                 _watch_display_hourly_chime_string(settings, Hourly_Chime_End[settings->bit.hourly_chime_end]);
                 break;
-            case 6:
+            case 7:
                 switch (settings->bit.led_duration)
                 {
                 case 0:
@@ -263,24 +276,22 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                     break;
                 }
                 break;
-            case 7:
+            case 8:
                 sprintf(buf, "%2d", settings->bit.led_green_color);
                 watch_display_string(buf, 8);
                 break;
-            case 8:
+            case 9:
                 sprintf(buf, "%2d", settings->bit.led_red_color);
                 watch_display_string(buf, 8);
                 break;
         }
     }
-    if (state->current_page == 0)
-        state->prev_screen_off_pref = settings->bit.screen_off_after_le;
 
-    if (state->current_page != 4 && state->current_page != 5)
+    if (state->current_page != 5 && state->current_page != 6)
         watch_clear_indicator(WATCH_INDICATOR_PM);
 
     // on LED color select screns, preview the color.
-    if (state->current_page >= 7) {
+    if (state->current_page >= 8) {
         watch_set_led_color(settings->bit.led_red_color ? (0xF | settings->bit.led_red_color << 4) : 0,
                             settings->bit.led_green_color ? (0xF | settings->bit.led_green_color << 4) : 0);
         // return false so the watch stays awake (needed for the PWM driver to function).
