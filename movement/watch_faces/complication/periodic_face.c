@@ -216,7 +216,7 @@ static void _make_upper(char *string) {
 
 static void _display_element(periodic_state_t *state)
 {
-    char buf[8];
+    char buf[9];
     char ele[3];
     uint8_t atomic_num = state->atomic_num;
     strcpy(ele, table[atomic_num - 1].symbol);

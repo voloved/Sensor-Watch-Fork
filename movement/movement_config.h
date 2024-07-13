@@ -29,8 +29,6 @@
 
 const watch_face_t watch_faces[] = {
     simple_clock_face,
-    party_face,
-    festival_schedule_face,
     stock_stopwatch_face,
     countdown_face,
     alarm_face,
@@ -40,6 +38,9 @@ const watch_face_t watch_faces[] = {
     moon_phase_face,
     tarot_face,
     kitchen_conversions_face,
+    periodic_face,
+    party_face,
+    festival_schedule_face,
     simon_face,
     wyoscan_face,
     preferences_face,
