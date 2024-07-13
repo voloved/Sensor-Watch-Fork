@@ -428,8 +428,7 @@ def get_url_content(url):
 
 def getFullArray(listActs):
     # Spits out the array of acts in alphabetically order
-    duo_pop_mult = 1.05  # Since duos are more hype, add a multiplier to their popularity and follower averages
-    duo_follower_mult = 1.2
+    duo_mult = 1.2  # Since duos are more hype, add a multiplier to their popularity and follower averages
     listActsPop = []
     listActsInListDuos = []
     client_id, client_secret = get_client_credentials()
@@ -457,10 +456,10 @@ def getFullArray(listActs):
             fol, pop = get_artist_followers_popularity(artist, client_id, client_secret)
             followers += fol
             popularity += pop
-        followers = int((followers / len(artists)) * duo_follower_mult)
-        popularity = int((popularity / len(artists)) * duo_pop_mult)
+        followers = int((followers / len(artists)) * duo_mult)
+        popularity = int((popularity / len(artists)) * duo_mult)
         listActsPop.append({'name':duo, 'followers' : followers, "popularity" : popularity})
-    listActsPop = set_pop_follow_manually(listActsPop, "Cuco", 32, 1059)  # Wrong Cuco is the first option.
+    listActsPop = set_pop_follow_manually(listActsPop, "Cuco", 32, 1059)  # Wrong Cuco is the first option in Spotify query.
     return listActsPop
 
 def dates_to_act(act, day_info, genre_list, element = 0):
