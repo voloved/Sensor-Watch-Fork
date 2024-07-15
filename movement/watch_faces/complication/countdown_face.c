@@ -213,7 +213,6 @@ bool countdown_face_loop(movement_event_t event, movement_settings_t *settings, 
         case EVENT_LIGHT_BUTTON_UP:
             switch(state->mode) {
                 case cd_running:
-                    movement_illuminate_led();
                     break;
                 case cd_paused:
                     reset(state);
@@ -264,7 +263,9 @@ bool countdown_face_loop(movement_event_t event, movement_settings_t *settings, 
             }
             break;
         case EVENT_LIGHT_LONG_PRESS:
-            if (state->mode == cd_setting) {
+            switch (state->mode)
+            {
+            case cd_setting:
                 switch (state->selection) {
                     case 0:
                         state->hours = 0;
@@ -276,6 +277,14 @@ bool countdown_face_loop(movement_event_t event, movement_settings_t *settings, 
                         state->seconds = 0;
                         break;
                 }
+                break;
+            case cd_reset:
+            case cd_running:
+            case cd_paused:
+                movement_illuminate_led();
+                break;
+            default:
+                break;
             }
             break;
         case EVENT_ALARM_LONG_UP:

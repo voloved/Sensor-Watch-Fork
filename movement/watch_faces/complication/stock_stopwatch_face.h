@@ -41,8 +41,7 @@
  *  o When the stopwatch reaches 59:59, the counter does not simply jump back
  *    to zero but keeps track of hours in the upper right-hand corner
  *    (up to 24 hours).
- *  o Long-press the light button to toggle the LED behavior.
- *    It either turns on with each button press or remains off.
+ *  o Long-press the light button shows the LED
  *
  * NOTE:
  * This watch face relies heavily on static vars in stock_stopwatch.c.
@@ -55,7 +54,7 @@
 #include "movement.h"
 
 typedef struct {
-    bool light_on_button;   // determines whether the light button actually triggers the led
+    uint8_t unused;
 } stock_stopwatch_state_t;
 
 void stock_stopwatch_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
