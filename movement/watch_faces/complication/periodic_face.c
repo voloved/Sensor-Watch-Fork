@@ -288,7 +288,7 @@ static void stop_quick_cyc(void){
 }
 
 static uint8_t _loop_text(const char* text, uint8_t curr_loc, uint8_t char_len){
-    char buf[6];
+    char buf[15];
     uint8_t next_pos;
     uint8_t text_len = strlen(text);
     uint8_t pos = 10 - char_len;
@@ -303,7 +303,7 @@ static uint8_t _loop_text(const char* text, uint8_t curr_loc, uint8_t char_len){
     else {
         next_pos = curr_loc + 1;
     }
-    sprintf(buf, "%s %s", text + curr_loc, text);
+    sprintf(buf, "%.6s %.6s", text + curr_loc, text);
     watch_display_string(buf, pos);
     return next_pos;
 }
