@@ -26,9 +26,12 @@
 #include <string.h>
 #include "periodic_face.h"
 
+#define FREQ_FAST 8
+#define FREQ 2
+
 static bool _quick_ticks_running;
 static uint8_t _ts_ticks = 0;
-static uint8_t _text_pos;
+static int16_t _text_pos;
 static const char* _text_looping;
 static const char title_text[] = "Periodic Table";
 
@@ -52,7 +55,7 @@ void periodic_face_activate(movement_settings_t *settings, void *context)
     state->mode = 0;
     state->selection_index = 0;
     _quick_ticks_running = false;
-    movement_request_tick_frequency(2);
+    movement_request_tick_frequency(FREQ);
 }
 
 typedef struct
@@ -279,30 +282,30 @@ static void _display_electronegativity(periodic_state_t *state)
 
 static void start_quick_cyc(void){
     _quick_ticks_running = true;
-    movement_request_tick_frequency(8);
+    movement_request_tick_frequency(FREQ_FAST);
 }
 
 static void stop_quick_cyc(void){
     _quick_ticks_running = false;
-    movement_request_tick_frequency(2);
+    movement_request_tick_frequency(FREQ);
 }
 
-static uint8_t _loop_text(const char* text, uint8_t curr_loc, uint8_t char_len){
+static int16_t _loop_text(const char* text, int8_t curr_loc, uint8_t char_len){
+    // if curr_loc, then use that many ticks as a delay before looping
     char buf[15];
     uint8_t next_pos;
     uint8_t text_len = strlen(text);
     uint8_t pos = 10 - char_len;
-    if (char_len >= text_len) {
+    if (curr_loc == -1) curr_loc = 0;  // To avoid double-showing the 0
+    if (char_len >= text_len || curr_loc < 0) {
+        sprintf(buf, "%s", text);
+        watch_display_string(buf, pos);
+        if (curr_loc < 0) return ++curr_loc;
+        return 0;
+    }
+    else if (curr_loc == (text_len + 1))
         curr_loc = 0;
-        next_pos = 0;
-    }
-    else if (curr_loc == text_len + 1){
-        curr_loc = 0;
-        next_pos = 1;
-    }
-    else {
-        next_pos = curr_loc + 1;
-    }
+    next_pos = curr_loc + 1;
     sprintf(buf, "%.6s %.6s", text + curr_loc, text);
     watch_display_string(buf, pos);
     return next_pos;
@@ -313,7 +316,7 @@ static void _display_title(periodic_state_t *state){
     watch_clear_colon();
     watch_clear_all_indicators();
     _text_looping = title_text;
-    _text_pos = 0;
+    _text_pos = FREQ * -1;
     _text_pos = _loop_text(_text_looping, _text_pos, 5);
 }
 
