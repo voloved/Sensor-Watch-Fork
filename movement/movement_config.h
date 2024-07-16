@@ -41,6 +41,7 @@ const watch_face_t watch_faces[] = {
     periodic_face,
     party_face,
     festival_schedule_face,
+    endless_runner_face,
     simon_face,
     wyoscan_face,
     preferences_face,
