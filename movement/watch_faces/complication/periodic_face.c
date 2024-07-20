@@ -392,9 +392,11 @@ static void _handle_mode_still_pressed(periodic_state_t *state, bool should_soun
 bool periodic_face_loop(movement_event_t event, movement_settings_t *settings, void *context)
 {
     periodic_state_t *state = (periodic_state_t *)context;
+    static bool in_le_mode = false;
     switch (event.event_type)
     {
     case EVENT_ACTIVATE:
+        in_le_mode = false;
         state->mode = SCREEN_TITLE;
         _display_screen(state, false);
         break;
@@ -459,6 +461,10 @@ bool periodic_face_loop(movement_event_t event, movement_settings_t *settings, v
     case EVENT_TIMEOUT:
         break;
     case EVENT_LOW_ENERGY_UPDATE:
+        if (in_le_mode) break;
+        state->mode = SCREEN_TITLE;
+        _display_screen(state, false);
+        in_le_mode = true;
         break;
     default:
         return movement_default_loop_handler(event, settings);
