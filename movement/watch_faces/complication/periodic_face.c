@@ -392,11 +392,9 @@ static void _handle_mode_still_pressed(periodic_state_t *state, bool should_soun
 bool periodic_face_loop(movement_event_t event, movement_settings_t *settings, void *context)
 {
     periodic_state_t *state = (periodic_state_t *)context;
-    static bool in_le_mode = false;
     switch (event.event_type)
     {
     case EVENT_ACTIVATE:
-        in_le_mode = false;
         state->mode = SCREEN_TITLE;
         _display_screen(state, false);
         break;
@@ -441,30 +439,30 @@ bool periodic_face_loop(movement_event_t event, movement_settings_t *settings, v
                 _display_screen(state, settings->bit.button_should_sound);
         }
         break;
-        case EVENT_MODE_LONG_PRESS:
-            switch (state->mode)
-            {
-            case SCREEN_TITLE:
-                movement_move_to_face(0);
-                return true;
-            case SCREEN_ELEMENT:
-                state->mode = SCREEN_TITLE;
-                _display_screen(state, settings->bit.button_should_sound);
-                break;
-            default:
-                state->mode = SCREEN_ELEMENT;
-                _display_screen(state, settings->bit.button_should_sound);
-                break;
-            }
-            _ts_ticks = 2;
+    case EVENT_MODE_LONG_PRESS:
+        switch (state->mode)
+        {
+        case SCREEN_TITLE:
+            movement_move_to_face(0);
+            return true;
+        case SCREEN_ELEMENT:
+            state->mode = SCREEN_TITLE;
+            _display_screen(state, settings->bit.button_should_sound);
             break;
+        default:
+            state->mode = SCREEN_ELEMENT;
+            _display_screen(state, settings->bit.button_should_sound);
+            break;
+        }
+        _ts_ticks = 2;
+        break;
     case EVENT_TIMEOUT:
         break;
     case EVENT_LOW_ENERGY_UPDATE:
-        if (in_le_mode) break;
+        // Display title in LE mode.
+        if (state->mode == SCREEN_TITLE) break;
         state->mode = SCREEN_TITLE;
         _display_screen(state, false);
-        in_le_mode = true;
         break;
     default:
         return movement_default_loop_handler(event, settings);
