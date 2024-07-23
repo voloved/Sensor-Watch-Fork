@@ -44,6 +44,7 @@ typedef enum {
     DIFF_EASY,      //      FREQ FPS;       MIN_ZEROES 0's min;  Jump is JUMP_FRAMES_EASY frames
     DIFF_NORM,      //      FREQ FPS;       MIN_ZEROES 0's min;  Jump is JUMP_FRAMES frames
     DIFF_HARD,      //      FREQ FPS;  MIN_ZEROES_HARD 0's min;  jump is JUMP_FRAMES frames
+    DIFF_FUEL,
     DIFF_COUNT
 } RunnerDifficulty;
 
@@ -56,6 +57,9 @@ typedef enum {
 #define MIN_ZEROES_HARD 3 // At minimum, we'll have this many spaces between obstacles on hard mode
 #define MAX_HI_SCORE 999  // Max hi score to store and display on the title screen.
 #define MAX_DISP_SCORE 39  // The top-right digits can't properly display above 39
+#define JUMP_FRAMES_FUEL 30
+#define JUMP_FRAMES_FUEL_RECHARGE 3
+#define MAX_DISP_SCORE_FUEL 9
 
 typedef struct {
     uint32_t obst_pattern;
@@ -66,6 +70,8 @@ typedef struct {
     uint16_t curr_screen : 4;
     bool loc_2_on;
     bool loc_3_on;
+    bool success_jump;
+    uint8_t fuel;
 } game_state_t;
 
 static game_state_t game_state;
@@ -79,6 +85,62 @@ static uint32_t get_random(uint32_t max) {
     #endif
 }
 
+static uint32_t get_random_nonzero(uint32_t max) {
+    uint32_t random;
+    do
+    {
+        random = get_random(max);
+    } while (random == 0);
+    return random;
+}
+
+static uint32_t get_random_kinda_nonzero(uint32_t max) {
+    // Returns a number that's between 1 and max, unless max is 0 or 1, then it returns 0 to max.
+    if (max == 0) return 0;
+    else if (max == 1) return get_random(max);
+    return get_random_nonzero(max);
+}
+
+static void print_binary(uint32_t value, int bits) {
+    for (int i = bits - 1; i >= 0; i--) {
+        // Print each bit
+        printf("%lu", (value >> i) & 1);
+        // Optional: add a space every 4 bits for readability
+        if (i % 4 == 0 && i != 0) {
+            printf(" ");
+        }
+    }
+    printf("\r\n");
+}
+
+static uint32_t get_random_fuel(uint32_t prev_val) {
+    static uint8_t prev_rand_subset = 0;
+    uint32_t rand;
+    uint8_t max_ones, subset;
+    uint32_t rand_legal = 0;
+    prev_val = prev_val & ~0xFFFF;
+
+    for (int i = 0; i < 2; i++) {
+        subset = 0;
+        max_ones = 8;
+        if (prev_rand_subset > 4)
+            max_ones -= prev_rand_subset;
+        rand = get_random_kinda_nonzero(max_ones);
+        if (rand > 5 && prev_rand_subset) rand = 5;  // The gap of one or two is awkward
+        for (uint32_t j = 0; j < rand; j++) {
+            subset |= (1 << j);
+        }
+        if (prev_rand_subset >= 7)
+            subset = subset << 1;
+        subset &= 0xFF;
+        rand_legal |= subset << (8 * i);
+        prev_rand_subset = rand;
+    }
+
+    rand_legal = prev_val | rand_legal;
+    return rand_legal;
+}
+
 static uint32_t get_random_legal(uint32_t prev_val, uint16_t difficulty) {
 /** @brief A legal random number starts with the previous number (which should be the 12 bits on the screen).
   * @param prev_val The previous value to tack onto. The return will have its first NUM_GRID MSBs be the same as prev_val, and the rest be new
@@ -87,7 +149,7 @@ static uint32_t get_random_legal(uint32_t prev_val, uint16_t difficulty) {
   */
     uint8_t min_zeros = (difficulty == DIFF_HARD) ? MIN_ZEROES_HARD : MIN_ZEROES;
     uint32_t max = (1 << (_num_bits_obst_pattern - NUM_GRID)) - 1;
-    uint32_t rand = get_random(max);
+    uint32_t rand = get_random_nonzero(max);
     uint32_t rand_legal = 0;
     prev_val = prev_val & ~max;
 
@@ -134,10 +196,33 @@ static void display_ball(bool jumping) {
     }
 }
 
-static void display_score(uint8_t score) {
+static void display_score(uint8_t score, uint8_t difficulty) {
     char buf[3];
-    score %= (MAX_DISP_SCORE + 1);
-    sprintf(buf, "%2d", score);
+    if (difficulty == DIFF_FUEL) {
+        score %= (MAX_DISP_SCORE_FUEL + 1);
+        sprintf(buf, "%1d", score);
+        watch_display_string(buf, 0);
+    }
+    else {
+        score %= (MAX_DISP_SCORE + 1);
+        sprintf(buf, "%2d", score);
+        watch_display_string(buf, 2);
+    }
+}
+
+static void add_to_score(endless_runner_state_t *state, uint8_t difficulty) {
+    if (game_state.curr_score <= MAX_HI_SCORE) {
+        game_state.curr_score++;
+        if (game_state.curr_score > state -> hi_score)
+            state -> hi_score = game_state.curr_score;
+    }
+    game_state.success_jump = true;
+    display_score(game_state.curr_score, difficulty);
+}
+
+static void display_fuel(void) {
+    char buf[4];
+    sprintf(buf, "%2d", game_state.fuel);
     watch_display_string(buf, 2);
 }
 
@@ -165,6 +250,9 @@ static void display_difficulty(uint16_t difficulty) {
         break;
     case DIFF_HARD:
         watch_display_string("H", 3);
+        break;
+    case DIFF_FUEL:
+        watch_display_string("F", 3);
         break;
     case DIFF_NORM:
     default:
@@ -216,17 +304,26 @@ static void display_title(endless_runner_state_t *state) {
 }
 
 static void begin_playing(endless_runner_state_t *state) {
+    uint8_t difficulty = state -> difficulty;
     game_state.curr_screen = SCREEN_PLAYING;
     watch_clear_colon();
-    movement_request_tick_frequency((state -> difficulty == DIFF_BABY) ? FREQ_SLOW : FREQ);
-    watch_display_string("ER         ", 0);
+    movement_request_tick_frequency((difficulty == DIFF_BABY) ? FREQ_SLOW : FREQ);
+    if (difficulty == DIFF_FUEL)
+        watch_display_string("           ", 0);
+    else
+        watch_display_string("         ", 2);
+    if (difficulty == DIFF_FUEL) {
+        game_state.obst_pattern = get_random_fuel(0);
+        game_state.fuel = 0;
+        if ((16 * JUMP_FRAMES_FUEL_RECHARGE) < JUMP_FRAMES_FUEL) // 16 frames of zeros at the start of a level
+            game_state.fuel = JUMP_FRAMES_FUEL - (16 * JUMP_FRAMES_FUEL_RECHARGE); // Have it below its max to show it counting up when starting.
+    }
+    else {
+        game_state.obst_pattern = get_random_legal(0, difficulty);
+    }
     game_state.jump_state = NOT_JUMPING;
     display_ball(game_state.jump_state != NOT_JUMPING);
-    do  // Avoid the first array of obstacles being a boring line of 0s 
-    {
-        game_state.obst_pattern = get_random_legal(0, state -> difficulty);
-    } while (game_state.obst_pattern == 0);
-    display_score( game_state.curr_score);
+    display_score( game_state.curr_score, difficulty);
     if (state -> soundOn){
         watch_buzzer_play_note(BUZZER_NOTE_C5, 200);
         watch_buzzer_play_note(BUZZER_NOTE_E5, 200);
@@ -244,16 +341,21 @@ static void display_lose_screen(endless_runner_state_t *state) {
         delay_ms(600);
 }
 
-static bool display_obstacle(bool obstacle, int grid_loc, endless_runner_state_t *state) {
-    bool success_jump = false;
+static void display_obstacle(bool obstacle, int grid_loc, endless_runner_state_t *state) {
+    static bool prev_obst_pos_two = 0;
+    uint8_t difficulty = state -> difficulty;
     switch (grid_loc)
     {
     case 2:
         game_state.loc_2_on = obstacle;
         if (obstacle)
             watch_set_pixel(0, 20);
-        else if (game_state.jump_state != NOT_JUMPING)
+        else if (game_state.jump_state != NOT_JUMPING) {
             watch_clear_pixel(0, 20);
+            if (difficulty == DIFF_FUEL && prev_obst_pos_two)
+                add_to_score(state, difficulty);
+        }
+        prev_obst_pos_two = obstacle;
         break;
     case 3:
         game_state.loc_3_on = obstacle;
@@ -264,19 +366,10 @@ static bool display_obstacle(bool obstacle, int grid_loc, endless_runner_state_t
         break;
     
     case 1:
-        if (obstacle) {  // If an obstacle is here, it means the ball cleared it
-            if (game_state.curr_score <= MAX_HI_SCORE) {
-                game_state.curr_score++;
-                if (game_state.curr_score > state -> hi_score)
-                    state -> hi_score = game_state.curr_score;
-            }
-            display_score(game_state.curr_score);
-        }
+        if (difficulty != DIFF_FUEL && obstacle)  // If an obstacle is here, it means the ball cleared it
+            add_to_score(state, difficulty);
         //fall through
     case 0:
-        if (obstacle)  // If an obstacle is here, it means the ball cleared it
-            success_jump = true;
-        //fall through
     case 5:
         if (obstacle)
             watch_set_pixel(0, 18 + grid_loc);
@@ -318,62 +411,86 @@ static bool display_obstacle(bool obstacle, int grid_loc, endless_runner_state_t
     default:
         break;
     }
-    return success_jump;
 }
 
-static bool display_obstacles(endless_runner_state_t *state) {
-    bool success_jump = false;
+static void stop_jumping(endless_runner_state_t *state) {
+    game_state.jump_state = NOT_JUMPING;
+    display_ball(game_state.jump_state != NOT_JUMPING);
+    if (state -> soundOn){
+        if (game_state.success_jump)
+            watch_buzzer_play_note(BUZZER_NOTE_C5, 60);
+        else
+            watch_buzzer_play_note(BUZZER_NOTE_C3, 60);
+    }
+    game_state.success_jump = false;
+}
+
+static void display_obstacles(endless_runner_state_t *state) {
     for (int i = 0; i < NUM_GRID; i++) {
         // Use a bitmask to isolate each bit and shift it to the least significant position
         uint32_t mask = 1 << ((_num_bits_obst_pattern - 1) - i);
         bool obstacle = (game_state.obst_pattern & mask) >> ((_num_bits_obst_pattern - 1) - i);
-        if (display_obstacle(obstacle, i, state)) success_jump = true;
-
+        display_obstacle(obstacle, i, state);
     }
     game_state.obst_pattern = game_state.obst_pattern << 1;
     game_state.obst_indx++;
-    if (game_state.obst_indx >= _num_bits_obst_pattern - NUM_GRID) {
+    if (state -> difficulty == DIFF_FUEL) {
+        if (game_state.obst_indx >= (_num_bits_obst_pattern / 2)) {
+                game_state.obst_indx = 0;
+                game_state.obst_pattern = get_random_fuel(game_state.obst_pattern);
+        }
+    }
+    else if (game_state.obst_indx >= _num_bits_obst_pattern - NUM_GRID) {
         game_state.obst_indx = 0;
         game_state.obst_pattern = get_random_legal(game_state.obst_pattern, state -> difficulty);
     }
-    return success_jump;
 }
 
 static void update_game(endless_runner_state_t *state, uint8_t subsecond) {
-    bool success_jump = false;
     uint8_t curr_jump_frame = 0;
+    bool fuel_mode = state -> difficulty == DIFF_FUEL;
     if (game_state.sec_before_moves != 0) {
         if (subsecond == 0) --game_state.sec_before_moves;
         return;
     }
-    success_jump = display_obstacles(state);
+    display_obstacles(state);
     switch (game_state.jump_state)
     {
     case NOT_JUMPING:
-        break;
-    case JUMPING_FINAL_FRAME:
-        game_state.jump_state = NOT_JUMPING;
-        display_ball(game_state.jump_state != NOT_JUMPING);
-        if (state -> soundOn){
-            if (success_jump)
-                watch_buzzer_play_note(BUZZER_NOTE_C5, 60);
-            else
-                watch_buzzer_play_note(BUZZER_NOTE_C3, 60);
+        if (fuel_mode) {
+            for (int i = 0; i < JUMP_FRAMES_FUEL_RECHARGE; i++)
+            {
+                if(game_state.fuel >= JUMP_FRAMES_FUEL) break;
+                game_state.fuel++;
+            }
         }
         break;
+    case JUMPING_FINAL_FRAME:
+        stop_jumping(state);
+        break;
     default:
-        curr_jump_frame = game_state.jump_state - NOT_JUMPING;
-        if (curr_jump_frame >= JUMP_FRAMES_EASY || (state -> difficulty >= DIFF_NORM && curr_jump_frame >= JUMP_FRAMES))
-            game_state.jump_state = JUMPING_FINAL_FRAME;
-        else
-            game_state.jump_state++;
-        //if (!watch_get_pin_level(BTN_ALARM) && !watch_get_pin_level(BTN_LIGHT)) game_state.jump_state = JUMPING_FINAL_FRAME;  // Uncomment to have depressing the buttons cause the ball to drop regardless of its current frame.
+        if (fuel_mode) {
+            if (!game_state.fuel)
+                game_state.jump_state = JUMPING_FINAL_FRAME;
+            else
+                game_state.fuel--;
+            if (!watch_get_pin_level(BTN_ALARM) && !watch_get_pin_level(BTN_LIGHT)) stop_jumping(state);
+        }
+        else {
+            curr_jump_frame = game_state.jump_state - NOT_JUMPING;
+            if (curr_jump_frame >= JUMP_FRAMES_EASY || (state -> difficulty >= DIFF_NORM && curr_jump_frame >= JUMP_FRAMES))
+                game_state.jump_state = JUMPING_FINAL_FRAME;
+            else
+                game_state.jump_state++;
+        }
         break;
     }
     if (game_state.jump_state == NOT_JUMPING && (game_state.loc_2_on || game_state.loc_3_on)) {
         delay_ms(200);  // To show the player jumping onto the obstacle before displaying the lose screen.
         display_lose_screen(state);
     }
+    else if (fuel_mode)
+        display_fuel();
 }
 
 void endless_runner_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
@@ -425,6 +542,7 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
         case EVENT_LIGHT_BUTTON_DOWN:
         case EVENT_ALARM_BUTTON_DOWN:
             if (game_state.curr_screen == SCREEN_PLAYING && game_state.jump_state == NOT_JUMPING){
+                if (state -> difficulty == DIFF_FUEL && !game_state.fuel) break;
                 game_state.jump_state = JUMPING_START;
                 display_ball(game_state.jump_state != NOT_JUMPING);
             }
@@ -434,7 +552,8 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
                 toggle_sound(state);
             break;
         case EVENT_TIMEOUT:
-            movement_move_to_face(0);
+            if (game_state.curr_screen != SCREEN_TITLE)
+                display_title(state);
             break;
         case EVENT_LOW_ENERGY_UPDATE:
             break;
