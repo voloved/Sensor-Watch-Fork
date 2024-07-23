@@ -77,6 +77,21 @@ typedef struct {
 static game_state_t game_state;
 static const uint8_t _num_bits_obst_pattern = sizeof(game_state.obst_pattern) * 8;
 
+static void print_binary(uint32_t value, int bits) {
+#if __EMSCRIPTEN__
+    for (int i = bits - 1; i >= 0; i--) {
+        // Print each bit
+        printf("%lu", (value >> i) & 1);
+        // Optional: add a space every 4 bits for readability
+        if (i % 4 == 0 && i != 0) {
+            printf(" ");
+        }
+    }
+    printf("\r\n");
+#endif
+    return;
+}
+
 static uint32_t get_random(uint32_t max) {
     #if __EMSCRIPTEN__
     return rand() % max;
@@ -99,18 +114,6 @@ static uint32_t get_random_kinda_nonzero(uint32_t max) {
     if (max == 0) return 0;
     else if (max == 1) return get_random(max);
     return get_random_nonzero(max);
-}
-
-[[maybe_unused]] static void print_binary(uint32_t value, int bits) {
-    for (int i = bits - 1; i >= 0; i--) {
-        // Print each bit
-        printf("%lu", (value >> i) & 1);
-        // Optional: add a space every 4 bits for readability
-        if (i % 4 == 0 && i != 0) {
-            printf(" ");
-        }
-    }
-    printf("\r\n");
 }
 
 static uint32_t get_random_fuel(uint32_t prev_val) {
@@ -138,6 +141,7 @@ static uint32_t get_random_fuel(uint32_t prev_val) {
     }
 
     rand_legal = prev_val | rand_legal;
+    print_binary(rand_legal, 32);
     return rand_legal;
 }
 
@@ -172,6 +176,7 @@ static uint32_t get_random_legal(uint32_t prev_val, uint16_t difficulty) {
         }
     }
     rand_legal = prev_val | rand_legal;
+    print_binary(rand_legal, 32);
     return rand_legal;
 }
 
