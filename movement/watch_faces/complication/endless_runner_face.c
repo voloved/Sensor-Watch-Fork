@@ -55,7 +55,7 @@ typedef enum {
 #define JUMP_FRAMES_EASY 3 // Wait this many frames on difficulties at or below EASY before coming down from the jump button pressed
 #define MIN_ZEROES 4  // At minimum, we'll have this many spaces between obstacles
 #define MIN_ZEROES_HARD 3 // At minimum, we'll have this many spaces between obstacles on hard mode
-#define MAX_HI_SCORE 999  // Max hi score to store and display on the title screen.
+#define MAX_HI_SCORE 9999  // Max hi score to store and display on the title screen.
 #define MAX_DISP_SCORE 39  // The top-right digits can't properly display above 39
 #define JUMP_FRAMES_FUEL 30
 #define JUMP_FRAMES_FUEL_RECHARGE 3
@@ -101,7 +101,7 @@ static uint32_t get_random_kinda_nonzero(uint32_t max) {
     return get_random_nonzero(max);
 }
 
-static void print_binary(uint32_t value, int bits) {
+[[maybe_unused]] static void print_binary(uint32_t value, int bits) {
     for (int i = bits - 1; i >= 0; i--) {
         // Print each bit
         printf("%lu", (value >> i) & 1);
@@ -220,8 +220,12 @@ static void add_to_score(endless_runner_state_t *state, uint8_t difficulty) {
     display_score(game_state.curr_score, difficulty);
 }
 
-static void display_fuel(void) {
+static void display_fuel(uint8_t subsecond) {
     char buf[4];
+    if (game_state.fuel == 0 && subsecond % 4 == 0) {
+        watch_display_string("  ", 2);
+        return;
+    }
     sprintf(buf, "%2d", game_state.fuel);
     watch_display_string(buf, 2);
 }
@@ -294,10 +298,10 @@ static void display_title(endless_runner_state_t *state) {
     }
     else {
         char buf[14];
-        if (hi_score <= 99)
+        if (hi_score < 10)
             sprintf(buf, "ER  HS%2d  ", hi_score);
         else if (hi_score <= MAX_HI_SCORE)
-            sprintf(buf, "ER  HS%3d ", hi_score);
+            sprintf(buf, "ER  HS%-4d", hi_score);
         watch_display_string(buf, 0);
     }
     display_difficulty(difficulty);
@@ -314,9 +318,9 @@ static void begin_playing(endless_runner_state_t *state) {
         watch_display_string("         ", 2);
     if (difficulty == DIFF_FUEL) {
         game_state.obst_pattern = get_random_fuel(0);
-        game_state.fuel = 0;
         if ((16 * JUMP_FRAMES_FUEL_RECHARGE) < JUMP_FRAMES_FUEL) // 16 frames of zeros at the start of a level
             game_state.fuel = JUMP_FRAMES_FUEL - (16 * JUMP_FRAMES_FUEL_RECHARGE); // Have it below its max to show it counting up when starting.
+        if (game_state.fuel < JUMP_FRAMES_FUEL_RECHARGE) game_state.fuel = JUMP_FRAMES_FUEL_RECHARGE;
     }
     else {
         game_state.obst_pattern = get_random_legal(0, difficulty);
@@ -460,7 +464,7 @@ static void update_game(endless_runner_state_t *state, uint8_t subsecond) {
         if (fuel_mode) {
             for (int i = 0; i < JUMP_FRAMES_FUEL_RECHARGE; i++)
             {
-                if(game_state.fuel >= JUMP_FRAMES_FUEL) break;
+                if(game_state.fuel >= JUMP_FRAMES_FUEL || !game_state.fuel) break;
                 game_state.fuel++;
             }
         }
@@ -490,7 +494,7 @@ static void update_game(endless_runner_state_t *state, uint8_t subsecond) {
         display_lose_screen(state);
     }
     else if (fuel_mode)
-        display_fuel();
+        display_fuel(subsecond);
 }
 
 void endless_runner_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
