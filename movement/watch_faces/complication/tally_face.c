@@ -62,6 +62,7 @@ static void tally_face_increment(tally_state_t *state) {
             if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E7, 30);
         }
         else {
+            if(state -> iterTen && !watch_get_pin_level(BTN_MODE)) state -> iterTen = ITERATE_TEN_OFF;
             if (state -> iterTen) {
                 state -> iterTen = ITERATE_TEN_USED;
                 state->tally_idx += 10;
@@ -79,6 +80,7 @@ static void tally_face_decrement(tally_state_t *state) {
             if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_C5SHARP_D5FLAT, 30);
         }
         else {
+            if(state -> iterTen && !watch_get_pin_level(BTN_MODE)) state -> iterTen = ITERATE_TEN_OFF;
             if (state -> iterTen) {
                 state -> iterTen = ITERATE_TEN_USED;
                 state->tally_idx -= 10;

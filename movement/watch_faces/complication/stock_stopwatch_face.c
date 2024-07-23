@@ -227,6 +227,7 @@ void stock_stopwatch_face_activate(movement_settings_t *settings, void *context)
 }
 
 bool stock_stopwatch_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
+    (void)context;
     // handle overflow of fast ticks
     while (_ticks >= (128 * 60 * 60)) {
         _ticks -= (128 * 60 * 60);
