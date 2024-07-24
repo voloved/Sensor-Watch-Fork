@@ -30,12 +30,7 @@
 #define TALLY_FACE_MAX 9999
 #define TALLY_FACE_MIN -99
 
-typedef enum {
-    ITERATE_TEN_OFF = 0,
-    ITERATE_TEN_STARTED,
-    ITERATE_TEN_USED,
-} tally_face_iterate_ten_t;
-
+static bool _quick_ticks_running;
 static const int16_t _tally_default[] = {0, 40, 20};
 static const uint8_t _tally_default_size = sizeof(_tally_default) / sizeof(int16_t);
 
@@ -48,48 +43,46 @@ void tally_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
         tally_state_t *state = (tally_state_t *)*context_ptr;
         state->tally_default_idx = 0;
         state->tally_idx = _tally_default[state->tally_default_idx];
-        state -> soundOff = true;
     }
 }
 
 void tally_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     (void) context;
+    _quick_ticks_running = false;
+}
+
+static void start_quick_cyc(void){
+    _quick_ticks_running = true;
+    movement_request_tick_frequency(8);
+}
+
+static void stop_quick_cyc(void){
+    _quick_ticks_running = false;
+    movement_request_tick_frequency(1);
 }
 
 static void tally_face_increment(tally_state_t *state) {
+        bool soundOn = !_quick_ticks_running && !state->soundOff;
         if (state->tally_idx >= TALLY_FACE_MAX){
-            if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E7, 30);
+            if (soundOn) watch_buzzer_play_note(BUZZER_NOTE_E7, 30);
         }
         else {
-            if(state -> iterTen && !watch_get_pin_level(BTN_MODE)) state -> iterTen = ITERATE_TEN_OFF;
-            if (state -> iterTen) {
-                state -> iterTen = ITERATE_TEN_USED;
-                state->tally_idx += 10;
-            }
-            else
-                state->tally_idx++;
-            if (state->tally_idx > TALLY_FACE_MAX) state->tally_idx = TALLY_FACE_MAX;
+            state->tally_idx++;
             print_tally(state);
-            if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
+            if (soundOn) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
         }
 }
 
 static void tally_face_decrement(tally_state_t *state) {
+        bool soundOn = !_quick_ticks_running && !state->soundOff;
         if (state->tally_idx <= TALLY_FACE_MIN){
-            if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_C5SHARP_D5FLAT, 30);
+            if (soundOn) watch_buzzer_play_note(BUZZER_NOTE_C5SHARP_D5FLAT, 30);
         }
         else {
-            if(state -> iterTen && !watch_get_pin_level(BTN_MODE)) state -> iterTen = ITERATE_TEN_OFF;
-            if (state -> iterTen) {
-                state -> iterTen = ITERATE_TEN_USED;
-                state->tally_idx -= 10;
-            }
-            else
-                state->tally_idx--;
-            if (state->tally_idx < TALLY_FACE_MIN) state->tally_idx = TALLY_FACE_MIN;
+            state->tally_idx--;
             print_tally(state);
-            if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_C6SHARP_D6FLAT, 30);
+            if (soundOn) watch_buzzer_play_note(BUZZER_NOTE_C6SHARP_D6FLAT, 30);
         }
 }
 
@@ -98,19 +91,35 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
     tally_state_t *state = (tally_state_t *)context;
     
     switch (event.event_type) {
+        case EVENT_TICK:
+            if (_quick_ticks_running) {
+                bool light_pressed = watch_get_pin_level(BTN_LIGHT);
+                bool alarm_pressed = watch_get_pin_level(BTN_ALARM);
+                if (light_pressed && alarm_pressed) stop_quick_cyc();
+                else if (light_pressed) tally_face_increment(state);
+                else if (alarm_pressed) tally_face_decrement(state);
+                else stop_quick_cyc();
+            }
+            break;
         case EVENT_ALARM_BUTTON_UP:
             tally_face_decrement(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
-            if (state -> iterTen != ITERATE_TEN_OFF) {
-                tally_face_decrement(state);
-            }
-            else if (state->tally_idx == _tally_default[state->tally_default_idx]){  // Able to turn off sound if we hold this button when it's at the default value.
+            if (state->tally_idx == _tally_default[state->tally_default_idx]){  // Able to turn off sound if we hold this button when it's at the default value.
                 state->soundOff = !state->soundOff;
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
                 print_tally(state);
             }
             else{
+                tally_face_decrement(state);
+                start_quick_cyc();
+            }
+            break;
+        case EVENT_MODE_LONG_PRESS:
+            if (state->tally_idx == _tally_default[state->tally_default_idx]) {
+                movement_move_to_face(0);
+            }
+            else {
                 state->tally_idx = _tally_default[state->tally_default_idx]; // reset tally index
                 //play a reset tune
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
@@ -125,10 +134,7 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
         case EVENT_LIGHT_BUTTON_DOWN:
             break;
         case EVENT_LIGHT_LONG_PRESS:
-            if (state -> iterTen != ITERATE_TEN_OFF) {
-                tally_face_increment(state);
-            }
-            else if (state->tally_idx == _tally_default[state->tally_default_idx]){
+            if (state->tally_idx == _tally_default[state->tally_default_idx]){
                 state->tally_default_idx = (state->tally_default_idx + 1) % _tally_default_size;
                 state->tally_idx = _tally_default[state->tally_default_idx];
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
@@ -137,23 +143,12 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
                 print_tally(state);
             }
             else{
-                movement_illuminate_led();
+                tally_face_increment(state);
+                start_quick_cyc();
             }
-            break;
-        case EVENT_MODE_BUTTON_DOWN:
-            state -> iterTen = ITERATE_TEN_STARTED;
-            break;
-        case EVENT_MODE_LONG_UP:
-            if (state -> iterTen != ITERATE_TEN_USED)
-                movement_move_to_face(0);
-            state -> iterTen = ITERATE_TEN_OFF;
             break;
         case EVENT_ACTIVATE:
             print_tally(state);
-            break;
-        case EVENT_MODE_LONG_PRESS:
-            if (state -> iterTen != ITERATE_TEN_USED && state->tally_idx == _tally_default[state->tally_default_idx])
-                movement_move_to_face(0);
             break;
         case EVENT_TIMEOUT:
             // ignore timeout
