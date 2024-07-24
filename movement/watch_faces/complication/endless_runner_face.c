@@ -308,14 +308,11 @@ static void display_title(endless_runner_state_t *state) {
     if (sound_on) game_state.sec_before_moves--; // Start chime is about 1 second
     watch_set_colon();
     if (hi_score > MAX_HI_SCORE) {
-        watch_display_string("ER  HS--  ", 0);
+        watch_display_string("ER  HS  --", 0);
     }
     else {
         char buf[14];
-        if (hi_score < 10)
-            sprintf(buf, "ER  HS%2d  ", hi_score);
-        else if (hi_score <= MAX_HI_SCORE)
-            sprintf(buf, "ER  HS%-4d", hi_score);
+        sprintf(buf, "ER  HS%4d", hi_score);
         watch_display_string(buf, 0);
     }
     display_difficulty(difficulty);
