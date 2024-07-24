@@ -30,6 +30,7 @@
 #define TALLY_FACE_MAX 9999
 #define TALLY_FACE_MIN -99
 
+static bool _init_val;
 static bool _quick_ticks_running;
 static const int16_t _tally_default[] = {0, 40, 20};
 static const uint8_t _tally_default_size = sizeof(_tally_default) / sizeof(int16_t);
@@ -43,6 +44,7 @@ void tally_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
         tally_state_t *state = (tally_state_t *)*context_ptr;
         state->tally_default_idx = 0;
         state->tally_idx = _tally_default[state->tally_default_idx];
+        _init_val = true;
     }
 }
 
@@ -64,6 +66,7 @@ static void stop_quick_cyc(void){
 
 static void tally_face_increment(tally_state_t *state) {
         bool soundOn = !_quick_ticks_running && !state->soundOff;
+        _init_val = false;
         if (state->tally_idx >= TALLY_FACE_MAX){
             if (soundOn) watch_buzzer_play_note(BUZZER_NOTE_E7, 30);
         }
@@ -76,6 +79,7 @@ static void tally_face_increment(tally_state_t *state) {
 
 static void tally_face_decrement(tally_state_t *state) {
         bool soundOn = !_quick_ticks_running && !state->soundOff;
+        _init_val = false;
         if (state->tally_idx <= TALLY_FACE_MIN){
             if (soundOn) watch_buzzer_play_note(BUZZER_NOTE_C5SHARP_D5FLAT, 30);
         }
@@ -89,6 +93,7 @@ static void tally_face_decrement(tally_state_t *state) {
 bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
     (void) settings;
     tally_state_t *state = (tally_state_t *)context;
+    static bool using_led = false;
     
     switch (event.event_type) {
         case EVENT_TICK:
@@ -105,7 +110,7 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             tally_face_decrement(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
-            if (state->tally_idx == _tally_default[state->tally_default_idx]){  // Able to turn off sound if we hold this button when it's at the default value.
+            if (_init_val) {
                 state->soundOff = !state->soundOff;
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
                 print_tally(state);
@@ -116,11 +121,14 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             }
             break;
         case EVENT_MODE_LONG_PRESS:
+            if (using_led) break;
             if (state->tally_idx == _tally_default[state->tally_default_idx]) {
+                _init_val = true;
                 movement_move_to_face(0);
             }
             else {
                 state->tally_idx = _tally_default[state->tally_default_idx]; // reset tally index
+                _init_val = true;
                 //play a reset tune
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_G6, 30);
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_REST, 30);
@@ -129,12 +137,18 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             }
             break;
         case EVENT_LIGHT_BUTTON_UP:
-            tally_face_increment(state);
+            if (!using_led)
+                tally_face_increment(state);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
+            if (watch_get_pin_level(BTN_MODE)) {
+                movement_illuminate_led();
+                using_led = true;
+            }
             break;
         case EVENT_LIGHT_LONG_PRESS:
-            if (state->tally_idx == _tally_default[state->tally_default_idx]){
+            if (using_led) break;
+            if (_init_val){
                 state->tally_default_idx = (state->tally_default_idx + 1) % _tally_default_size;
                 state->tally_idx = _tally_default[state->tally_default_idx];
                 if (!state->soundOff) watch_buzzer_play_note(BUZZER_NOTE_E6, 30);
@@ -154,10 +168,13 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             // ignore timeout
             break;
         default:
+            if (using_led) break;
             movement_default_loop_handler(event, settings);
             break;
     }
 
+    if (using_led && !watch_get_pin_level(BTN_MODE))
+        using_led = false;
     return true;
 }
 

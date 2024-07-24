@@ -90,6 +90,9 @@ static void print_binary(uint32_t value, int bits) {
         }
     }
     printf("\r\n");
+#else
+    (void) value;
+    (void) bits;
 #endif
     return;
 }
