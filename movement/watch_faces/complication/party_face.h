@@ -41,7 +41,8 @@ typedef struct {
     uint8_t text : 2;
     uint8_t color : 2;
     uint8_t party_text : 2;
-    uint8_t curr_year : 6;  // 0-63 (representing 2020-2083)
+    uint8_t curr_day : 5;
+    bool unused;
     int8_t prev_text;
 } party_state_t;
 

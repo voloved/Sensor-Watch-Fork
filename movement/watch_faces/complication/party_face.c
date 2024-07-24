@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "party_face.h"
+#include "watch_utility.h"
 
 void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
@@ -40,9 +41,6 @@ void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
 void party_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     party_state_t *state = (party_state_t *)context;
-    watch_date_time date_time;
-    date_time = watch_rtc_get_date_time();
-    state->curr_year = date_time.unit.year;
     state->blink = false;
     state->led = false;
     state->fast = false;
@@ -54,6 +52,7 @@ static void _party_face_init_lcd(party_state_t *state) {
     char text[11];
     const int partyTextNum = 3;
     const char partyTime[][7] = {" It's","Party", "Tin&e"};
+    watch_date_time date_time;
     uint8_t disp_loc = 0;
     switch (state->text)
     {
@@ -78,17 +77,19 @@ static void _party_face_init_lcd(party_state_t *state) {
             state->party_text = (state->party_text + 1)  % partyTextNum;
             watch_set_indicator(WATCH_INDICATOR_BELL);
         }
-        if (state->prev_text == state->text){
+        date_time = watch_rtc_get_date_time();
+        if (state->prev_text == state->text && date_time.unit.day == state->curr_day){
             disp_loc = 5;
             sprintf(text, "%s",partyTime[state->party_text]);
         }
-        else
-            sprintf(text, "EF%02d %s", state->curr_year + 20, partyTime[state->party_text]);
+        else {
+            sprintf(text, "%s%2d %s", watch_utility_get_weekday(date_time), date_time.unit.day, partyTime[state->party_text]);
+            state->curr_day = date_time.unit.day;
+        }
         break;
     }
     watch_display_string(text, disp_loc);
     state->prev_text = state->text;
-
 }
 
 bool party_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
