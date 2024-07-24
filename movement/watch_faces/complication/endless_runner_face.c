@@ -45,6 +45,7 @@ typedef enum {
     DIFF_NORM,      //      FREQ FPS;       MIN_ZEROES 0's min;  Jump is JUMP_FRAMES frames
     DIFF_HARD,      //      FREQ FPS;  MIN_ZEROES_HARD 0's min;  jump is JUMP_FRAMES frames
     DIFF_FUEL,
+    DIFF_FUEL_1,  // If your fuel is 0, then you won't recharge
     DIFF_COUNT
 } RunnerDifficulty;
 
@@ -71,6 +72,7 @@ typedef struct {
     bool loc_2_on;
     bool loc_3_on;
     bool success_jump;
+    bool fuel_mode;
     uint8_t fuel;
 } game_state_t;
 
@@ -201,9 +203,9 @@ static void display_ball(bool jumping) {
     }
 }
 
-static void display_score(uint8_t score, uint8_t difficulty) {
+static void display_score(uint8_t score) {
     char buf[3];
-    if (difficulty == DIFF_FUEL) {
+    if (game_state.fuel_mode) {
         score %= (MAX_DISP_SCORE_FUEL + 1);
         sprintf(buf, "%1d", score);
         watch_display_string(buf, 0);
@@ -215,19 +217,19 @@ static void display_score(uint8_t score, uint8_t difficulty) {
     }
 }
 
-static void add_to_score(endless_runner_state_t *state, uint8_t difficulty) {
+static void add_to_score(endless_runner_state_t *state) {
     if (game_state.curr_score <= MAX_HI_SCORE) {
         game_state.curr_score++;
         if (game_state.curr_score > state -> hi_score)
             state -> hi_score = game_state.curr_score;
     }
     game_state.success_jump = true;
-    display_score(game_state.curr_score, difficulty);
+    display_score(game_state.curr_score);
 }
 
-static void display_fuel(uint8_t subsecond) {
+static void display_fuel(uint8_t subsecond, uint8_t difficulty) {
     char buf[4];
-    if (game_state.fuel == 0 && subsecond % 4 == 0) {
+    if (difficulty == DIFF_FUEL_1 && game_state.fuel == 0 && subsecond % 4 == 0) {
         watch_display_string("  ", 2);
         return;
     }
@@ -252,22 +254,26 @@ static void display_difficulty(uint16_t difficulty) {
     switch (difficulty)
     {
     case DIFF_BABY:
-        watch_display_string("b", 3);
+        watch_display_string(" b", 2);
         break;
     case DIFF_EASY:
-        watch_display_string("E", 3);
+        watch_display_string(" E", 2);
         break;
     case DIFF_HARD:
-        watch_display_string("H", 3);
+        watch_display_string(" H", 2);
         break;
     case DIFF_FUEL:
-        watch_display_string("F", 3);
+        watch_display_string(" F", 2);
+        break;
+    case DIFF_FUEL_1:
+        watch_display_string("1F", 2);
         break;
     case DIFF_NORM:
     default:
-        watch_display_string("N", 3);
+        watch_display_string(" N", 2);
         break;
     }
+    game_state.fuel_mode = difficulty >= DIFF_FUEL && difficulty <= DIFF_FUEL_1;
 }
 
 static void change_difficulty(endless_runner_state_t *state) {
@@ -316,23 +322,21 @@ static void begin_playing(endless_runner_state_t *state) {
     uint8_t difficulty = state -> difficulty;
     game_state.curr_screen = SCREEN_PLAYING;
     watch_clear_colon();
-    movement_request_tick_frequency((difficulty == DIFF_BABY) ? FREQ_SLOW : FREQ);
-    if (difficulty == DIFF_FUEL)
+    movement_request_tick_frequency((state -> difficulty == DIFF_BABY) ? FREQ_SLOW : FREQ);
+    if (game_state.fuel_mode) {
         watch_display_string("           ", 0);
-    else
-        watch_display_string("         ", 2);
-    if (difficulty == DIFF_FUEL) {
         game_state.obst_pattern = get_random_fuel(0);
         if ((16 * JUMP_FRAMES_FUEL_RECHARGE) < JUMP_FRAMES_FUEL) // 16 frames of zeros at the start of a level
             game_state.fuel = JUMP_FRAMES_FUEL - (16 * JUMP_FRAMES_FUEL_RECHARGE); // Have it below its max to show it counting up when starting.
         if (game_state.fuel < JUMP_FRAMES_FUEL_RECHARGE) game_state.fuel = JUMP_FRAMES_FUEL_RECHARGE;
     }
     else {
+        watch_display_string("         ", 2);
         game_state.obst_pattern = get_random_legal(0, difficulty);
     }
     game_state.jump_state = NOT_JUMPING;
     display_ball(game_state.jump_state != NOT_JUMPING);
-    display_score( game_state.curr_score, difficulty);
+    display_score( game_state.curr_score);
     if (state -> soundOn){
         watch_buzzer_play_note(BUZZER_NOTE_C5, 200);
         watch_buzzer_play_note(BUZZER_NOTE_E5, 200);
@@ -352,7 +356,6 @@ static void display_lose_screen(endless_runner_state_t *state) {
 
 static void display_obstacle(bool obstacle, int grid_loc, endless_runner_state_t *state) {
     static bool prev_obst_pos_two = 0;
-    uint8_t difficulty = state -> difficulty;
     switch (grid_loc)
     {
     case 2:
@@ -361,8 +364,8 @@ static void display_obstacle(bool obstacle, int grid_loc, endless_runner_state_t
             watch_set_pixel(0, 20);
         else if (game_state.jump_state != NOT_JUMPING) {
             watch_clear_pixel(0, 20);
-            if (difficulty == DIFF_FUEL && prev_obst_pos_two)
-                add_to_score(state, difficulty);
+            if (game_state.fuel_mode && prev_obst_pos_two)
+                add_to_score(state);
         }
         prev_obst_pos_two = obstacle;
         break;
@@ -375,8 +378,8 @@ static void display_obstacle(bool obstacle, int grid_loc, endless_runner_state_t
         break;
     
     case 1:
-        if (difficulty != DIFF_FUEL && obstacle)  // If an obstacle is here, it means the ball cleared it
-            add_to_score(state, difficulty);
+        if (!game_state.fuel_mode && obstacle)  // If an obstacle is here, it means the ball cleared it
+            add_to_score(state);
         //fall through
     case 0:
     case 5:
@@ -443,7 +446,7 @@ static void display_obstacles(endless_runner_state_t *state) {
     }
     game_state.obst_pattern = game_state.obst_pattern << 1;
     game_state.obst_indx++;
-    if (state -> difficulty == DIFF_FUEL) {
+    if (game_state.fuel_mode) {
         if (game_state.obst_indx >= (_num_bits_obst_pattern / 2)) {
                 game_state.obst_indx = 0;
                 game_state.obst_pattern = get_random_fuel(game_state.obst_pattern);
@@ -457,7 +460,6 @@ static void display_obstacles(endless_runner_state_t *state) {
 
 static void update_game(endless_runner_state_t *state, uint8_t subsecond) {
     uint8_t curr_jump_frame = 0;
-    bool fuel_mode = state -> difficulty == DIFF_FUEL;
     if (game_state.sec_before_moves != 0) {
         if (subsecond == 0) --game_state.sec_before_moves;
         return;
@@ -466,10 +468,11 @@ static void update_game(endless_runner_state_t *state, uint8_t subsecond) {
     switch (game_state.jump_state)
     {
     case NOT_JUMPING:
-        if (fuel_mode) {
+        if (game_state.fuel_mode) {
             for (int i = 0; i < JUMP_FRAMES_FUEL_RECHARGE; i++)
             {
-                if(game_state.fuel >= JUMP_FRAMES_FUEL || !game_state.fuel) break;
+                if(game_state.fuel >= JUMP_FRAMES_FUEL || (state -> difficulty == DIFF_FUEL_1 && !game_state.fuel))
+                    break;
                 game_state.fuel++;
             }
         }
@@ -478,7 +481,7 @@ static void update_game(endless_runner_state_t *state, uint8_t subsecond) {
         stop_jumping(state);
         break;
     default:
-        if (fuel_mode) {
+        if (game_state.fuel_mode) {
             if (!game_state.fuel)
                 game_state.jump_state = JUMPING_FINAL_FRAME;
             else
@@ -498,8 +501,8 @@ static void update_game(endless_runner_state_t *state, uint8_t subsecond) {
         delay_ms(200);  // To show the player jumping onto the obstacle before displaying the lose screen.
         display_lose_screen(state);
     }
-    else if (fuel_mode)
-        display_fuel(subsecond);
+    else if (game_state.fuel_mode)
+        display_fuel(subsecond, state -> difficulty);
 }
 
 void endless_runner_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
@@ -551,7 +554,7 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
         case EVENT_LIGHT_BUTTON_DOWN:
         case EVENT_ALARM_BUTTON_DOWN:
             if (game_state.curr_screen == SCREEN_PLAYING && game_state.jump_state == NOT_JUMPING){
-                if (state -> difficulty == DIFF_FUEL && !game_state.fuel) break;
+                if (game_state.fuel_mode && !game_state.fuel) break;
                 game_state.jump_state = JUMPING_START;
                 display_ball(game_state.jump_state != NOT_JUMPING);
             }
