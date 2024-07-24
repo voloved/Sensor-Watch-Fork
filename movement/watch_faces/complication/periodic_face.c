@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2023 PrimmR
+ * Copyright (c) 2024 David Volovskiy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -418,12 +419,19 @@ bool periodic_face_loop(movement_event_t event, movement_settings_t *settings, v
         _handle_forward(state, settings->bit.button_should_sound);
         break;
     case EVENT_ALARM_LONG_PRESS:
-        start_quick_cyc();
-        _handle_forward(state, settings->bit.button_should_sound);
+        if (state->mode <= SCREEN_ELEMENT) {
+            start_quick_cyc();
+            _handle_forward(state, settings->bit.button_should_sound);
+        }
         break;
     case EVENT_LIGHT_LONG_PRESS:
-        start_quick_cyc();
-        _handle_backward(state, settings->bit.button_should_sound);
+        if (state->mode <= SCREEN_ELEMENT) {
+            start_quick_cyc();
+            _handle_backward(state, settings->bit.button_should_sound);
+        }
+        else {
+            movement_illuminate_led();
+        }
         break;
     case EVENT_MODE_BUTTON_UP:
         if (state->mode == SCREEN_TITLE) movement_move_to_next_face();

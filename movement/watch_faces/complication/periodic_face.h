@@ -2,6 +2,7 @@
  * MIT License
  *
  * Copyright (c) 2023 PrimmR
+ * Copyright (c) 2024 David Volovskiy
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,13 +52,13 @@
  *    Light Press
  *        Previous Element
  *    Light Hold
- *        Fast Cycle through Previous Elements
+ *        On Title Screen or Element Symbol: Fast Cycle through Previous Elements
+ *                                     Else: Activate LED backlight
  *
  *    Alarm Press
  *        Next Element
  *    Alarm Hold
- *        Fast Cycle through Next Elements
- *
+ *        On Title Screen or Element Symbol: Fast Cycle through Next Elements
  */
 
 #define MODE_VIEW 0
