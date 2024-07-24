@@ -95,6 +95,16 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
     tally_state_t *state = (tally_state_t *)context;
     static bool using_led = false;
     
+    if (using_led) {
+        if(!watch_get_pin_level(BTN_MODE) && !watch_get_pin_level(BTN_LIGHT) && !watch_get_pin_level(BTN_ALARM))
+            using_led = false;
+        else {
+            if (event.event_type == EVENT_LIGHT_BUTTON_DOWN || event.event_type == EVENT_ALARM_BUTTON_DOWN)
+                movement_illuminate_led();
+            return true;
+        }
+    }
+    
     switch (event.event_type) {
         case EVENT_TICK:
             if (_quick_ticks_running) {
@@ -121,7 +131,6 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             }
             break;
         case EVENT_MODE_LONG_PRESS:
-            if (using_led) break;
             if (state->tally_idx == _tally_default[state->tally_default_idx]) {
                 _init_val = true;
                 movement_move_to_face(0);
@@ -137,17 +146,16 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             }
             break;
         case EVENT_LIGHT_BUTTON_UP:
-            if (!using_led)
-                tally_face_increment(state);
+            tally_face_increment(state);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
+        case EVENT_ALARM_BUTTON_DOWN:
             if (watch_get_pin_level(BTN_MODE)) {
                 movement_illuminate_led();
                 using_led = true;
             }
             break;
         case EVENT_LIGHT_LONG_PRESS:
-            if (using_led) break;
             if (_init_val){
                 state->tally_default_idx = (state->tally_default_idx + 1) % _tally_default_size;
                 state->tally_idx = _tally_default[state->tally_default_idx];
@@ -168,13 +176,10 @@ bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void
             // ignore timeout
             break;
         default:
-            if (using_led) break;
             movement_default_loop_handler(event, settings);
             break;
     }
 
-    if (using_led && !watch_get_pin_level(BTN_MODE))
-        using_led = false;
     return true;
 }
 
