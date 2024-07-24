@@ -214,6 +214,11 @@ void alarm_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
             state->alarm[i].beeps = 5;
             state->alarm[i].pitch = 1;
         }
+        state->alarm[0].hour = 7;
+        state->alarm[0].minute = 45;
+        state->alarm[0].day = ALARM_DAY_WORKDAY;
+        // state->alarm[0].enabled = true;
+
         state->alarm_handled_minute = -1;
         _wait_ticks = -1;
     }
