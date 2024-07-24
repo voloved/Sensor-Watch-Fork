@@ -113,6 +113,16 @@ const watch_face_t watch_faces[] = {
 #define MOVEMENT_DEFAULT_LATITUDE 3578
 #define MOVEMENT_DEFAULT_LONGITUDE -7864
 
+/* The wearers birthdate
+ * Valid values:
+ * Year: 1 - 4095
+ * Month: 1 - 12
+ * Day: 1 - 31
+ */
+#define MOVEMENT_DEFAULT_BIRTHDATE_YEAR 1994
+#define MOVEMENT_DEFAULT_BIRTHDATE_MONTH 6
+#define MOVEMENT_DEFAULT_BIRTHDATE_DAY 3
+
 /* Set if the watch will chime every hour and ignorethe start and end chimes
  * Valid values are:
  * 0: Use the Start and End values
