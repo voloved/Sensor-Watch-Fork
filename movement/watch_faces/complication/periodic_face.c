@@ -411,12 +411,24 @@ bool periodic_face_loop(movement_event_t event, movement_settings_t *settings, v
         _handle_mode_still_pressed(state, settings->bit.button_should_sound);
         break;
     case EVENT_LIGHT_BUTTON_UP:
-        _handle_backward(state, settings->bit.button_should_sound);
+        if (state->mode <= SCREEN_ELEMENT) {
+            _handle_backward(state, settings->bit.button_should_sound);
+        }
+        else {
+            state->mode = SCREEN_ELEMENT;
+            _display_screen(state, settings->bit.button_should_sound);
+        }
         break;
     case EVENT_LIGHT_BUTTON_DOWN:
         break;
     case EVENT_ALARM_BUTTON_UP:
-        _handle_forward(state, settings->bit.button_should_sound);
+        if (state->mode <= SCREEN_ELEMENT) {
+            _handle_forward(state, settings->bit.button_should_sound);
+        }
+        else {
+            state->mode = SCREEN_ELEMENT;
+            _display_screen(state, settings->bit.button_should_sound);
+        }
         break;
     case EVENT_ALARM_LONG_PRESS:
         if (state->mode <= SCREEN_ELEMENT) {
