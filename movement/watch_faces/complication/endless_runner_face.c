@@ -36,6 +36,7 @@ typedef enum {
     SCREEN_TITLE = 0,
     SCREEN_PLAYING,
     SCREEN_LOSE,
+    SCREEN_TIME,
     SCREEN_COUNT
 } RunnerCurrScreen;
 
@@ -44,8 +45,8 @@ typedef enum {
     DIFF_EASY,      //      FREQ FPS;       MIN_ZEROES 0's min;  Jump is JUMP_FRAMES_EASY frames
     DIFF_NORM,      //      FREQ FPS;       MIN_ZEROES 0's min;  Jump is JUMP_FRAMES frames
     DIFF_HARD,      //      FREQ FPS;  MIN_ZEROES_HARD 0's min;  jump is JUMP_FRAMES frames
-    DIFF_FUEL,
-    DIFF_FUEL_1,  // If your fuel is 0, then you won't recharge
+    DIFF_FUEL,      // Mode where the top-right displays the amoount of fuel that you can be above the ground for, dodging obstacles. When on the ground, your fuel recharges.
+    DIFF_FUEL_1,    // Same as DIFF_FUEL, but if your fuel is 0, then you won't recharge
     DIFF_COUNT
 } RunnerDifficulty;
 
@@ -58,9 +59,9 @@ typedef enum {
 #define MIN_ZEROES_HARD 3 // At minimum, we'll have this many spaces between obstacles on hard mode
 #define MAX_HI_SCORE 9999  // Max hi score to store and display on the title screen.
 #define MAX_DISP_SCORE 39  // The top-right digits can't properly display above 39
-#define JUMP_FRAMES_FUEL 30
-#define JUMP_FRAMES_FUEL_RECHARGE 3
-#define MAX_DISP_SCORE_FUEL 9
+#define JUMP_FRAMES_FUEL 30  // The max fuel that fuel that the fuel mode game will hold
+#define JUMP_FRAMES_FUEL_RECHARGE 3 // How much fuel each frame on the ground adds
+#define MAX_DISP_SCORE_FUEL 9  // Since the fuel mode displays the score in the weekday slot, two digits will display wonky data
 
 typedef struct {
     uint32_t obst_pattern;
@@ -233,7 +234,7 @@ static void add_to_score(endless_runner_state_t *state) {
 static void display_fuel(uint8_t subsecond, uint8_t difficulty) {
     char buf[4];
     if (difficulty == DIFF_FUEL_1 && game_state.fuel == 0 && subsecond % 4 == 0) {
-        watch_display_string("  ", 2);
+        watch_display_string("  ", 2);  // Blink the 0 fuel to show it cannot be refilled.
         return;
     }
     sprintf(buf, "%2d", game_state.fuel);
@@ -241,7 +242,7 @@ static void display_fuel(uint8_t subsecond, uint8_t difficulty) {
 }
 
 static void check_and_reset_hi_score(endless_runner_state_t *state) {
-    // Resets the hi scroe at the beginning of each month.
+    // Resets the hi score at the beginning of each month.
     watch_date_time date_time = watch_rtc_get_date_time();
     if ((state -> year_last_hi_score != date_time.unit.year) || 
         (state -> month_last_hi_score != date_time.unit.month))
@@ -316,6 +317,37 @@ static void display_title(endless_runner_state_t *state) {
         watch_display_string(buf, 0);
     }
     display_difficulty(difficulty);
+}
+
+static void display_time(watch_date_time date_time, bool clock_mode_24h) {
+    static watch_date_time previous_date_time;
+    char buf[6 + 1];
+
+    // If the hour needs updating
+    if (date_time.unit.hour != previous_date_time.unit.hour) {
+        uint8_t hour = date_time.unit.hour;
+
+        if (clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
+        else {
+            if (hour >= 12) watch_set_indicator(WATCH_INDICATOR_PM);
+            hour %= 12;
+            if (hour == 0) hour = 12;
+        }
+        watch_set_colon();
+        sprintf( buf, "%2d%02d  ", hour, date_time.unit.minute);
+        watch_display_string(buf, 4);
+    }
+    // If both digits of the minute need updating
+    else if ((date_time.unit.minute / 10) != (previous_date_time.unit.minute / 10)) {
+        sprintf( buf, "%02d  ", date_time.unit.minute);
+        watch_display_string(buf, 6);
+    }
+    // If only the ones-place of the minute needs updating.
+    else if (date_time.unit.minute != previous_date_time.unit.minute) {
+        sprintf( buf, "%d  ", date_time.unit.minute % 10);
+        watch_display_string(buf, 7);
+    }
+    previous_date_time.reg = date_time.reg;
 }
 
 static void begin_playing(endless_runner_state_t *state) {
@@ -568,6 +600,7 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
                 display_title(state);
             break;
         case EVENT_LOW_ENERGY_UPDATE:
+            display_time(watch_rtc_get_date_time(), settings->bit.clock_mode_24h);
             break;
         default:
             return movement_default_loop_handler(event, settings);
