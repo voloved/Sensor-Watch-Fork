@@ -165,7 +165,7 @@ bool minute_repeater_decimal_face_loop(movement_event_t event, movement_settings
             else watch_clear_indicator(WATCH_INDICATOR_BELL);
             break;
         case EVENT_BACKGROUND_TASK:
-            movement_play_signal();
+            movement_play_signal(SIGNAL_TUNE_DEFAULT);
             break;
         case EVENT_LIGHT_LONG_UP:
             /*

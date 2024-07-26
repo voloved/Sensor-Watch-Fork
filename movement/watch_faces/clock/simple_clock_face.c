@@ -28,6 +28,8 @@
 #include "watch_utility.h"
 #include "watch_private_display.h"
 
+static watch_date_time date_time;
+
 static void _update_alarm_indicator(bool settings_alarm_enabled, simple_clock_state_t *state) {
     state->alarm_enabled = settings_alarm_enabled;
     if (state->alarm_enabled) watch_set_indicator(WATCH_INDICATOR_SIGNAL);
@@ -65,6 +67,8 @@ void simple_clock_face_activate(movement_settings_t *settings, void *context) {
     // this ensures that none of the timestamp fields will match, so we can re-render them all.
     state->previous_date_time = 0xFFFFFFFF;
     state->showingLogo = false;
+
+    state->birth_date.reg = watch_get_backup_data(2);
 }
 
 bool simple_clock_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -72,7 +76,6 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
     char buf[11];
     uint8_t pos;
 
-    watch_date_time date_time;
     uint32_t previous_date_time;
 
     if (state->showingLogo){
@@ -181,7 +184,10 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
         case EVENT_BACKGROUND_TASK:
             // uncomment this line to snap back to the clock face when the hour signal sounds:
             // movement_move_to_face(state->watch_face_index);
-            movement_play_signal();
+            if ((date_time.unit.month != state->birth_date.bit.month) || (date_time.unit.day != state->birth_date.bit.day))
+                movement_play_signal(SIGNAL_TUNE_DEFAULT);
+            else
+                movement_play_signal(SIGNAL_TUNE_HAPPY_BIRTHDAY);
             break;
         default:
             return movement_default_loop_handler(event, settings);
@@ -200,7 +206,7 @@ bool simple_clock_face_wants_background_task(movement_settings_t *settings, void
     simple_clock_state_t *state = (simple_clock_state_t *)context;
     if (!state->signal_enabled) return false;
 
-    watch_date_time date_time = watch_rtc_get_date_time();
+    date_time = watch_rtc_get_date_time();
     uint8_t chime_start = Hourly_Chime_Start[settings->bit.hourly_chime_start];
     uint8_t chime_end = Hourly_Chime_End[settings->bit.hourly_chime_end];
     if (chime_end == 0) chime_end = 24;

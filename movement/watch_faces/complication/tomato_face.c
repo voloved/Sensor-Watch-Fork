@@ -97,7 +97,7 @@ static void tomato_reset(tomato_state_t *state) {
 }
 
 static void tomato_ring(tomato_state_t *state) {
-    movement_play_signal();
+    movement_play_signal(SIGNAL_TUNE_DEFAULT);
     tomato_reset(state);
     if (state->kind == tomato_focus) {
         state->kind = tomato_break;

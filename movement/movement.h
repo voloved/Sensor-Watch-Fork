@@ -315,7 +315,7 @@ void movement_cancel_background_task_for_face(uint8_t watch_face_index);
 
 void movement_request_wake(void);
 
-void movement_play_signal(void);
+void movement_play_signal(uint8_t chime);
 void movement_play_alarm(void);
 void movement_play_alarm_beeps(uint8_t rounds, BuzzerNote alarm_note);
 
@@ -336,5 +336,17 @@ static const uint8_t Hourly_Chime_End[] =
     22, // 10pm
     00  // 12am
 };
+
+typedef enum {
+    SIGNAL_TUNE_ORIGINAL,
+    SIGNAL_TUNE_CUSTOM,
+    SIGNAL_TUNE_ZELDA_SECRET,
+    SIGNAL_TUNE_MARIO_THEME,
+    SIGNAL_TUNE_KIM_POSSIBLE,
+    SIGNAL_TUNE_DEEP_COVER,
+    SIGNAL_TUNE_SONG_OF_STORMS,
+    SIGNAL_TUNE_HAPPY_BIRTHDAY,
+    SIGNAL_TUNE_SONG_OF_COUNT
+} signal_tune_t;
 
 #endif // MOVEMENT_H_

@@ -40,6 +40,7 @@ typedef struct {
     uint32_t previous_date_time;
     uint8_t last_battery_check;
     uint8_t watch_face_index;
+    movement_birthdate_t birth_date;
     bool signal_enabled;
     bool battery_low;
     bool alarm_enabled;

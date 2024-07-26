@@ -375,7 +375,7 @@ bool rpn_calculator_alt_face_loop(movement_event_t event, movement_settings_t *s
             if (s->mode == CALC_NUMBER) {
                 change_mode(s, CALC_OPERATION);
             } else if (proposed_stack_size < 0 || proposed_stack_size + functions[s->fn_index].output > CALC_MAX_STACK_SIZE) {
-                movement_play_signal();
+                movement_play_signal(SIGNAL_TUNE_DEFAULT);
                 break;
             } else {
                 functions[s->fn_index].func(s);
