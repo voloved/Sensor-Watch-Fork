@@ -138,9 +138,6 @@ bool thermistor_logging_face_loop(movement_event_t event, movement_settings_t *s
         else return true;
     }
     switch (event.event_type) {
-        case EVENT_TIMEOUT:
-            movement_move_to_face(0);
-            break;
         case EVENT_LIGHT_LONG_PRESS:
             // light button shows the timestamp, but if you need the light, long press it.
             movement_illuminate_led();
