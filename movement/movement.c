@@ -765,7 +765,7 @@ void cb_alarm_btn_interrupt(void) {
     _movement_reset_inactivity_countdown();
     uint8_t event_type = _figure_out_button_event(pin_level, EVENT_ALARM_BUTTON_DOWN, &movement_state.alarm_down_timestamp);
     if  (movement_state.ignore_alarm_btn_after_sleep){
-        if (event_type == EVENT_ALARM_BUTTON_UP || event_type == EVENT_ALARM_BUTTON_UP) movement_state.ignore_alarm_btn_after_sleep = false;
+        if (event_type == EVENT_ALARM_BUTTON_UP || event_type == EVENT_ALARM_LONG_UP) movement_state.ignore_alarm_btn_after_sleep = false;
         return;
     }
     event.event_type = event_type;

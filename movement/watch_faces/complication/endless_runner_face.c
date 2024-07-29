@@ -233,7 +233,7 @@ static void add_to_score(endless_runner_state_t *state) {
 
 static void display_fuel(uint8_t subsecond, uint8_t difficulty) {
     char buf[4];
-    if (difficulty == DIFF_FUEL_1 && game_state.fuel == 0 && subsecond % 4 == 0) {
+    if (difficulty == DIFF_FUEL_1 && game_state.fuel == 0 && subsecond % (FREQ/2) == 0) {
         watch_display_string("  ", 2);  // Blink the 0 fuel to show it cannot be refilled.
         return;
     }
@@ -580,6 +580,10 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
                 begin_playing(state);
             else if (game_state.curr_screen == SCREEN_LOSE)
                 display_title(state);
+            break;
+        case EVENT_ALARM_LONGER_PRESS:
+            if (game_state.curr_screen == SCREEN_TITLE)
+                movement_move_to_face(0);
             break;
         case EVENT_LIGHT_LONG_PRESS:
             if (game_state.curr_screen == SCREEN_TITLE)

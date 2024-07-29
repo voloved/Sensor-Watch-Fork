@@ -81,18 +81,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
     if (state->showingLogo){
         if (!watch_get_pin_level(BTN_ALARM)){
             state->showingLogo = false;
-            date_time = watch_rtc_get_date_time();
-            state->previous_date_time = date_time.reg;
-            if (state->signal_enabled) watch_set_indicator(WATCH_INDICATOR_BELL);
-            if (settings->bit.clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
-            else {
-                if (date_time.unit.hour >= 12) watch_set_indicator(WATCH_INDICATOR_PM);
-                date_time.unit.hour %= 12;
-                if (date_time.unit.hour == 0) date_time.unit.hour = 12;
-            }
-            watch_set_colon();
-            sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
-            watch_display_string(buf, 0);
+            movement_move_to_face(8);  // Endless runner face
         }
         return true;
     }
@@ -184,10 +173,12 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
         case EVENT_BACKGROUND_TASK:
             // uncomment this line to snap back to the clock face when the hour signal sounds:
             // movement_move_to_face(state->watch_face_index);
-            if ((date_time.unit.month != state->birth_date.bit.month) || (date_time.unit.day != state->birth_date.bit.day))
-                movement_play_signal(SIGNAL_TUNE_DEFAULT);
-            else
+            if (date_time.unit.hour == 16 && date_time.unit.minute == 20)
+                movement_play_signal(SIGNAL_TUNE_DEEP_COVER);
+            else if (date_time.unit.month == state->birth_date.bit.month && date_time.unit.day == state->birth_date.bit.day)
                 movement_play_signal(SIGNAL_TUNE_HAPPY_BIRTHDAY);
+            else
+                movement_play_signal(SIGNAL_TUNE_DEFAULT);
             break;
         default:
             return movement_default_loop_handler(event, settings);
@@ -211,6 +202,9 @@ bool simple_clock_face_wants_background_task(movement_settings_t *settings, void
     uint8_t chime_end = Hourly_Chime_End[settings->bit.hourly_chime_end];
     if (chime_end == 0) chime_end = 24;
     if (!settings->bit.hourly_chime_always && (date_time.unit.hour < chime_start || date_time.unit.hour >= chime_end)) return false;
+
+    if (date_time.unit.hour == 16 && date_time.unit.minute == 20)
+        return true;
 
     return date_time.unit.minute == 0;
 }
