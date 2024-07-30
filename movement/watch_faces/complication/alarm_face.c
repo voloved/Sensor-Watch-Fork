@@ -226,8 +226,10 @@ void alarm_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
 
 void alarm_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
+    alarm_state_t *state = (alarm_state_t *)context;
     (void) context;
     watch_set_colon();
+    state->birth_date.reg = watch_get_backup_data(2);
 }
 
 void alarm_face_resign(movement_settings_t *settings, void *context) {
@@ -240,7 +242,7 @@ void alarm_face_resign(movement_settings_t *settings, void *context) {
     movement_request_tick_frequency(1);
 }
 
-static bool is_holiday(watch_date_time time, uint8_t weekday_idx) {
+static bool is_holiday(watch_date_time time, uint8_t weekday_idx, movement_birthdate_t birth_date) {
     if (time.unit.month == 1 && time.unit.day == 1)  // New Year's Day
         return true;
     if (time.unit.month == 1 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // MLK Day
@@ -258,6 +260,8 @@ static bool is_holiday(watch_date_time time, uint8_t weekday_idx) {
     if (time.unit.month == 11 && weekday_idx == 3 && time.unit.day > 21 && time.unit.day <= 28)  // Thanksgiving
         return true;
     if (time.unit.month == 12 && time.unit.day == 25)  // Thanksgiving
+        return true;
+    if (birth_date.reg != 0 && time.unit.month == birth_date.bit.month && time.unit.day == birth_date.bit.day)  // Birthday
         return true;
     return false;
 }
@@ -281,7 +285,7 @@ bool alarm_face_wants_background_task(movement_settings_t *settings, void *conte
                     if (state->alarm[i].day == ALARM_DAY_WEEKEND && weekday_idx >= 5) return true;
                     if (weekday_idx < 5) {
                         if (state->alarm[i].day == ALARM_DAY_WORKDAY) return true;
-                        if (state->alarm[i].day == ALARM_DAY_WORKDAY_NO_HOLIDAYS && !is_holiday(now, weekday_idx)) return true;
+                        if (state->alarm[i].day == ALARM_DAY_WORKDAY_NO_HOLIDAYS && !is_holiday(now, weekday_idx, state->birth_date)) return true;
                     }
                 }
             }

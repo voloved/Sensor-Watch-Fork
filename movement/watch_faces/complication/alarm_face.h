@@ -82,6 +82,7 @@ typedef struct {
     bool alarm_quick_ticks : 1;
     bool is_setting : 1;
     alarm_setting_t alarm[ALARM_ALARMS];
+    movement_birthdate_t birth_date;
 } alarm_state_t;
 
 
