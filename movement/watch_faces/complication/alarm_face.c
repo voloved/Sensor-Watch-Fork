@@ -39,7 +39,7 @@ typedef enum {
     alarm_setting_idx_count,
 } alarm_setting_idx_t;
 
-static const char _dow_strings[ALARM_DAY_STATES + 1][2] ={"AL", "MO", "TU", "WE", "TH", "FR", "SA", "SU", "ED", "1t", "MF", "WN"};
+static const char _dow_strings[ALARM_DAY_STATES + 1][2] ={"AL", "MO", "TU", "WE", "TH", "FR", "SA", "SU", "ED", "1t", "MF", "WN", "WD"};
 static const uint8_t _blink_idx[alarm_setting_idx_count] = {4, 6, 0, 8, 9};
 static const uint8_t _blink_idx2[alarm_setting_idx_count] = {5, 7, 1, 8, 9};
 static const BuzzerNote _buzzer_notes[3] = {BUZZER_NOTE_B6, BUZZER_NOTE_C8, BUZZER_NOTE_A8};
@@ -240,6 +240,28 @@ void alarm_face_resign(movement_settings_t *settings, void *context) {
     movement_request_tick_frequency(1);
 }
 
+static bool is_holiday(watch_date_time time, uint8_t weekday_idx) {
+    if (time.unit.month == 1 && time.unit.day == 1)  // New Year's Day
+        return true;
+    if (time.unit.month == 1 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // MLK Day
+        return true;
+    if (time.unit.month == 5 && weekday_idx == 0 && time.unit.day > 24)  // Memorial Day
+        return true;
+    if (time.unit.month == 6 && time.unit.day == 19)  // Juneteenth
+        return true;
+    if (time.unit.month == 7 && time.unit.day == 4)  // Independence Day
+        return true;
+    if (time.unit.month == 9 && weekday_idx == 0 && time.unit.day <= 7)  // Labor Day
+        return true;
+    if (time.unit.month == 11 && time.unit.day == 11)  // Veterans Day
+        return true;
+    if (time.unit.month == 11 && weekday_idx == 3 && time.unit.day > 21 && time.unit.day <= 28)  // Thanksgiving
+        return true;
+    if (time.unit.month == 12 && time.unit.day == 25)  // Thanksgiving
+        return true;
+    return false;
+}
+
 bool alarm_face_wants_background_task(movement_settings_t *settings, void *context) {
     (void) settings;
     alarm_state_t *state = (alarm_state_t *)context;
@@ -256,8 +278,11 @@ bool alarm_face_wants_background_task(movement_settings_t *settings, void *conte
                     if (state->alarm[i].day == ALARM_DAY_EACH_DAY || state->alarm[i].day == ALARM_DAY_ONE_TIME) return true;
                     uint8_t weekday_idx = _get_weekday_idx(now);
                     if (state->alarm[i].day == weekday_idx) return true;
-                    if (state->alarm[i].day == ALARM_DAY_WORKDAY && weekday_idx < 5) return true;
                     if (state->alarm[i].day == ALARM_DAY_WEEKEND && weekday_idx >= 5) return true;
+                    if (weekday_idx < 5) {
+                        if (state->alarm[i].day == ALARM_DAY_WORKDAY) return true;
+                        if (state->alarm[i].day == ALARM_DAY_WORKDAY_NO_HOLIDAYS && !is_holiday(now, weekday_idx)) return true;
+                    }
                 }
             }
         }
