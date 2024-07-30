@@ -575,16 +575,15 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
             }
             break;
         case EVENT_LIGHT_BUTTON_UP:
+        case EVENT_ALARM_BUTTON_UP:
             if (game_state.curr_screen == SCREEN_TITLE)
                 begin_playing(state);
             else if (game_state.curr_screen == SCREEN_LOSE)
                 display_title(state);
             break;
-        case EVENT_ALARM_BUTTON_UP:
+        case EVENT_ALARM_LONGER_PRESS:
             if (game_state.curr_screen == SCREEN_TITLE)
                 movement_move_to_face(0);
-            else if (game_state.curr_screen == SCREEN_LOSE)
-                display_title(state);
             break;
         case EVENT_LIGHT_LONG_PRESS:
             if (game_state.curr_screen == SCREEN_TITLE)
