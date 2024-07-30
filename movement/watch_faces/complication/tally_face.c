@@ -43,6 +43,7 @@ void tally_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
         memset(*context_ptr, 0, sizeof(tally_state_t));
         tally_state_t *state = (tally_state_t *)*context_ptr;
         state->tally_default_idx = 0;
+        state->soundOff = true;
         state->tally_idx = _tally_default[state->tally_default_idx];
         _init_val = true;
     }
