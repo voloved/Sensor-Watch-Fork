@@ -247,7 +247,7 @@ endif
 #  YES = Always 24H mode
 #  NO = 24H mode can be set in the settings
 ifndef CLOCK_FACE_24H_ONLY
-CLOCK_FACE_24H_ONLY := TOGGLE
+CLOCK_FACE_24H_ONLY := NO
 endif
 ifeq ($(CLOCK_FACE_24H_ONLY), TOGGLE)
 CFLAGS += -DCLOCK_FACE_24H_TOGGLE
