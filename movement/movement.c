@@ -254,6 +254,16 @@ static void _decrement_deep_sleep_counter(void){
     }
 }
 
+static void cb_debounce(void) {
+    movement_state.debounce_occurring = false;
+    watch_rtc_disable_periodic_callback(64);  // 64 HZ is 15.625ms
+}
+
+static inline void _movement_enable_debounce_tick(void) {
+    movement_state.debounce_occurring = true;
+    watch_rtc_register_periodic_callback(cb_debounce, 64);
+}
+
 static void _movement_handle_background_tasks(void) {
     for(uint8_t i = 0; i < MOVEMENT_NUM_FACES; i++) {
         // For each face, if the watch face wants a background task...
@@ -295,15 +305,15 @@ static void _movement_handle_scheduled_tasks(void) {
 }
 
 void movement_request_tick_frequency(uint8_t freq) {
-    // Movement uses the 128 Hz tick internally
-    if (freq == 128) return;
+    // Movement uses the 128 Hz tick internally; 64 is th edebounce frequency
+    if (freq == 128 || freq == 64 ) return;
 
     // Movement requires at least a 1 Hz tick.
     // If we are asked for an invalid frequency, default back to 1 Hz.
     if (freq == 0 || __builtin_popcount(freq) != 1) freq = 1;
 
     // disable all callbacks except the 128 Hz one
-    watch_rtc_disable_matching_periodic_callbacks(0xFE);
+    watch_rtc_disable_matching_periodic_callbacks(0xFC);
 
     movement_state.subsecond = 0;
     movement_state.tick_frequency = freq;
@@ -728,6 +738,8 @@ bool app_loop(void) {
 static movement_event_type_t _figure_out_button_event(bool pin_level, movement_event_type_t button_down_event_type, uint16_t *down_timestamp) {
     // force alarm off if the user pressed a button.
     if (movement_state.alarm_ticks) movement_state.alarm_ticks = 0;
+    if ( movement_state.debounce_occurring)
+        return EVENT_NONE;
 
     if (pin_level) {
         // handle rising edge
@@ -742,6 +754,7 @@ static movement_event_type_t _figure_out_button_event(bool pin_level, movement_e
         uint16_t diff = movement_state.fast_ticks - *down_timestamp;
         *down_timestamp = 0;
         _movement_disable_fast_tick_if_possible();
+        _movement_enable_debounce_tick();
         // any press over a half second is considered a long press. Fire the long-up event
         if (diff > MOVEMENT_LONG_PRESS_TICKS) return button_down_event_type + 3;
         else return button_down_event_type + 1;
@@ -781,7 +794,8 @@ void cb_alarm_fired(void) {
 }
 
 void cb_fast_tick(void) {
-    movement_state.fast_ticks++;
+    if (!movement_state.debounce_occurring)
+        movement_state.fast_ticks++;
     if (movement_state.light_ticks > 0) movement_state.light_ticks--;
     if (movement_state.alarm_ticks > 0) movement_state.alarm_ticks--;
     // check timestamps and auto-fire the long-press events
