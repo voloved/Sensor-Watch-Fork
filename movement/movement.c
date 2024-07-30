@@ -145,6 +145,8 @@
 #include <emscripten.h>
 #endif
 
+#define DEBOUNCE_TICKS 2  // In terms of *7.8125ms
+
 movement_state_t movement_state;
 void * watch_face_contexts[MOVEMENT_NUM_FACES];
 watch_date_time scheduled_tasks[MOVEMENT_NUM_FACES];
@@ -219,6 +221,9 @@ static inline void _movement_reset_inactivity_countdown(void) {
 static inline void _movement_enable_fast_tick_if_needed(void) {
     if (!movement_state.fast_tick_enabled) {
         movement_state.fast_ticks = 0;
+        movement_state.debounce_ticks_light = 0;
+        movement_state.debounce_ticks_alarm = 0;
+        movement_state.debounce_ticks_mode = 0;
         watch_rtc_register_periodic_callback(cb_fast_tick, 128);
         movement_state.fast_tick_enabled = true;
     }
@@ -252,16 +257,6 @@ static void _decrement_deep_sleep_counter(void){
         }
         movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
     }
-}
-
-static void cb_debounce(void) {
-    movement_state.debounce_occurring = false;
-    watch_rtc_disable_periodic_callback(64);  // 64 HZ is 15.625ms
-}
-
-static inline void _movement_enable_debounce_tick(void) {
-    movement_state.debounce_occurring = true;
-    watch_rtc_register_periodic_callback(cb_debounce, 64);
 }
 
 static void _movement_handle_background_tasks(void) {
@@ -305,15 +300,15 @@ static void _movement_handle_scheduled_tasks(void) {
 }
 
 void movement_request_tick_frequency(uint8_t freq) {
-    // Movement uses the 128 Hz tick internally; 64 is th edebounce frequency
-    if (freq == 128 || freq == 64 ) return;
+    // Movement uses the 128 Hz tick internally
+    if (freq == 128) return;
 
     // Movement requires at least a 1 Hz tick.
     // If we are asked for an invalid frequency, default back to 1 Hz.
     if (freq == 0 || __builtin_popcount(freq) != 1) freq = 1;
 
     // disable all callbacks except the 128 Hz one
-    watch_rtc_disable_matching_periodic_callbacks(0xFC);
+    watch_rtc_disable_matching_periodic_callbacks(0xFE);
 
     movement_state.subsecond = 0;
     movement_state.tick_frequency = freq;
@@ -738,8 +733,6 @@ bool app_loop(void) {
 static movement_event_type_t _figure_out_button_event(bool pin_level, movement_event_type_t button_down_event_type, uint16_t *down_timestamp) {
     // force alarm off if the user pressed a button.
     if (movement_state.alarm_ticks) movement_state.alarm_ticks = 0;
-    if ( movement_state.debounce_occurring)
-        return EVENT_NONE;
 
     if (pin_level) {
         // handle rising edge
@@ -753,35 +746,45 @@ static movement_event_type_t _figure_out_button_event(bool pin_level, movement_e
         // now that that's out of the way, handle falling edge
         uint16_t diff = movement_state.fast_ticks - *down_timestamp;
         *down_timestamp = 0;
-        _movement_disable_fast_tick_if_possible();
-        _movement_enable_debounce_tick();
         // any press over a half second is considered a long press. Fire the long-up event
         if (diff > MOVEMENT_LONG_PRESS_TICKS) return button_down_event_type + 3;
         else return button_down_event_type + 1;
     }
 }
 
-void cb_light_btn_interrupt(void) {
-    bool pin_level = watch_get_pin_level(BTN_LIGHT);
+static void light_btn_action(bool pin_level) {
     _movement_reset_inactivity_countdown();
     event.event_type = _figure_out_button_event(pin_level, EVENT_LIGHT_BUTTON_DOWN, &movement_state.light_down_timestamp);
 }
 
-void cb_mode_btn_interrupt(void) {
-    bool pin_level = watch_get_pin_level(BTN_MODE);
+static void mode_btn_action(bool pin_level) { 
     _movement_reset_inactivity_countdown();
     event.event_type = _figure_out_button_event(pin_level, EVENT_MODE_BUTTON_DOWN, &movement_state.mode_down_timestamp);
 }
 
-void cb_alarm_btn_interrupt(void) {
-    bool pin_level = watch_get_pin_level(BTN_ALARM);
+static void alarm_btn_action(bool pin_level) {
     _movement_reset_inactivity_countdown();
     uint8_t event_type = _figure_out_button_event(pin_level, EVENT_ALARM_BUTTON_DOWN, &movement_state.alarm_down_timestamp);
     if  (movement_state.ignore_alarm_btn_after_sleep){
-        if (event_type == EVENT_ALARM_BUTTON_UP || event_type == EVENT_ALARM_LONG_UP) movement_state.ignore_alarm_btn_after_sleep = false;
+        if (event_type == EVENT_ALARM_BUTTON_UP || event_type == EVENT_ALARM_LONG_UP || event_type == EVENT_ALARM_LONG_UP) movement_state.ignore_alarm_btn_after_sleep = false;
         return;
     }
     event.event_type = event_type;
+}
+
+void cb_light_btn_interrupt(void) {
+    movement_state.debounce_btn_trig_light = true;
+    _movement_enable_fast_tick_if_needed();
+}
+
+void cb_mode_btn_interrupt(void) {
+    movement_state.debounce_btn_trig_mode = true;
+    _movement_enable_fast_tick_if_needed();
+}
+
+void cb_alarm_btn_interrupt(void) {
+    movement_state.debounce_btn_trig_alarm = true;
+    _movement_enable_fast_tick_if_needed();
 }
 
 void cb_alarm_btn_extwake(void) {
@@ -793,8 +796,29 @@ void cb_alarm_fired(void) {
     movement_state.needs_background_tasks_handled = true;
 }
 
+static void debounce_btn_press(uint8_t pin, uint8_t *debounce_ticks, bool *debounce_btn_trig, uint16_t *down_timestamp, void (*function)(bool)) {
+    if (*debounce_ticks > 0)
+    {
+        if (--(*debounce_ticks) == 0)
+            _movement_disable_fast_tick_if_possible();
+    }
+    if (*debounce_btn_trig) {
+        bool pin_level = watch_get_pin_level(pin);
+        *debounce_btn_trig = false;
+        if (*debounce_ticks == 0) {
+            function(pin_level);
+            *debounce_ticks = DEBOUNCE_TICKS;
+        }
+        else
+            *down_timestamp = 0;
+    }
+}
+
 void cb_fast_tick(void) {
-    if (!movement_state.debounce_occurring)
+    debounce_btn_press(BTN_LIGHT, &movement_state.debounce_ticks_light, &movement_state.debounce_btn_trig_light, &movement_state.light_down_timestamp, light_btn_action);
+    debounce_btn_press(BTN_ALARM, &movement_state.debounce_ticks_alarm, &movement_state.debounce_btn_trig_alarm, &movement_state.alarm_down_timestamp, alarm_btn_action);
+    debounce_btn_press(BTN_MODE, &movement_state.debounce_ticks_mode, &movement_state.debounce_btn_trig_mode, &movement_state.mode_down_timestamp, mode_btn_action);
+    if (movement_state.debounce_ticks_light + movement_state.debounce_ticks_mode + movement_state.debounce_ticks_alarm  == 0)
         movement_state.fast_ticks++;
     if (movement_state.light_ticks > 0) movement_state.light_ticks--;
     if (movement_state.alarm_ticks > 0) movement_state.alarm_ticks--;
