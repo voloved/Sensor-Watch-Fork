@@ -65,7 +65,7 @@ typedef union {
         bool hourly_chime_always : 1;       // if true, then ignore the 
         uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm; 
         uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
-        bool screen_off_after_le;           // If true and we're in LE mode and it's the top of the hour and the temp is below #DEFAULT_TEMP_ASSUME_WEARING but not zero, then turn off the screen and other tasks.
+        bool dst_active : 1;                // indicates whether daylight savings time is active
     } bit;
     uint32_t reg;
 } movement_settings_t;
@@ -132,6 +132,8 @@ typedef struct {
 } movement_event_t;
 
 extern const int16_t movement_timezone_offsets[];
+extern const uint8_t movement_dst_jump_table[];
+extern const uint8_t movement_dst_inverse_jump_table[];
 extern const char movement_valid_position_0_chars[];
 extern const char movement_valid_position_1_chars[];
 extern int8_t g_temperature_c;
