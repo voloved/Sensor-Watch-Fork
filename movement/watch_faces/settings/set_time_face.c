@@ -27,7 +27,7 @@
 #include "watch.h"
 
 #define SET_TIME_FACE_NUM_SETTINGS (8)
-const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "ZO", "DS"};
+const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "ZO", "Dt"};
 
 static bool _quick_ticks_running;
 
@@ -140,7 +140,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             return movement_default_loop_handler(event, settings);
     }
 
-    char buf[11];
+    char buf[13];
     if (current_page < 3) {
         watch_set_colon();
         if (settings->bit.clock_mode_24h) {
@@ -166,8 +166,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
         }
     } else { // daylight savings
         watch_clear_colon();
-        if (settings->bit.dst_active) sprintf(buf, "%s   dsT y", set_time_face_titles[current_page]);
-        else sprintf(buf, "%s   dsT n", set_time_face_titles[current_page]);
+        sprintf(buf, "%s   dsT %s", set_time_face_titles[current_page], settings->bit.dst_active ? "y" : "n");
     }
 
     // blink up the parameter we're setting

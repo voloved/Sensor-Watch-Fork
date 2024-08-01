@@ -51,8 +51,8 @@ typedef union {
         bool to_always : 1;                 // if true, always time out from the active face to face 0. otherwise only faces that time out will resign (the default).
         uint8_t le_interval : 3;            // 0 to disable low energy mode, or an inactivity interval for going into low energy mode.
         uint8_t led_duration : 2;           // how many seconds to shine the LED for (x2), or 0 to disable it.
-        uint8_t led_red_color : 4;          // for general purpose illumination, the red LED value (0-15)
-        uint8_t led_green_color : 4;        // for general purpose illumination, the green LED value (0-15)
+        uint8_t led_red_color : 3;          // for general purpose illumination, the red LED value (0-15)
+        uint8_t led_green_color : 3;        // for general purpose illumination, the green LED value (0-15)
         uint8_t time_zone : 6;              // an integer representing an index in the time zone table.
 
         // while Movement itself doesn't implement a clock or display units, it may make sense to include some
@@ -65,7 +65,9 @@ typedef union {
         bool hourly_chime_always : 1;       // if true, then ignore the 
         uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm; 
         uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
+        bool screen_off_after_le : 1;
         bool dst_active : 1;                // indicates whether daylight savings time is active
+        bool reserved : 1;
     } bit;
     uint32_t reg;
 } movement_settings_t;

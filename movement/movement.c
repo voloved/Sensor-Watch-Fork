@@ -415,8 +415,8 @@ void movement_request_tick_frequency(uint8_t freq) {
 
 void movement_illuminate_led(void) {
     if (movement_state.settings.bit.led_duration) {
-        watch_set_led_color(movement_state.settings.bit.led_red_color ? (0xF | movement_state.settings.bit.led_red_color << 4) : 0,
-                            movement_state.settings.bit.led_green_color ? (0xF | movement_state.settings.bit.led_green_color << 4) : 0);
+        watch_set_led_color(get_color_val(movement_state.settings.bit.led_red_color),
+                            get_color_val(movement_state.settings.bit.led_green_color));
         switch (movement_state.settings.bit.led_duration)
         {
         case 1:
