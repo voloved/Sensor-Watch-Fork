@@ -319,7 +319,7 @@ void movement_illuminate_led(void) {
         switch (movement_state.settings.bit.led_duration)
         {
         case 1:
-            movement_state.light_ticks = 8; //62ms; to avoid bounce
+            movement_state.light_ticks = 32;
             break;
         case 2:
             movement_state.light_ticks = 128;

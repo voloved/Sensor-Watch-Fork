@@ -99,7 +99,7 @@ const watch_face_t watch_faces[] = {
 /* Set the led duration
  * Valid values are:
  * 0: No LED
- * 1: 0.5 seconds
+ * 1: 250 milliseconds
  * 2: 1 second
  * 3: 3 seconds
  */

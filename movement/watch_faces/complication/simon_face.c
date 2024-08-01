@@ -208,6 +208,9 @@ void simon_face_setup(movement_settings_t *settings, uint8_t watch_face_index,
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(simon_state_t));
         memset(*context_ptr, 0, sizeof(simon_state_t));
+        simon_state_t *state = (simon_state_t *)*context_ptr;
+        state->lightOff = true;
+        state->soundOff = true;
         // Do any one-time tasks in here; the inside of this conditional happens
         // only at boot.
     }

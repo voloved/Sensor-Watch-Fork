@@ -216,8 +216,8 @@ void alarm_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
         }
         state->alarm[0].hour = 7;
         state->alarm[0].minute = 45;
-        state->alarm[0].day = ALARM_DAY_WORKDAY;
-        // state->alarm[0].enabled = true;
+        state->alarm[0].day = ALARM_DAY_WORKDAY_NO_HOLIDAYS;
+        state->alarm[0].enabled = true;
 
         state->alarm_handled_minute = -1;
         _wait_ticks = -1;
@@ -247,6 +247,8 @@ static bool is_holiday(watch_date_time time, uint8_t weekday_idx, movement_birth
         return true;
     if (time.unit.month == 1 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // MLK Day
         return true;
+    if (time.unit.month == 2 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // President's Day
+        return true;
     if (time.unit.month == 5 && weekday_idx == 0 && time.unit.day > 24)  // Memorial Day
         return true;
     if (time.unit.month == 6 && time.unit.day == 19)  // Juneteenth
@@ -259,7 +261,7 @@ static bool is_holiday(watch_date_time time, uint8_t weekday_idx, movement_birth
         return true;
     if (time.unit.month == 11 && weekday_idx == 3 && time.unit.day > 21 && time.unit.day <= 28)  // Thanksgiving
         return true;
-    if (time.unit.month == 12 && time.unit.day == 25)  // Thanksgiving
+    if (time.unit.month == 12 && time.unit.day == 25)  // Christmas
         return true;
     if (birth_date.reg != 0 && time.unit.month == birth_date.bit.month && time.unit.day == birth_date.bit.day)  // Birthday
         return true;
