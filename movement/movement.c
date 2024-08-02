@@ -36,6 +36,7 @@
 #include "movement.h"
 #include "shell.h"
 #include "thermistor_driver.h"
+#include "watch_utility.h"
 
 #ifndef MOVEMENT_FIRMWARE
 #include "movement_config.h"
@@ -255,50 +256,6 @@ const uint8_t movement_dst_jump_table[] = {
     38, // 38 NDT is already a daylight timezone
     40, // 39 FNT  + 1 = AST
     0   // 40 AST  + 1 = UTC
-};
-
-const uint8_t movement_dst_inverse_jump_table[] = {
-    40, // 0
-    0,  // 1
-    1,  // 2
-    2,  // 3
-    4,  // 4
-    3,  // 5
-    4,  // 6
-    5,  // 7
-    6,  // 8
-    9,  // 9
-    7,  // 10
-    8,  // 11
-    10, // 12
-    12, // 13
-    14, // 14
-    13, // 15
-    16, // 16
-    15, // 17
-    16, // 18
-    17, // 19
-    19, // 20
-    21, // 21
-    20, // 22
-    21, // 23
-    24, // 24
-    25, // 25
-    25, // 26
-    26, // 27
-    28, // 28
-    27, // 29
-    29, // 30
-    30, // 31
-    31, // 32
-    32, // 33
-    34, // 34
-    33, // 35
-    34, // 36
-    35, // 37
-    36, // 38
-    37, // 39
-    39  // 40
 };
 
 const char movement_valid_position_0_chars[] = " AaBbCcDdEeFGgHhIiJKLMNnOoPQrSTtUuWXYZ-='+\\/0123456789";
@@ -551,6 +508,21 @@ void movement_play_alarm_beeps(uint8_t rounds, BuzzerNote alarm_note) {
 uint8_t movement_claim_backup_register(void) {
     if (movement_state.next_available_backup_register >= 8) return 0;
     return movement_state.next_available_backup_register++;
+}
+
+int16_t get_timezone_offset(uint8_t timezone_idx, watch_date_time date_time) {
+    if (!movement_state.settings.bit.dst_active) return movement_timezone_offsets[timezone_idx];
+    uint8_t dst_result = is_dst(date_time);
+    switch (dst_result)
+    {
+    case DST_STARTED:
+    case DST_OCCURRING:
+        return movement_timezone_offsets[movement_dst_jump_table[timezone_idx]];
+    case DST_ENDING:
+    case DST_ENDED:
+    default:
+        return movement_timezone_offsets[timezone_idx];
+    }
 }
 
 void app_init(void) {
