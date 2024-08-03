@@ -67,7 +67,7 @@ typedef union {
         uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
         bool screen_off_after_le : 1;
         bool dst_active : 1;                // indicates whether daylight savings time is active
-        bool dst_skip_rolling_back : 1;     // If true, then skip the next time we roll back the time to not end up in an endless loop
+        bool reserved : 1;
     } bit;
     uint32_t reg;
 } movement_settings_t;
@@ -326,6 +326,7 @@ void movement_play_alarm(void);
 void movement_play_alarm_beeps(uint8_t rounds, BuzzerNote alarm_note);
 
 uint8_t movement_claim_backup_register(void);
+uint8_t check_and_act_on_daylight_savings(watch_date_time date_time);  // Returns the currently set hour
 int16_t get_timezone_offset(uint8_t timezone_idx, watch_date_time date_time);
 
 static const uint8_t Hourly_Chime_Start[] =
