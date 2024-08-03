@@ -67,7 +67,7 @@ typedef union {
         uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
         bool screen_off_after_le : 1;
         bool dst_active : 1;                // indicates whether daylight savings time is active
-        bool reserved : 1;
+        bool dst_skip_rolling_back : 1;     // If true, then skip the next time we roll back the time to not end up in an endless loop
     } bit;
     uint32_t reg;
 } movement_settings_t;
