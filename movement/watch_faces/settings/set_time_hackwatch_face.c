@@ -133,9 +133,8 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
                     }
                     break;
             }
-            if (current_page != 2) { // Do not set time when we are at seconds, it was already set previously
+            if (current_page != 2) // Do not set time when we are at seconds, it was already set previously
                 watch_rtc_set_date_time(date_time_settings);
-            }
             break;
         
         case EVENT_ALARM_LONG_UP://Setting seconds on long release
@@ -177,7 +176,6 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
                 date_time_settings.unit.day = 1;
             if (current_page != 2) // Do not set time when we are at seconds, it was already set previously
                 watch_rtc_set_date_time(date_time_settings);
-            }
             //TODO: Do not update whole RTC, just what we are changing
             break;
         case EVENT_TIMEOUT:
