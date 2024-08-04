@@ -550,7 +550,6 @@ int16_t get_timezone_offset(uint8_t timezone_idx, watch_date_time date_time) {
 }
 
 void app_init(void) {
-    const int16_t* timezone_offsets;
 #if defined(NO_FREQCORR)
     watch_rtc_freqcorr_write(0, 0);
 #elif defined(WATCH_IS_BLUE_BOARD)
@@ -582,6 +581,11 @@ void app_init(void) {
     movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
     movement_state.settings.bit.screen_off_after_le = MOVEMENT_DEFAULT_LE_DEEP_SLEEP;
     movement_state.settings.bit.dst_active = MOVEMENT_DEFAULT_DST_ACTIVE;
+
+
+#if defined(MAKEFILE_TIMEZONE) || defined(__EMSCRIPTEN__)
+    const int16_t* timezone_offsets;
+#endif
 
 #ifdef MAKEFILE_TIMEZONE
     timezone_offsets = dst_occurring(watch_rtc_get_date_time()) ? movement_timezone_dst_offsets : movement_timezone_offsets;
