@@ -148,9 +148,14 @@ const watch_face_t watch_faces[] = {
  */
 #define MOVEMENT_DEFAULT_HOURLY_CHIME_END 1
 
-#define MOVEMENT_DEFAULT_LE_DEEP_SLEEP true
-
+/* Set if using DST
+ * Valid values are:
+ * false: Don't allow the watch to use DST
+ * true: Allow the watch to use DST
+ */
 #define MOVEMENT_DEFAULT_DST_ACTIVE true
+
+#define MOVEMENT_DEFAULT_LE_DEEP_SLEEP true
 
 #define TEMPERATURE_ASSUME_WEARING 27 //C
 
