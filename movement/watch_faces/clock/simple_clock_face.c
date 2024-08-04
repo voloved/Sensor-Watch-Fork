@@ -193,12 +193,7 @@ void simple_clock_face_resign(movement_settings_t *settings, void *context) {
 bool simple_clock_face_wants_background_task(movement_settings_t *settings, void *context) {
     simple_clock_state_t *state = (simple_clock_state_t *)context;
     date_time = watch_rtc_get_date_time();
-    uint8_t hour_dst = check_and_act_on_daylight_savings(date_time);
-    if(hour_dst != date_time.unit.hour) {
-        char buf[3 + 1];
-        sprintf(buf, "%2d", hour_dst);
-        watch_display_string(buf, 4);
-    }
+    check_and_act_on_daylight_savings(date_time);
     if (!state->signal_enabled) return false;
 
     uint8_t chime_start = Hourly_Chime_Start[settings->bit.hourly_chime_start];
