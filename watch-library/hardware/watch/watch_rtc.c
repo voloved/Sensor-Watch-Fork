@@ -85,6 +85,28 @@ watch_date_time watch_rtc_get_date_time(void) {
     return retval;
 }
 
+watch_date_time watch_get_init_date_time(void) {
+    watch_date_time date_time;
+#ifdef MAKEFILE_CURR_YEAR
+    date_time.unit.year = MAKEFILE_CURR_YEAR;
+#else
+    date_time.unit.year = 4;
+#endif
+#ifdef MAKEFILE_CURR_MONTH
+    date_time.unit.month = MAKEFILE_CURR_MONTH;
+#endif
+#ifdef MAKEFILE_CURR_DAY
+    date_time.unit.day = MAKEFILE_CURR_DAY;
+#endif
+#ifdef MAKEFILE_CURR_HOUR
+    date_time.unit.hour = MAKEFILE_CURR_HOUR;
+#endif
+#ifdef MAKEFILE_CURR_MINUTE
+    date_time.unit.minute = MAKEFILE_CURR_MINUTE;
+#endif
+    return date_time;
+}
+
 void watch_rtc_register_tick_callback(ext_irq_cb_t callback) {
     watch_rtc_register_periodic_callback(callback, 1);
 }

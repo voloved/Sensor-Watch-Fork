@@ -582,22 +582,6 @@ void app_init(void) {
     movement_state.settings.bit.screen_off_after_le = MOVEMENT_DEFAULT_LE_DEEP_SLEEP;
     movement_state.settings.bit.dst_active = MOVEMENT_DEFAULT_DST_ACTIVE;
 
-
-#if defined(MAKEFILE_TIMEZONE) || defined(__EMSCRIPTEN__)
-    const int16_t* timezone_offsets;
-#endif
-
-#ifdef MAKEFILE_TIMEZONE
-    timezone_offsets = dst_occurring(watch_rtc_get_date_time()) ? movement_timezone_dst_offsets : movement_timezone_offsets;
-    for (int i = 0; i < NUM_TIME_ZONES; i++) {
-        if (timezone_offsets[i] == MAKEFILE_TIMEZONE) {
-            movement_state.settings.bit.time_zone = i;
-            break;
-        }
-    }
-#else
-    movement_state.settings.bit.time_zone = 33;  // Atlantic Time as default
-#endif
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
     movement_state.debounce_ticks_light = 0;
@@ -609,6 +593,7 @@ void app_init(void) {
     filesystem_init();
 
 #if __EMSCRIPTEN__
+    const int16_t* timezone_offsets;
     int32_t time_zone_offset = EM_ASM_INT({
         return -new Date().getTimezoneOffset();
     });
@@ -619,6 +604,17 @@ void app_init(void) {
             break;
         }
     }
+#elif defined(MAKEFILE_TIMEZONE)
+    const int16_t* timezone_offsets;
+    timezone_offsets = dst_occurring(watch_get_init_date_time()) ? movement_timezone_dst_offsets : movement_timezone_offsets;
+    for (int i = 0; i < NUM_TIME_ZONES; i++) {
+        if (timezone_offsets[i] == MAKEFILE_TIMEZONE) {
+            movement_state.settings.bit.time_zone = i;
+            break;
+        }
+    }
+#else
+    movement_state.settings.bit.time_zone = 33;  // Atlantic Time as default
 #endif
 }
 

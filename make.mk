@@ -271,9 +271,8 @@ ifndef DATE
 DATE := YEAR
 endif
 ifeq ($(DATE), YEAR)
-CFLAGS += -DMAKEFILE_TIMEZONE=$(TIMEZONE)
 CFLAGS += -DMAKEFILE_CURR_YEAR=$(CURRENT_YEAR)
-$(info Default year and timezone are set to $(shell date +"%Y") $(shell date +%Z))
+$(info Default year is set to $(shell date +"%Y"))
 else ifeq ($(DATE), DAY)
 CFLAGS += -DMAKEFILE_TIMEZONE=$(TIMEZONE)
 CFLAGS += -DMAKEFILE_CURR_YEAR=$(CURRENT_YEAR)

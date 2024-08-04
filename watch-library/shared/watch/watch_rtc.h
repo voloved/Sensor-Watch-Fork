@@ -81,6 +81,11 @@ void watch_rtc_set_date_time(watch_date_time date_time);
   */
 watch_date_time watch_rtc_get_date_time(void);
 
+/** @brief Returns the date and time that the watch defaults to when power cycled. Often comes from the Makefile flags.
+  * @return A watch_date_time with the current date and time, with a year value from 0-63 representing 2020-2083.
+  */
+watch_date_time watch_get_init_date_time(void);
+
 /** @brief Registers an alarm callback that will be called when the RTC time matches the target time, as masked
   *        by the provided mask.
   * @param callback The function you wish to have called when the alarm fires. If this value is NULL, the alarm
