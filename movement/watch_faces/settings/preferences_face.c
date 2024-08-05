@@ -29,8 +29,8 @@
 
 #define PREFERENCES_FACE_NUM_PREFERENCES (10)
 const char preferences_face_titles[PREFERENCES_FACE_NUM_PREFERENCES][11] = {
-    "CL        ",   // Clock: 12 or 24 hour
     "BT  Beep  ",   // Buttons: should they beep?
+    "CL        ",   // Clock: 12 or 24 hour
     "TO        ",   // Timeout: how long before we snap back to the clock face?
     "LE        ",   // Low Energy mode: how long before it engages?
     "LEds      ",   // Low Energy deep sleep
@@ -119,10 +119,20 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
         case EVENT_ALARM_BUTTON_UP:
             switch (state->current_page) {
                 case 0:
-                    settings->bit.clock_mode_24h = !(settings->bit.clock_mode_24h);
+                    settings->bit.button_should_sound = !(settings->bit.button_should_sound);
                     break;
                 case 1:
-                    settings->bit.button_should_sound = !(settings->bit.button_should_sound);
+                    if (settings->bit.clock_mode_toggle) {
+                        settings->bit.clock_mode_toggle = false;
+                        settings->bit.clock_mode_24h = false;
+                    }
+                    else if (settings->bit.clock_mode_24h) {
+                        settings->bit.clock_mode_toggle = true;
+                        settings->bit.clock_mode_24h = false;
+                    }
+                    else {
+                        settings->bit.clock_mode_24h = true;
+                    }
                     break;
                 case 2:
                     settings->bit.to_interval = settings->bit.to_interval + 1;
@@ -186,9 +196,6 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
 
     if (state->current_page == 0)
         state->prev_screen_off_pref = settings->bit.screen_off_after_le;
-#if defined(CLOCK_FACE_24H_ONLY) || defined(CLOCK_FACE_24H_TOGGLE)
-    if (state->current_page == 0) state->current_page++;  // Skips past 12/24HR mode
-#endif
     watch_display_string((char *)preferences_face_titles[state->current_page], 0);
     watch_clear_colon();
 
@@ -197,12 +204,13 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
         char buf[8];
         switch (state->current_page) {
             case 0:
-                if (settings->bit.clock_mode_24h) watch_display_string("24h", 4);
-                else watch_display_string("12h", 4);
-                break;
-            case 1:
                 if (settings->bit.button_should_sound) watch_display_string("y", 9);
                 else watch_display_string("n", 9);
+                break;
+            case 1:
+                if (settings->bit.clock_mode_toggle) watch_display_string("Btn", 4);
+                else if (settings->bit.clock_mode_24h) watch_display_string("24h", 4);
+                else watch_display_string("12h", 4);
                 break;
             case 2:
                 switch (settings->bit.to_interval) {

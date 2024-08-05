@@ -60,6 +60,7 @@ typedef union {
         // time-oriented complication like a sunrise/sunset timer, and a simple locale preference could tell an
         // altimeter to display feet or meters as easily as it tells a thermometer to display degrees in F or C.
         bool clock_mode_24h : 1;            // indicates whether clock should use 12 or 24 hour mode.
+        bool clock_mode_toggle : 1;         // If true, then pressing the alarm button toggles 24H mode
         bool use_imperial_units : 1;        // indicates whether to use metric units (the default) or imperial.
         bool alarm_enabled : 1;             // indicates whether there is at least one alarm enabled.
         bool hourly_chime_always : 1;       // if true, then ignore the 
@@ -67,7 +68,6 @@ typedef union {
         uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
         bool screen_off_after_le : 1;
         bool dst_active : 1;                // indicates whether daylight savings time is active
-        bool reserved : 1;
     } bit;
     uint32_t reg;
 } movement_settings_t;

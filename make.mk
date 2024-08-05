@@ -240,23 +240,6 @@ ifeq ($(BOARD), OSO-FEAL-A1-00)
 CFLAGS += -DCRYSTALLESS
 endif
 
-# Build options to customize movement and faces
-
-# CLOCK_FACE_24H_ONLY = X
-#  TOGGLE = Pressing the alarm button on the clock face toggles between 24H and 12H
-#  YES = Always 24H mode
-#  NO = 24H mode can be set in the settings
-ifndef CLOCK_FACE_24H_ONLY
-CLOCK_FACE_24H_ONLY := TOGGLE
-endif
-ifeq ($(CLOCK_FACE_24H_ONLY), TOGGLE)
-CFLAGS += -DCLOCK_FACE_24H_TOGGLE
-else ifeq ($(CLOCK_FACE_24H_ONLY), YES)
-CFLAGS += -DCLOCK_FACE_24H_ONLY
-else ifneq ($(CLOCK_FACE_24H_ONLY), NO)
-$(error CLOCK_FACE_24H_ONLY must be TOGGLE, YES, or NO if used.)
-endif
-
 # DATE = X
 #  YEAR = Sets the year and timezone to the PC's
 #  DAY = Sets the default time down to the day (year, month, day, timezone)
