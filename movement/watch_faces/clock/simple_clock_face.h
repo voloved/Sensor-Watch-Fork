@@ -45,6 +45,7 @@ typedef struct {
     bool battery_low;
     bool alarm_enabled;
     bool showingLogo;
+    bool in_sleep;
 } simple_clock_state_t;
 
 void simple_clock_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
