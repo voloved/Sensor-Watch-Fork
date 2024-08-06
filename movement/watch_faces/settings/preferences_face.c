@@ -27,13 +27,14 @@
 #include "preferences_face.h"
 #include "watch.h"
 
-#define PREFERENCES_FACE_NUM_PREFERENCES (10)
+#define PREFERENCES_FACE_NUM_PREFERENCES (11)
 const char preferences_face_titles[PREFERENCES_FACE_NUM_PREFERENCES][11] = {
     "BT  Beep  ",   // Buttons: should they beep?
     "CL        ",   // Clock: 12 or 24 hour
     "TO        ",   // Timeout: how long before we snap back to the clock face?
     "LE        ",   // Low Energy mode: how long before it engages?
     "LEds      ",   // Low Energy deep sleep
+    "au   dst  ",   // Enable auto-DST
     "CHSt      ",   // Hourly Chime Start
     "CHEd      ",   // Hourly Chime End
     "LT        ",   // Light: duration
@@ -149,6 +150,9 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                     }
                     break;
                 case 5:
+                    settings->bit.dst_active = !settings->bit.dst_active;
+                    break;
+                case 6:
                     if (settings->bit.hourly_chime_always){
                         settings->bit.hourly_chime_always = false;
                         settings->bit.hourly_chime_start = 0;
@@ -161,7 +165,7 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         settings->bit.hourly_chime_start = settings->bit.hourly_chime_start + 1;
                     }
                     break;
-                case 6:
+                case 7:
                     if (settings->bit.hourly_chime_always){
                         settings->bit.hourly_chime_always = false;
                         settings->bit.hourly_chime_end = 0;
@@ -174,13 +178,13 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         settings->bit.hourly_chime_end = settings->bit.hourly_chime_end + 1;
                     }
                     break;
-                case 7:
+                case 8:
                     settings->bit.led_duration = settings->bit.led_duration + 1;
                     break;
-                case 8:
+                case 9:
                     settings->bit.led_green_color = settings->bit.led_green_color + 1;
                     break;
-                case 9:
+                case 10:
                     settings->bit.led_red_color = settings->bit.led_red_color + 1;
                     break;
             }
@@ -262,12 +266,15 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 else watch_display_string("OFF", 7);
                 break;
             case 5:
-                _watch_display_hourly_chime_string(settings, Hourly_Chime_Start[settings->bit.hourly_chime_start]);
+                watch_display_string(settings->bit.dst_active ? "Y" : "N", 9);
                 break;
             case 6:
-                _watch_display_hourly_chime_string(settings, Hourly_Chime_End[settings->bit.hourly_chime_end]);
+                _watch_display_hourly_chime_string(settings, Hourly_Chime_Start[settings->bit.hourly_chime_start]);
                 break;
             case 7:
+                _watch_display_hourly_chime_string(settings, Hourly_Chime_End[settings->bit.hourly_chime_end]);
+                break;
+            case 8:
                 switch (settings->bit.led_duration)
                 {
                 case 0:
@@ -284,22 +291,22 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                     break;
                 }
                 break;
-            case 8:
+            case 9:
                 sprintf(buf, "%2d", settings->bit.led_green_color);
                 watch_display_string(buf, 8);
                 break;
-            case 9:
+            case 10:
                 sprintf(buf, "%2d", settings->bit.led_red_color);
                 watch_display_string(buf, 8);
                 break;
         }
     }
 
-    if (state->current_page != 5 && state->current_page != 6)
+    if (state->current_page != 6 && state->current_page != 7)
         watch_clear_indicator(WATCH_INDICATOR_PM);
 
     // on LED color select screns, preview the color.
-    if (state->current_page >= 8) {
+    if (state->current_page >= 9) {
         watch_set_led_color(get_color_val(settings->bit.led_red_color),
                             get_color_val(settings->bit.led_green_color));
         // return false so the watch stays awake (needed for the PWM driver to function).

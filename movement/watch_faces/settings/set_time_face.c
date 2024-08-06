@@ -27,8 +27,8 @@
 #include "watch.h"
 #include "watch_utility.h"
 
-#define SET_TIME_FACE_NUM_SETTINGS (8)
-const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "ZO", "Dt"};
+#define SET_TIME_FACE_NUM_SETTINGS (7)
+const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "ZO"};
 
 static bool _quick_ticks_running;
 
@@ -59,9 +59,6 @@ static void _handle_alarm_button(movement_settings_t *settings, watch_date_time 
         case 6: // time zone
             settings->bit.time_zone++;
             if (settings->bit.time_zone > 40) settings->bit.time_zone = 0;
-            break;
-        case 7: // daylight savings time
-            settings->bit.dst_active = !settings->bit.dst_active;
             break;
     }
     if (date_time.unit.day > (days_in_month[date_time.unit.month - 1] + (is_leap(date_time.unit.year) &&date_time.unit.month == 2)))
@@ -145,7 +142,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
         watch_clear_indicator(WATCH_INDICATOR_24H);
         watch_clear_indicator(WATCH_INDICATOR_PM);
         sprintf(buf, "%s  %2d%02d%02d", set_time_face_titles[current_page], date_time.unit.year + 20, date_time.unit.month, date_time.unit.day);
-    } else if (current_page < 7) {  // zone
+    } else {
         char dst_char = (settings->bit.dst_active && dst_occurring(watch_rtc_get_date_time())) ? 'd' : ' ';
         if (event.subsecond % 2) {
             watch_clear_colon();
@@ -155,9 +152,6 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             watch_set_colon();
             sprintf(buf, "%s %3d%02d %c", set_time_face_titles[current_page], (int8_t) (tz / 60), (int8_t) (tz % 60) * (tz < 0 ? -1 : 1), dst_char);
         }
-    } else { // daylight savings
-        watch_clear_colon();
-        sprintf(buf, "%s   dsT %c", set_time_face_titles[current_page], settings->bit.dst_active ? 'y' : 'n');
     }
 
     // blink up the parameter we're setting
@@ -174,9 +168,6 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             case 2:
             case 5:
                 buf[8] = buf[9] = ' ';
-                break;
-            case 7:
-                buf[9] = ' ';
                 break;
         }
     }
