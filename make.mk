@@ -251,7 +251,7 @@ CURRENT_DAY := $(shell date +"%-d")
 CURRENT_HOUR := $(shell date +"%-H")
 CURRENT_MINUTE := $(shell date +"%-M")
 ifndef DATE
-DATE := YEAR
+DATE := MIN
 endif
 ifeq ($(DATE), YEAR)
 CFLAGS += -DMAKEFILE_CURR_YEAR=$(CURRENT_YEAR)

@@ -35,7 +35,6 @@ typedef struct
 } unit;
 
 #define TICK_FREQ 4
-#define TICK_FREQ_FAST 8
 
 #define MEASURES_COUNT 3 // Number of different measurement 'types'
 #define WEIGHT 0
@@ -79,16 +78,6 @@ static const unit vols[VOL_COUNT] = {
 static int8_t calc_success_seq[5] = {BUZZER_NOTE_G6, 10, BUZZER_NOTE_C7, 10, 0};
 static int8_t calc_fail_seq[5] = {BUZZER_NOTE_C7, 10, BUZZER_NOTE_G6, 10, 0};
 
-static void set_fast_cycle(bool *fast_cycling) {
-    *fast_cycling = true;
-    movement_request_tick_frequency(TICK_FREQ_FAST);
-}
-
-static void reset_fast_cycle(bool *fast_cycling) {
-    *fast_cycling = false;
-    movement_request_tick_frequency(TICK_FREQ);
-}
-
 // Resets all state variables to 0
 static void reset_state(kitchen_conversions_state_t *state, movement_settings_t *settings)
 {
@@ -100,7 +89,7 @@ static void reset_state(kitchen_conversions_state_t *state, movement_settings_t 
     state->to_is_us = settings->bit.use_imperial_units;
     state->selection_value = 0;
     state->selection_index = 0;
-    reset_fast_cycle(&state->fast_cycling);
+    state->fast_cycling = false;
 }
 
 void kitchen_conversions_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void **context_ptr)
@@ -122,6 +111,8 @@ void kitchen_conversions_face_activate(movement_settings_t *settings, void *cont
     kitchen_conversions_state_t *state = (kitchen_conversions_state_t *)context;
 
     // Handle any tasks related to your watch face coming on screen.
+    movement_request_tick_frequency(TICK_FREQ);
+
     reset_state(state, settings);
 }
 
@@ -262,6 +253,10 @@ static void display(kitchen_conversions_state_t *state, movement_settings_t *set
     }
 }
 
+static inline uint8_t get_digit(uint32_t value, uint8_t digit) {
+    return (value / (uint32_t)pow_10(digit - 1)) % 10;
+}
+
 static void blink_input(kitchen_conversions_state_t *state, uint8_t subsec) {
     // Blink digit (on & off) twice a second
     if (subsec % 2 && !state->fast_cycling)
@@ -269,7 +264,7 @@ static void blink_input(kitchen_conversions_state_t *state, uint8_t subsec) {
     else
     {
         char buf[2];
-        sprintf(buf, "%1d", (state->selection_value / (uint32_t)pow_10(DISPLAY_DIGITS - state->selection_index - 1)) % 10);
+        sprintf(buf, "%1d", get_digit(state->selection_value, DISPLAY_DIGITS - state->selection_index));
         watch_display_string(buf, 4 + state->selection_index);
     }
 }
@@ -279,7 +274,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
     kitchen_conversions_state_t *state = (kitchen_conversions_state_t *)context;
 
     if (state->fast_cycling && !watch_get_pin_level(BTN_ALARM)) {
-        reset_fast_cycle(&state->fast_cycling);
+        state->fast_cycling = false;
         display(state, settings);  // Undo a blink when stopping a fast cycle.
     }
 
@@ -327,7 +322,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
         if (state->pg != result)
             display(state, settings);
 
-        reset_fast_cycle(&state->fast_cycling);
+        state->fast_cycling = false;
 
         break;
 
@@ -367,7 +362,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
         watch_clear_display();
         display(state, settings);
 
-        reset_fast_cycle(&state->fast_cycling);
+        state->fast_cycling = false;
 
         break;
 
@@ -411,7 +406,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
             if (settings->bit.button_should_sound)
                 watch_buzzer_play_note(BUZZER_NOTE_C8, 50);
 
-            reset_fast_cycle(&state->fast_cycling);
+            state->fast_cycling = false;
         }
         break;
 
@@ -440,7 +435,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
 
         // Sets flag to increment input digit when light held
         if (state->pg == input)
-            set_fast_cycle(&state->fast_cycling);
+            state->fast_cycling = true;
 
         break;
 
