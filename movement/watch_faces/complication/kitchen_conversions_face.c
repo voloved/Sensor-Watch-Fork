@@ -35,6 +35,7 @@ typedef struct
 } unit;
 
 #define TICK_FREQ 4
+#define TICK_FREQ_FAST 8
 
 #define MEASURES_COUNT 3 // Number of different measurement 'types'
 #define WEIGHT 0
@@ -78,6 +79,16 @@ static const unit vols[VOL_COUNT] = {
 static int8_t calc_success_seq[5] = {BUZZER_NOTE_G6, 10, BUZZER_NOTE_C7, 10, 0};
 static int8_t calc_fail_seq[5] = {BUZZER_NOTE_C7, 10, BUZZER_NOTE_G6, 10, 0};
 
+static void set_fast_cycle(bool *fast_cycling) {
+    *fast_cycling = true;
+    movement_request_tick_frequency(TICK_FREQ_FAST);
+}
+
+static void reset_fast_cycle(bool *fast_cycling) {
+    *fast_cycling = false;
+    movement_request_tick_frequency(TICK_FREQ);
+}
+
 // Resets all state variables to 0
 static void reset_state(kitchen_conversions_state_t *state, movement_settings_t *settings)
 {
@@ -85,11 +96,11 @@ static void reset_state(kitchen_conversions_state_t *state, movement_settings_t 
     state->measurement_i = 0;
     state->from_i = 0;
     state->from_is_us = settings->bit.use_imperial_units; // If uses imperial, most likely to be US
-    state->to_i = 0;
+    state->to_i = 1;
     state->to_is_us = settings->bit.use_imperial_units;
     state->selection_value = 0;
     state->selection_index = 0;
-    state->light_held = false;
+    reset_fast_cycle(&state->fast_cycling);
 }
 
 void kitchen_conversions_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void **context_ptr)
@@ -111,8 +122,6 @@ void kitchen_conversions_face_activate(movement_settings_t *settings, void *cont
     kitchen_conversions_state_t *state = (kitchen_conversions_state_t *)context;
 
     // Handle any tasks related to your watch face coming on screen.
-    movement_request_tick_frequency(TICK_FREQ);
-
     reset_state(state, settings);
 }
 
@@ -162,80 +171,44 @@ static void increment_input(kitchen_conversions_state_t *state)
     }
 }
 
-// Displays the list of units in the selected category
-static void display_units(uint8_t measurement_i, uint8_t list_i)
+static void display(kitchen_conversions_state_t *state, movement_settings_t *settings)
 {
-    watch_display_string(get_unit_list(measurement_i)[list_i].name, 4);
-}
-
-static void display(kitchen_conversions_state_t *state, movement_settings_t *settings, uint8_t subsec)
-{
-    watch_clear_display();
-
+    char buf[11];
     switch (state->pg)
     {
     case measurement:
     {
-        watch_display_string("Un", 0);
-        watch_display_string(measures[state->measurement_i], 4);
+        sprintf(buf, "Un  %-6s", measures[state->measurement_i]);
+        watch_display_string(buf, 0);
     }
     break;
 
     case from:
-        display_units(state->measurement_i, state->from_i);
-
         // Display Fr if non-locale specific, else display locale and F
         if (state->measurement_i == VOL)
-        {
-            watch_display_string("F", 3);
-
-            char *locale = state->from_is_us ? "A " : "GB";
-            watch_display_string(locale, 0);
-        }
+            sprintf(buf, "%2s F%-6s", state->from_is_us ? "A " : "GB", get_unit_list(state->measurement_i)[state->from_i].name);
         else
-        {
-            watch_display_string("Fr", 0);
-        }
-
+            sprintf(buf, "F   %-6s", get_unit_list(state->measurement_i)[state->from_i].name);
+        watch_display_string(buf, 0);
         break;
 
     case to:
-        display_units(state->measurement_i, state->to_i);
 
         // Display To if non-locale specific, else display locale and T
         if (state->measurement_i == VOL)
-        {
-            watch_display_string("T", 3);
-
-            char *locale = state->to_is_us ? "A " : "GB";
-            watch_display_string(locale, 0);
-        }
+            sprintf(buf, "%2s T%-6s", state->to_is_us ? "A " : "GB", get_unit_list(state->measurement_i)[state->to_i].name);
         else
-        {
-            watch_display_string("To", 0);
-        }
-
+            sprintf(buf, "To  %-6s", get_unit_list(state->measurement_i)[state->to_i].name);
+        watch_display_string(buf, 0);
         break;
 
     case input:
     {
-        char buf[7];
-        sprintf(buf, "%06lu", state->selection_value);
-        watch_display_string(buf, 4);
-
         // Only allow ints for Gas Mk
         if (state->measurement_i == TEMP && state->from_i == 2)
-        {
             watch_display_string("  ", 8);
-        }
-
-        // Blink digit (on & off) twice a second
-        if (subsec % 2)
-        {
-            watch_display_string(" ", 4 + state->selection_index);
-        }
-
-        watch_display_string("In", 0);
+        sprintf(buf, "In  %06lu", state->selection_value);
+        watch_display_string(buf, 0);
     }
     break;
 
@@ -255,17 +228,17 @@ static void display(kitchen_conversions_state_t *state, movement_settings_t *set
         if (conversion >= 1000000 || conversion < lower_bound)
         {
             watch_set_indicator(WATCH_INDICATOR_BELL);
-            watch_display_string("Err", 5);
+            watch_display_string(" =   Err  ", 0);
 
             if (settings->bit.button_should_sound)
                 watch_buzzer_play_sequence(calc_fail_seq, NULL);
+            break;
         }
         else
         {
             uint32_t rounded = conversion + .5;
-            char buf[7];
-            sprintf(buf, "%6lu", rounded);
-            watch_display_string(buf, 4);
+            sprintf(buf, " =  %6lu", rounded);
+            watch_display_string(buf, 0);
 
             // Make sure LSDs always filled
             if (rounded < 10)
@@ -280,7 +253,6 @@ static void display(kitchen_conversions_state_t *state, movement_settings_t *set
             if (settings->bit.button_should_sound)
                 watch_buzzer_play_sequence(calc_success_seq, NULL);
         }
-        watch_display_string("=", 1);
     }
 
     break;
@@ -290,28 +262,43 @@ static void display(kitchen_conversions_state_t *state, movement_settings_t *set
     }
 }
 
+static void blink_input(kitchen_conversions_state_t *state, uint8_t subsec) {
+    // Blink digit (on & off) twice a second
+    if (subsec % 2 && !state->fast_cycling)
+        watch_display_string(" ", 4 + state->selection_index);
+    else
+    {
+        char buf[2];
+        sprintf(buf, "%1d", (state->selection_value / (uint32_t)pow_10(DISPLAY_DIGITS - state->selection_index - 1)) % 10);
+        watch_display_string(buf, 4 + state->selection_index);
+    }
+}
+
 bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *settings, void *context)
 {
     kitchen_conversions_state_t *state = (kitchen_conversions_state_t *)context;
+
+    if (state->fast_cycling && !watch_get_pin_level(BTN_ALARM)) {
+        reset_fast_cycle(&state->fast_cycling);
+        display(state, settings);  // Undo a blink when stopping a fast cycle.
+    }
 
     switch (event.event_type)
     {
     case EVENT_ACTIVATE:
         // Initial UI
-        display(state, settings, event.subsecond);
+        display(state, settings);
         break;
     case EVENT_TICK:
         // Update for blink animation on input
         if (state->pg == input)
         {
-            display(state, settings, event.subsecond);
-
-            // Increments input twice a second when light button held
-            if (state->light_held && event.subsecond % 2)
+            blink_input(state, event.subsecond);
+            if (state->fast_cycling)
                 increment_input(state);
         }
         break;
-    case EVENT_LIGHT_BUTTON_UP:
+    case EVENT_ALARM_BUTTON_UP:
         // Cycles options
         switch (state->pg)
         {
@@ -321,6 +308,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
 
         case from:
             increment_wrapping(state->from_i, units_count[state->measurement_i]);
+            increment_wrapping(state->to_i, units_count[state->measurement_i]);
             break;
 
         case to:
@@ -337,13 +325,13 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
 
         // Light button does nothing on final screen
         if (state->pg != result)
-            display(state, settings, event.subsecond);
+            display(state, settings);
 
-        state->light_held = false;
+        reset_fast_cycle(&state->fast_cycling);
 
         break;
 
-    case EVENT_ALARM_BUTTON_UP:
+    case EVENT_LIGHT_BUTTON_UP:
         // Increments selected digit
         if (state->pg == input)
         {
@@ -357,7 +345,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
             else
             {
                 state->pg++;
-                display(state, settings, event.subsecond);
+                display(state, settings);
             }
         }
         // Moves forward 1 page
@@ -376,14 +364,14 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
             if (settings->bit.button_should_sound)
                 watch_buzzer_play_note(BUZZER_NOTE_C7, 50);
         }
+        watch_clear_display();
+        display(state, settings);
 
-        display(state, settings, event.subsecond);
-
-        state->light_held = false;
+        reset_fast_cycle(&state->fast_cycling);
 
         break;
 
-    case EVENT_ALARM_LONG_PRESS:
+    case EVENT_LIGHT_LONG_PRESS:
         // Moves backwards through pages, resetting certain values
         if (state->pg != measurement)
         {
@@ -417,17 +405,17 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
             }
 
             state->pg--;
-            display(state, settings, event.subsecond);
+            display(state, settings);
 
             // Play beep
             if (settings->bit.button_should_sound)
                 watch_buzzer_play_note(BUZZER_NOTE_C8, 50);
 
-            state->light_held = false;
+            reset_fast_cycle(&state->fast_cycling);
         }
         break;
 
-    case EVENT_LIGHT_LONG_PRESS:
+    case EVENT_ALARM_LONG_PRESS:
         // Switch between locales
         if (state->measurement_i == VOL)
         {
@@ -442,7 +430,7 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
 
             if (state->pg == from || state->pg == to)
             {
-                display(state, settings, event.subsecond);
+                display(state, settings);
 
                 // Play bleep
                 if (settings->bit.button_should_sound)
@@ -452,13 +440,10 @@ bool kitchen_conversions_face_loop(movement_event_t event, movement_settings_t *
 
         // Sets flag to increment input digit when light held
         if (state->pg == input)
-            state->light_held = true;
+            set_fast_cycle(&state->fast_cycling);
 
         break;
 
-    case EVENT_LIGHT_LONG_UP:
-        state->light_held = false;
-        break;
 
     case EVENT_TIMEOUT:
         movement_move_to_face(0);

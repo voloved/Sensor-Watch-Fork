@@ -68,7 +68,7 @@ typedef struct
     bool to_is_us;
     uint32_t selection_value;
     uint8_t selection_index;
-    bool light_held;
+    bool fast_cycling;
 } kitchen_conversions_state_t;
 
 void kitchen_conversions_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void **context_ptr);
