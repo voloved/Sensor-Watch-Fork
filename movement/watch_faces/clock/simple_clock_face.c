@@ -67,7 +67,6 @@ void simple_clock_face_activate(movement_settings_t *settings, void *context) {
     // this ensures that none of the timestamp fields will match, so we can re-render them all.
     state->previous_date_time = 0xFFFFFFFF;
     state->showingLogo = false;
-    state->in_sleep = false;
 
     state->birth_date.reg = watch_get_backup_data(2);
 }
@@ -88,11 +87,9 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
     }
 
     switch (event.event_type) {
-        case EVENT_LOW_ENERGY_UPDATE:
-            state->in_sleep = true;
-            // fall through
         case EVENT_ACTIVATE:
         case EVENT_TICK:
+        case EVENT_LOW_ENERGY_UPDATE:
             date_time = watch_rtc_get_date_time();
             previous_date_time = state->previous_date_time;
             state->previous_date_time = date_time.reg;
@@ -111,12 +108,12 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             // ...and set the LAP indicator if low.
             if (state->battery_low) watch_set_indicator(WATCH_INDICATOR_LAP);
 
-            if ((date_time.reg >> 6) == (previous_date_time >> 6) && !state->in_sleep) {
+            if ((date_time.reg >> 6) == (previous_date_time >> 6) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
                 // everything before seconds is the same, don't waste cycles setting those segments.
                 watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
                 watch_display_character_lp_seconds('0' + date_time.unit.second % 10, 9);
                 break;
-            } else if ((date_time.reg >> 12) == (previous_date_time >> 12) && !state->in_sleep) {
+            } else if ((date_time.reg >> 12) == (previous_date_time >> 12) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
                 // everything before minutes is the same.
                 pos = 6;
                 sprintf(buf, "%02d%02d", date_time.unit.minute, date_time.unit.second);
@@ -133,7 +130,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
                     if (date_time.unit.hour == 0) date_time.unit.hour = 12;
                 }
                 pos = 0;
-                if (state->in_sleep) {
+                if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
                     sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
                 } else {
                     sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
