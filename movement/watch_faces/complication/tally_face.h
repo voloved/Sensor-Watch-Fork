@@ -50,8 +50,7 @@
 
 typedef struct {
     int16_t tally_idx;
-    uint8_t tally_default_idx : 7;
-    bool soundOff;
+    uint8_t tally_default_idx;
 } tally_state_t;
 
 
@@ -60,7 +59,7 @@ void tally_face_activate(movement_settings_t *settings, void *context);
 bool tally_face_loop(movement_event_t event, movement_settings_t *settings, void *context);
 void tally_face_resign(movement_settings_t *settings, void *context);
 
-void print_tally(tally_state_t *state);
+void print_tally(tally_state_t *state, bool sound_on);
 
 #define tally_face ((const watch_face_t){ \
     tally_face_setup, \
