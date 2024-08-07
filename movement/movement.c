@@ -588,9 +588,7 @@ void app_init(void) {
 
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
-    movement_state.debounce_ticks_light = 0;
-    movement_state.debounce_ticks_alarm = 0;
-    movement_state.debounce_ticks_mode = 0;
+    reset_debounce_timers();
     movement_state.next_available_backup_register = 4;
     _movement_reset_inactivity_countdown();
 
@@ -833,6 +831,12 @@ bool app_loop(void) {
     if (movement_state.light_ticks != -1) can_sleep = false;
 
     return can_sleep;
+}
+
+void reset_debounce_timers(void) {
+    movement_state.debounce_ticks_light = 0;
+    movement_state.debounce_ticks_alarm = 0;
+    movement_state.debounce_ticks_mode = 0;
 }
 
 static movement_event_type_t _figure_out_button_event(bool pin_level, movement_event_type_t button_down_event_type, uint16_t *down_timestamp) {
