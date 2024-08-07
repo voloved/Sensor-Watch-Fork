@@ -36,7 +36,6 @@
 #include <hpl_sleep.h>
 #include "hal_delay.h"
 #include <hpl_delay.h>
-#include "movement.h"
 
 /**
  * \brief Driver version
@@ -61,7 +60,6 @@ void delay_init(void *const hw)
  */
 void delay_us(const uint16_t us)
 {
-	reset_debounce_timers();
 	_delay_cycles(hardware, _get_cycles_for_us(us));
 }
 
@@ -70,7 +68,6 @@ void delay_us(const uint16_t us)
  */
 void delay_ms(const uint16_t ms)
 {
-	reset_debounce_timers();
 	_delay_cycles(hardware, _get_cycles_for_ms(ms));
 }
 

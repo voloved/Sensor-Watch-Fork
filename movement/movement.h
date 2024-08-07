@@ -300,6 +300,7 @@ typedef struct {
 
 void movement_move_to_face(uint8_t watch_face_index);
 void movement_move_to_next_face(void);
+void go_to_teriary_face(void);
 
 bool movement_default_loop_handler(movement_event_t event, movement_settings_t *settings);
 
@@ -328,7 +329,6 @@ void movement_play_alarm_beeps(uint8_t rounds, BuzzerNote alarm_note);
 uint8_t movement_claim_backup_register(void);
 bool check_and_act_on_daylight_savings(watch_date_time date_time);  // Returns if the time was changed due to DST
 int16_t get_timezone_offset(uint8_t timezone_idx, watch_date_time date_time);
-void reset_debounce_timers(void);
 
 static const uint8_t Hourly_Chime_Start[] =
 {

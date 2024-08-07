@@ -81,7 +81,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
     if (state->showingLogo){
         if (!watch_get_pin_level(BTN_ALARM)){
             state->showingLogo = false;
-            movement_move_to_face(8);  // Endless runner face
+            go_to_teriary_face();
         }
         return true;
     }

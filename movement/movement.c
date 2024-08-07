@@ -23,7 +23,7 @@
  */
 
 #define MOVEMENT_LONG_PRESS_TICKS 64
-#define DEBOUNCE_TICKS 1  // In terms of *7.8125ms
+#define DEBOUNCE_TICKS 2  // In terms of *7.8125ms
 
 #include <stdio.h>
 #include <string.h>
@@ -284,7 +284,9 @@ static inline void _movement_reset_inactivity_countdown(void) {
 static inline void _movement_enable_fast_tick_if_needed(void) {
     if (!movement_state.fast_tick_enabled) {
         movement_state.fast_ticks = 0;
-        reset_debounce_timers();
+        movement_state.debounce_ticks_light = 0;
+        movement_state.debounce_ticks_alarm = 0;
+        movement_state.debounce_ticks_mode = 0;
         watch_rtc_register_periodic_callback(cb_fast_tick, 128);
         movement_state.fast_tick_enabled = true;
     }
@@ -423,12 +425,20 @@ void movement_illuminate_led(void) {
     }
 }
 
+void go_to_teriary_face(void) {
+    movement_move_to_face(MOVEMENT_TERIARY_FACE_INDEX);
+}
+
 bool movement_default_loop_handler(movement_event_t event, movement_settings_t *settings) {
     (void)settings;
 
     switch (event.event_type) {
         case EVENT_MODE_BUTTON_UP:
-            movement_move_to_next_face();
+            if (movement_state.current_face_idx == MOVEMENT_TERIARY_FACE_INDEX - 1) {
+                movement_move_to_face(0);
+            } else {
+                movement_move_to_next_face();
+            }
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             movement_illuminate_led();
@@ -833,15 +843,6 @@ bool app_loop(void) {
     return can_sleep;
 }
 
-void reset_debounce_timers(void) {
-    movement_state.debounce_ticks_light = 0;
-    movement_state.debounce_ticks_alarm = 0;
-    movement_state.debounce_ticks_mode = 0;
-#if __EMSCRIPTEN__
-    printf("tt light %d  alarm %d  mode %d\r\n", movement_state.debounce_ticks_light, movement_state.debounce_ticks_alarm, movement_state.debounce_ticks_mode);
-#endif
-}
-
 static movement_event_type_t _figure_out_button_event(bool pin_level, movement_event_type_t button_down_event_type, uint16_t *down_timestamp) {
     // force alarm off if the user pressed a button.
     if (movement_state.alarm_ticks) movement_state.alarm_ticks = 0;
@@ -886,7 +887,7 @@ static void alarm_btn_action(bool pin_level) {
 
 static void debounce_btn_press(uint8_t pin, uint8_t *debounce_ticks, uint16_t *down_timestamp, void (*function)(bool)) {
     bool pin_level = watch_get_pin_level(pin);
-    if (*debounce_ticks <= 1) {
+    if (*debounce_ticks <= 1 || pin_level) {
         function(pin_level);
         if (!pin_level) *debounce_ticks = DEBOUNCE_TICKS;
     }

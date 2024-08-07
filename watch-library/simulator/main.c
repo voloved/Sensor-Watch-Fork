@@ -25,7 +25,6 @@
 #include <stdio.h>
 #include "watch.h"
 #include "watch_main_loop.h"
-#include "movement.h"
 
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -103,7 +102,6 @@ static void main_loop_set_sleeping(bool sleeping) {
 }
 
 void delay_ms(const uint16_t ms) {
-    reset_debounce_timers();
     main_loop_sleep(ms);
 }
 
