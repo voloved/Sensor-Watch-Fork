@@ -65,17 +65,10 @@
  * The face tries to remain true to the spirit of using "cards"; to cope with the display limitations I've arrived at
  * the following mapping of card values to screen display, but am open to better suggestions:
  *
- * | Cards   |                          |
- * |---------|--------------------------|
- * | Value   |2|3|4|5|6|7|8|9|10|J|Q|K|A|
- * | Display |0|1|2|3|4|5|6|7|8 |9|-|=|≡|
- *
- * A previous alternative can be found in the git history:
- * | Cards   |                          |
- * |---------|--------------------------|
- * | Value   |2|3|4|5|6|7|8|9|10|J|Q|K|A|
- * | Display |2|3|4|5|6|7|8|9| 0|-|=|≡|H|
- *
+ * | Cards   |                       |
+ * |---------|-----------------------|
+ * | Value   |A|2|3|4|5|6|7|8|9|J|Q|K|
+ * | Display |1|2|3|4|5|6|7|8|9|-|=|≡|
  *
  * Future Ideas:
  * - Add sounds

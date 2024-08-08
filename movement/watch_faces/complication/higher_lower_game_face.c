@@ -41,8 +41,8 @@
 #define BOARD_SCORE_DISPLAY_START 2
 #define BOARD_DISPLAY_START 4
 #define BOARD_DISPLAY_END 9
-#define MIN_CARD_VALUE 2
-#define MAX_CARD_VALUE 14
+#define MIN_CARD_VALUE 1
+#define MAX_CARD_VALUE 12
 #define FLIP_BOARD_DIRECTION false
 
 typedef struct card_t {
@@ -139,22 +139,22 @@ static void render_board_position(size_t board_position) {
 
     const uint8_t value = game_board[board_position].value;
     switch (value) {
-        case 14: // A (≡)
+        case 12: // K (≡)
             watch_display_character(' ', display_position);
             set_segment_at_position(A, display_position);
             set_segment_at_position(D, display_position);
             set_segment_at_position(G, display_position);
             break;
-        case 13: // K (=)
+        case 11: // Q (=)
             watch_display_character(' ', display_position);
             set_segment_at_position(A, display_position);
             set_segment_at_position(D, display_position);
             break;
-        case 12: // Q (-)
+        case 10: // J (-)
             watch_display_character('-', display_position);
             break;
         default: {
-            const char display_char = (value - MIN_CARD_VALUE) + '0';
+            const char display_char = value + '0';
             watch_display_character(display_char, display_position);
         }
     }
