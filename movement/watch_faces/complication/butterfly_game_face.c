@@ -320,7 +320,6 @@ static bool _round_start_screen(movement_event_t event, butterfly_game_state_t *
 static bool _goal_select_screen(movement_event_t event, butterfly_game_state_t *state) {
     switch (event.event_type) {
         case EVENT_ACTIVATE:
-            watch_clear_display();
             state->goal_score = 6;
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
@@ -347,7 +346,6 @@ static bool _reset_screen(movement_event_t event, butterfly_game_state_t *state)
 static bool _continue_select_screen(movement_event_t event, butterfly_game_state_t *state) {
     switch (event.event_type) {
         case EVENT_ACTIVATE:
-            watch_clear_display();
 
             // no game in progress, start a new game
             if (state->score_p1 == 0 && state->score_p2 == 0) {
@@ -377,7 +375,6 @@ static bool _continue_select_screen(movement_event_t event, butterfly_game_state
 static bool _sound_select_screen(movement_event_t event, butterfly_game_state_t *state) {
     switch (event.event_type) {
         case EVENT_ACTIVATE:
-            watch_clear_display();
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             return _transition_to(_continue_select_screen, state);
@@ -387,9 +384,9 @@ static bool _sound_select_screen(movement_event_t event, butterfly_game_state_t 
     }
 
     if (state->sound) {
-        watch_display_string("snd y", 5);
+        watch_display_string(" snd y", 4);
     } else {
-        watch_display_string("snd n", 5);
+        watch_display_string(" snd n", 4);
     }
     return true;
 }
@@ -400,7 +397,7 @@ static bool _splash_screen(movement_event_t event, butterfly_game_state_t *state
             state->ctr = TICK_FREQ;
 
             watch_clear_display();
-            watch_display_string("Btrfly", 4);
+            watch_display_string("BF  Btrfly", 0);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
         case EVENT_ALARM_BUTTON_DOWN:
@@ -440,14 +437,12 @@ bool butterfly_game_face_loop(movement_event_t event, movement_settings_t *setti
 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
+        case EVENT_TIMEOUT:
             return _transition_to(_splash_screen, state);
         case EVENT_TICK:
         case EVENT_LIGHT_BUTTON_DOWN:
         case EVENT_ALARM_BUTTON_DOWN:
             return (*cur_screen_fn)(event, state);
-        case EVENT_TIMEOUT:
-            movement_move_to_face(0);
-            return true;
         default:
             return movement_default_loop_handler(event, settings);
     }

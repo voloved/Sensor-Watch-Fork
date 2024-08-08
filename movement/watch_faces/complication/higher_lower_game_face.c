@@ -104,7 +104,7 @@ static void reset_board(bool first_round) {
 static void init_game(void) {
     watch_clear_display();
     watch_display_string(TITLE_TEXT, BOARD_DISPLAY_START);
-    watch_display_string("GA", STATUS_DISPLAY_START);
+    watch_display_string("HL", STATUS_DISPLAY_START);
     reset_board(true);
     score = 0;
     completed_board_count = 0;
@@ -271,7 +271,7 @@ static void do_game_loop(guess_t user_guess) {
         case HL_GS_SHOW_SCORE:
             watch_clear_display();
             watch_display_string(TITLE_TEXT, BOARD_DISPLAY_START);
-            watch_display_string("GA", STATUS_DISPLAY_START);
+            watch_display_string("HL", STATUS_DISPLAY_START);
             game_state = HL_GS_TITLE_SCREEN;
             break;
         default:
@@ -317,7 +317,7 @@ bool higher_lower_game_face_loop(movement_event_t event, movement_settings_t *se
         case EVENT_ACTIVATE:
             // Show your initial UI here.
             watch_display_string(TITLE_TEXT, BOARD_DISPLAY_START);
-            watch_display_string("GA", STATUS_DISPLAY_START);
+            watch_display_string("HL", STATUS_DISPLAY_START);
             break;
         case EVENT_TICK:
             // If needed, update your display here.

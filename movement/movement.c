@@ -954,7 +954,7 @@ void cb_fast_tick(void) {
         if (movement_state.fast_ticks - movement_state.mode_down_timestamp == MOVEMENT_LONG_PRESS_TICKS + 1)
             event.event_type = EVENT_MODE_LONG_PRESS;
     if (movement_state.alarm_down_timestamp > 0){
-        if (movement_state.fast_ticks - movement_state.alarm_down_timestamp == (6 * MOVEMENT_LONG_PRESS_TICKS) + 1)
+        if (movement_state.fast_ticks - movement_state.alarm_down_timestamp == (3 * MOVEMENT_LONG_PRESS_TICKS) + 1)
             event.event_type = EVENT_ALARM_LONGER_PRESS;
         else if (movement_state.fast_ticks - movement_state.alarm_down_timestamp == MOVEMENT_LONG_PRESS_TICKS + 1)
             event.event_type = EVENT_ALARM_LONG_PRESS;
