@@ -449,6 +449,8 @@ bool movement_default_loop_handler(movement_event_t event, movement_settings_t *
         case EVENT_MODE_BUTTON_UP:
             if (movement_state.current_face_idx == MOVEMENT_TERIARY_FACE_INDEX - 1) {
                 movement_move_to_face(0);
+            } else if (movement_state.current_face_idx == MOVEMENT_NUM_FACES - 1) {
+                go_to_teriary_face();
             } else {
                 movement_move_to_next_face();
             }
