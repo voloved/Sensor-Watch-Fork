@@ -36,7 +36,6 @@ typedef enum {
     SCREEN_TITLE = 0,
     SCREEN_PLAYING,
     SCREEN_LOSE,
-    SCREEN_TIME,
     SCREEN_COUNT
 } RunnerCurrScreen;
 
@@ -320,38 +319,6 @@ static void display_title(endless_runner_state_t *state) {
     display_difficulty(difficulty);
 }
 
-static void display_time(watch_date_time date_time, bool clock_mode_24h) {
-    static watch_date_time previous_date_time;
-    char buf[6 + 1];
-
-    // If the hour needs updating or it's the first time displaying the time
-    if ((game_state.curr_screen != SCREEN_TIME) || (date_time.unit.hour != previous_date_time.unit.hour)) {
-        uint8_t hour = date_time.unit.hour;
-        game_state.curr_screen = SCREEN_TIME;
-
-        if (clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
-        else {
-            if (hour >= 12) watch_set_indicator(WATCH_INDICATOR_PM);
-            hour %= 12;
-            if (hour == 0) hour = 12;
-        }
-        watch_set_colon();
-        sprintf( buf, "%2d%02d  ", hour, date_time.unit.minute);
-        watch_display_string(buf, 4);
-    }
-    // If both digits of the minute need updating
-    else if ((date_time.unit.minute / 10) != (previous_date_time.unit.minute / 10)) {
-        sprintf( buf, "%02d  ", date_time.unit.minute);
-        watch_display_string(buf, 6);
-    }
-    // If only the ones-place of the minute needs updating.
-    else if (date_time.unit.minute != previous_date_time.unit.minute) {
-        sprintf( buf, "%d  ", date_time.unit.minute % 10);
-        watch_display_string(buf, 7);
-    }
-    previous_date_time.reg = date_time.reg;
-}
-
 static void begin_playing(endless_runner_state_t *state) {
     uint8_t difficulty = state -> difficulty;
     game_state.curr_screen = SCREEN_PLAYING;
@@ -581,10 +548,6 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
             else if (game_state.curr_screen == SCREEN_LOSE)
                 display_title(state);
             break;
-        case EVENT_ALARM_LONGER_PRESS:
-            if (game_state.curr_screen == SCREEN_TITLE)
-                movement_move_to_face(0);
-            break;
         case EVENT_LIGHT_LONG_PRESS:
             if (game_state.curr_screen == SCREEN_TITLE)
                 change_difficulty(state);
@@ -604,9 +567,6 @@ bool endless_runner_face_loop(movement_event_t event, movement_settings_t *setti
         case EVENT_TIMEOUT:
             if (game_state.curr_screen != SCREEN_TITLE)
                 display_title(state);
-            break;
-        case EVENT_LOW_ENERGY_UPDATE:
-            display_time(watch_rtc_get_date_time(), settings->bit.clock_mode_24h);
             break;
         default:
             return movement_default_loop_handler(event, settings);

@@ -318,11 +318,6 @@ bool simon_face_loop(movement_event_t event, movement_settings_t *settings,
                 _simon_not_playing_display(state);
             }
             break;
-        case EVENT_TIMEOUT:
-            movement_move_to_face(0);
-            break;
-        case EVENT_LOW_ENERGY_UPDATE:
-            break;
         default:
             return movement_default_loop_handler(event, settings);
     }

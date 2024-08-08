@@ -36,6 +36,27 @@ static void _update_alarm_indicator(bool settings_alarm_enabled, simple_clock_st
     else watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
 }
 
+static void _update_face_low_energy(watch_date_time date_time, watch_date_time previous_date_time, char *buf) {
+    if (date_time.unit.day != previous_date_time.unit.day) {
+        sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
+        watch_display_string(buf, 0);
+    }
+    else if (date_time.unit.hour != previous_date_time.unit.hour) {
+        sprintf(buf, "%2d%02d  ", date_time.unit.hour, date_time.unit.minute);
+        watch_display_string(buf, 4);
+    }
+    // If both digits of the minute need updating
+    else if ((date_time.unit.minute / 10) != (previous_date_time.unit.minute / 10)) {
+        sprintf( buf, "%02d  ", date_time.unit.minute);
+        watch_display_string(buf, 6);
+    }
+    // If only the ones-place of the minute needs updating.
+    else if (date_time.unit.minute != previous_date_time.unit.minute) {
+        sprintf( buf, "%d  ", date_time.unit.minute % 10);
+        watch_display_string(buf, 7);
+    }
+}
+
 void simple_clock_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -65,7 +86,7 @@ void simple_clock_face_activate(movement_settings_t *settings, void *context) {
     watch_set_colon();
 
     // this ensures that none of the timestamp fields will match, so we can re-render them all.
-    state->previous_date_time = 0xFFFFFFFF;
+    state->previous_date_time.reg = 0xFFFFFFFF;
     state->showingLogo = false;
 
     state->birth_date.reg = watch_get_backup_data(2);
@@ -76,7 +97,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
     char buf[11];
     uint8_t pos;
 
-    uint32_t previous_date_time;
+    watch_date_time previous_date_time;
 
     if (state->showingLogo){
         if (!watch_get_pin_level(BTN_ALARM)){
@@ -92,7 +113,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
         case EVENT_LOW_ENERGY_UPDATE:
             date_time = watch_rtc_get_date_time();
             previous_date_time = state->previous_date_time;
-            state->previous_date_time = date_time.reg;
+            state->previous_date_time.reg = date_time.reg;
 
             // check the battery voltage once a day...
             if (date_time.unit.day != state->last_battery_check) {
@@ -108,15 +129,21 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             // ...and set the LAP indicator if low.
             if (state->battery_low) watch_set_indicator(WATCH_INDICATOR_LAP);
 
-            if ((date_time.reg >> 6) == (previous_date_time >> 6) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
+            if ((date_time.reg >> 6) == (previous_date_time.reg >> 6) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
                 // everything before seconds is the same, don't waste cycles setting those segments.
-                watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
+                if (date_time.unit.second / 10 != previous_date_time.unit.second / 10)
+                    watch_display_character_lp_seconds('0' + date_time.unit.second / 10, 8);
                 watch_display_character_lp_seconds('0' + date_time.unit.second % 10, 9);
                 break;
-            } else if ((date_time.reg >> 12) == (previous_date_time >> 12) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
+            } else if ((date_time.reg >> 12) == (previous_date_time.reg >> 12) && event.event_type != EVENT_LOW_ENERGY_UPDATE) {
                 // everything before minutes is the same.
-                pos = 6;
-                sprintf(buf, "%02d%02d", date_time.unit.minute, date_time.unit.second);
+                if (date_time.unit.minute / 10 != previous_date_time.unit.minute / 10) {
+                    pos = 6;
+                    sprintf(buf, "%02d%02d", date_time.unit.minute, date_time.unit.second);
+                } else {
+                     pos = 7;
+                    sprintf(buf, "%1d%02d", date_time.unit.minute % 10, date_time.unit.second);                   
+                }
             } else {
                 // other stuff changed; let's do it all.
                 if (!settings->bit.clock_mode_24h) {
@@ -131,7 +158,8 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
                 }
                 pos = 0;
                 if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
-                    sprintf(buf, "%s%2d%2d%02d  ", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
+                    _update_face_low_energy(date_time, previous_date_time, buf);
+                    break;
                 } else {
                     sprintf(buf, "%s%2d%2d%02d%02d", watch_utility_get_weekday(date_time), date_time.unit.day, date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
                 }

@@ -429,6 +429,19 @@ void go_to_teriary_face(void) {
     movement_move_to_face(MOVEMENT_TERIARY_FACE_INDEX);
 }
 
+static void display_time(watch_date_time date_time, bool clock_mode_24h) {
+    char buf[8 + 1];
+    if (clock_mode_24h) watch_set_indicator(WATCH_INDICATOR_24H);
+    else {
+        if (date_time.unit.hour >= 12) watch_set_indicator(WATCH_INDICATOR_PM);
+        date_time.unit.hour %= 12;
+        if (date_time.unit.hour == 0) date_time.unit.hour = 12;
+    }
+    watch_set_colon();
+    sprintf(buf, "%2d%2d%02d  ", date_time.unit.day, date_time.unit.hour, date_time.unit.minute);
+    watch_display_string(buf, 2);
+}
+
 bool movement_default_loop_handler(movement_event_t event, movement_settings_t *settings) {
     (void)settings;
 
@@ -449,6 +462,10 @@ bool movement_default_loop_handler(movement_event_t event, movement_settings_t *
             } else {
                 movement_move_to_face(0);
             }
+            break;
+        case EVENT_LOW_ENERGY_UPDATE:
+            if (movement_state.current_face_idx >= (int16_t)MOVEMENT_TERIARY_FACE_INDEX)
+                display_time(watch_rtc_get_date_time(), movement_state.settings.bit.clock_mode_24h);
             break;
         default:
             break;

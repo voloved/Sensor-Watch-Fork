@@ -211,7 +211,8 @@ void invaders_face_setup(movement_settings_t *settings, uint8_t watch_face_index
         memset(*context_ptr, 0, sizeof(invaders_state_t));
         invaders_state_t *state = (invaders_state_t *)*context_ptr;
         // default: sound on
-        state->sound_on = true;
+        state->sound_on = false;
+        watch_clear_indicator(WATCH_INDICATOR_BELL);
     }
 #if __EMSCRIPTEN__
     // simulator only: seed the randon number generator
@@ -296,21 +297,20 @@ bool invaders_face_loop(movement_event_t event, movement_settings_t *settings, v
             }
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
-            if (!_signals.suspend_buttons) {
-                if (_current_state == invaders_state_playing) {
-                    // cycle the aim
-                    _aim = (_aim + 1) % 11;
-                    _display_invader(_aim, 0);
-                } else if (_current_state == invaders_state_activated || _current_state == invaders_state_game_over) {
-                    // just illuminate the LED
-                    movement_illuminate_led();
-                }
+            if (!_signals.suspend_buttons && _current_state == invaders_state_playing) {
+                // cycle the aim
+                _aim = (_aim + 1) % 11;
+                _display_invader(_aim, 0);
             }
             break;
         case EVENT_LIGHT_LONG_PRESS:
             if ((_current_state == invaders_state_activated || _current_state == invaders_state_game_over) && !_signals.suspend_buttons) {
                 // switch between beepy and silent mode
                 state->sound_on = !state->sound_on;
+                if (state->sound_on)
+                    watch_set_indicator(WATCH_INDICATOR_BELL);
+                else
+                    watch_clear_indicator(WATCH_INDICATOR_BELL);
                 watch_buzzer_play_note(BUZZER_NOTE_A7, state->sound_on ? 65 : 25);
             }
             break;
@@ -406,7 +406,9 @@ bool invaders_face_loop(movement_event_t event, movement_settings_t *settings, v
             }
             break;
         case EVENT_TIMEOUT:
-            movement_move_to_face(0);
+            _current_state = invaders_state_activated;
+            _signals.suspend_buttons = false;
+            _display_score("IN", state->highscore);
             break;
         default:
             // Movement's default loop handler will step in for any cases you don't handle above:
