@@ -34,15 +34,15 @@
 
 #define TITLE_TEXT "Hi-Lo"
 #define GAME_BOARD_SIZE 6
-#define MAX_BOARDS 40
 #define GUESSES_PER_SCREEN 5
-#define WIN_SCORE MAX_BOARDS * GUESSES_PER_SCREEN
 #define STATUS_DISPLAY_START 0
 #define BOARD_SCORE_DISPLAY_START 2
 #define BOARD_DISPLAY_START 4
 #define BOARD_DISPLAY_END 9
 #define MIN_CARD_VALUE 1
 #define MAX_CARD_VALUE 12
+#define DUPLICATES_OF_CARD 4
+#define DECK_COUNT (DUPLICATES_OF_CARD * (MAX_CARD_VALUE - MIN_CARD_VALUE + 1))
 #define FLIP_BOARD_DIRECTION false
 
 typedef struct card_t {
@@ -73,6 +73,8 @@ static card_t game_board[GAME_BOARD_SIZE] = {0};
 static uint8_t guess_position = 0;
 static uint8_t score = 0;
 static uint8_t completed_board_count = 0;
+static uint8_t _deck[DECK_COUNT];
+static uint8_t _curr_card;
 
 static uint8_t generate_random_number(uint8_t num_values) {
     // Emulator: use rand. Hardware: use arc4random.
@@ -83,10 +85,30 @@ static uint8_t generate_random_number(uint8_t num_values) {
 #endif
 }
 
+static void stack_deck(uint8_t *array) {
+    const uint8_t unique_cards = MAX_CARD_VALUE - MIN_CARD_VALUE + 1;
+    for (uint8_t i = 0; i < unique_cards; i++)
+    {
+        for (uint8_t j = 0; j < DUPLICATES_OF_CARD; j++) 
+            array[(i * DUPLICATES_OF_CARD) + j] = MIN_CARD_VALUE + i;
+    }
+}
+
+static void shuffle_deck(uint8_t *array, uint8_t n) {
+    // Randomize shuffle with Fisher Yates
+    uint8_t i, j, tmp;
+     for (i = n - 1; i > 0; i--) {
+         j = generate_random_number(0xFF) % (i + 1);
+         tmp = array[j];
+         array[j] = array[i];
+         array[i] = tmp;
+     }
+}
+
 static void reset_board(bool first_round) {
     // First card is random on the first board, and carried over from the last position on subsequent boards
     const uint8_t first_card_value = first_round
-                                     ? generate_random_number(MAX_CARD_VALUE - MIN_CARD_VALUE + 1) + MIN_CARD_VALUE
+                                     ? _deck[_curr_card++]
                                      : game_board[GAME_BOARD_SIZE - 1].value;
 
     game_board[0].value = first_card_value;
@@ -95,7 +117,7 @@ static void reset_board(bool first_round) {
     // Fill remainder of board
     for (size_t i = 1; i < GAME_BOARD_SIZE; ++i) {
         game_board[i] = (card_t) {
-                .value = generate_random_number(MAX_CARD_VALUE - MIN_CARD_VALUE + 1) + MIN_CARD_VALUE,
+                .value = _deck[_curr_card++],
                 .revealed = false
         };
     }
@@ -105,6 +127,9 @@ static void init_game(void) {
     watch_clear_display();
     watch_display_string(TITLE_TEXT, BOARD_DISPLAY_START);
     watch_display_string("HL", STATUS_DISPLAY_START);
+    _curr_card = 0;
+    stack_deck(_deck);
+    shuffle_deck(_deck, DECK_COUNT);
     reset_board(true);
     score = 0;
     completed_board_count = 0;
@@ -166,10 +191,10 @@ static void render_board() {
     }
 }
 
-static void render_board_count(void) {
-    // Render completed boards (screens)
+static void render_board_count(uint8_t display_score) {
     char buf[3] = {0};
-    snprintf(buf, sizeof(buf), "%2hhu", completed_board_count);
+    snprintf(buf, sizeof(buf), "%2hhu", display_score);
+    if ((score / 10) == 4) buf[0] = 'w';
     watch_display_string(buf, BOARD_SCORE_DISPLAY_START);
 }
 
@@ -203,7 +228,7 @@ static void do_game_loop(guess_t user_guess) {
         case HL_GS_TITLE_SCREEN:
             init_game();
             render_board();
-            render_board_count();
+            render_board_count(score);
             game_state = HL_GS_GUESSING;
             break;
         case HL_GS_GUESSING: {
@@ -225,8 +250,6 @@ static void do_game_loop(guess_t user_guess) {
             // Scoring
             if (answer == user_guess) {
                 score++;
-            } else if (answer == HL_GUESS_EQUAL) {
-                // No score for two consecutive identical cards
             } else {
                 // Incorrect guess, game over
                 watch_display_string("GO", STATUS_DISPLAY_START);
@@ -236,7 +259,7 @@ static void do_game_loop(guess_t user_guess) {
                 return;
             }
 
-            if (score >= WIN_SCORE) {
+            if (score >= DECK_COUNT) {
                 // Win, perhaps some kind of animation sequence?
                 watch_display_string("WI", STATUS_DISPLAY_START);
                 watch_display_string("  ", BOARD_SCORE_DISPLAY_START);
@@ -250,7 +273,6 @@ static void do_game_loop(guess_t user_guess) {
             if (final_board_guess) {
                 // Seed new board
                 completed_board_count++;
-                render_board_count();
                 guess_position = 1;
                 reset_board(false);
                 render_board();
@@ -259,6 +281,7 @@ static void do_game_loop(guess_t user_guess) {
                 render_board_position(guess_position - 1);
                 render_board_position(guess_position);
             }
+            render_board_count(score);
             break;
         }
         case HL_GS_WIN:

@@ -48,11 +48,12 @@ const watch_face_t watch_faces[] = {
     voltage_face,
 // Start of Teriary Faces
     endless_runner_face,
-    simon_face,
-    invaders_face,
     higher_lower_game_face,
-    butterfly_game_face,
     lander_face,
+    invaders_face,
+    simon_face,
+    butterfly_game_face,
+    tarot_face,
 };
 
 #define MOVEMENT_NUM_FACES (sizeof(watch_faces) / sizeof(watch_face_t))
@@ -63,7 +64,7 @@ const watch_face_t watch_faces[] = {
  * Some folks also like to use this to hide the preferences and time set faces from the normal rotation.
  * If you don't want any faces to be excluded, set this to 0 and a long Mode press will have no effect.
  */
-#define MOVEMENT_TERIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 6)
+#define MOVEMENT_TERIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 7)
 #define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_TERIARY_FACE_INDEX - 4) // or (0)
 
 /* Custom hourly chime tune. Check movement_custom_signal_tunes.h for options. */

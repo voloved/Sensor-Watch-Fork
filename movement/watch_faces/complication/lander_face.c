@@ -202,7 +202,7 @@ bool lander_face_loop(movement_event_t event, movement_settings_t *settings, voi
             state->tick_counter++;
             if ( state->mode == MODE_PLAYING ) {
                 int16_t accel = state->gravity;
-                bool gas_pedal_on = watch_get_pin_level(BTN_ALARM);
+                bool gas_pedal_on = watch_get_pin_level(BTN_ALARM) || watch_get_pin_level(BTN_LIGHT );
                 if ( gas_pedal_on && ( state->fuel_remaining > 0 ) ) {
                     accel = ENGINE_THRUST + state->gravity;		// Gravity is negative
                     state->fuel_remaining--;					// Used 1 fuel unit
@@ -538,6 +538,7 @@ bool lander_face_loop(movement_event_t event, movement_settings_t *settings, voi
             }
             break;
         case EVENT_LIGHT_LONG_PRESS:
+            if ( state->mode != MODE_WAITING_TO_START ) break;
             state->led_enabled = !state->led_enabled;
             if (state->led_enabled) watch_set_indicator(WATCH_INDICATOR_SIGNAL);
             else watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
