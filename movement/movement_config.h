@@ -50,8 +50,8 @@ const watch_face_t watch_faces[] = {
     endless_runner_face,
     higher_lower_game_face,
     lander_face,
-    invaders_face,
     simon_face,
+    invaders_face,
     butterfly_game_face,
     tarot_face,
 };

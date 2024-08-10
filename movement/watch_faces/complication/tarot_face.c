@@ -94,9 +94,9 @@ static void tarot_display(tarot_state_t *state) {
     if (state->drawn_cards[0] == 0xff) {
         watch_clear_indicator(WATCH_INDICATOR_SIGNAL);
         if (state->major_arcana_only) {
-            sprintf(buf, "TR%2dn&ajor", state->num_cards_to_draw);
+            sprintf(buf, "TA%2dn&ajor", state->num_cards_to_draw);
         } else {
-            sprintf(buf, "TR%2d   All", state->num_cards_to_draw);
+            sprintf(buf, "TA%2d   All", state->num_cards_to_draw);
         }
         watch_display_string(buf, 0);
         return;
@@ -225,7 +225,7 @@ void tarot_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     tarot_state_t *state = (tarot_state_t *)context;
 
-    watch_display_string("TR", 0);
+    watch_display_string("TA", 0);
     init_deck(state);
     state->num_cards_to_draw = 3;
     state->major_arcana_only = true;
@@ -280,8 +280,6 @@ bool tarot_face_loop(movement_event_t event, movement_settings_t *settings, void
             state->is_picking = true;
             // card picking animation begins on next tick and new cards will be displayed on completion
             movement_request_tick_frequency(TAROT_ANIMATION_TICK_FREQUENCY);
-            break;
-        case EVENT_LOW_ENERGY_UPDATE:
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
             // don't light up every time light is hit

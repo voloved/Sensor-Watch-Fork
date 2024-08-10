@@ -23,7 +23,8 @@
  */
 
 #define MOVEMENT_LONG_PRESS_TICKS 64
-#define DEBOUNCE_TICKS 2  // In terms of *7.8125ms
+#define DEBOUNCE_TICKS_DOWN 2  // In terms of *7.8125ms
+#define DEBOUNCE_TICKS_UP   0  // In terms of *7.8125ms
 
 #include <stdio.h>
 #include <string.h>
@@ -905,10 +906,10 @@ static void alarm_btn_action(bool pin_level) {
 }
 
 static void debounce_btn_press(uint8_t pin, uint8_t *debounce_ticks, uint16_t *down_timestamp, void (*function)(bool)) {
-    bool pin_level = watch_get_pin_level(pin);
-    if (*debounce_ticks <= 1 || pin_level) {
+    if (*debounce_ticks <= 1) {
+        bool pin_level = watch_get_pin_level(pin);
         function(pin_level);
-        if (!pin_level) *debounce_ticks = DEBOUNCE_TICKS;
+        *debounce_ticks = pin_level ? DEBOUNCE_TICKS_DOWN : DEBOUNCE_TICKS_UP;
     }
     else
         *down_timestamp = 0;

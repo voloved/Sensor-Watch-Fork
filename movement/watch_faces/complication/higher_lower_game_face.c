@@ -252,7 +252,7 @@ static void do_game_loop(guess_t user_guess) {
                 score++;
             } else {
                 // Incorrect guess, game over
-                watch_display_string("GO", STATUS_DISPLAY_START);
+                watch_display_string(" L", STATUS_DISPLAY_START);
                 game_board[guess_position].revealed = true;
                 render_board_position(guess_position);
                 game_state = HL_GS_LOSE;
