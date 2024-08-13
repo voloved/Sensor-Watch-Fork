@@ -248,7 +248,7 @@ static void do_game_loop(guess_t user_guess) {
             }
 
             // Scoring
-            if (answer == user_guess) {
+            if (answer == user_guess || answer == HL_GUESS_EQUAL) {
                 score++;
             } else {
                 // Incorrect guess, game over
