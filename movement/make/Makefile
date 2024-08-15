@@ -137,6 +137,7 @@ SRCS += \
   ../watch_faces/complication/lander_face.c \
   ../watch_faces/complication/higher_lower_game_face.c \
   ../watch_faces/complication/butterfly_game_face.c \
+  ../watch_faces/complication/wordle_face.c \
 # New watch faces go above this line.
 
 # Leave this line at the bottom of the file; it has all the targets for making your project.
