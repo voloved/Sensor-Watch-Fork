@@ -75,7 +75,7 @@ static const char _legal_words[][WORDLE_LENGTH + 1] = {
 static const char _expanded_words[][WORDLE_LENGTH + 1] = {
 #endif
 #if (USE_EXPANDED_DICT != 0)
-    "AAAAA","PARIS", "APRIL", "SPAIN", "EINEN", "ASCII", "EINER", "SEINE", "AINSI", "ALICE", 
+    "PARIS", "APRIL", "SPAIN", "EINEN", "ASCII", "EINER", "SEINE", "AINSI", "ALICE", 
     "ALLES", "ALORS", "EINES", "ALLER", "PEINE", "PARCE", "CELLE", "CLARA", "ELLES", 
     "ELLEN", "OLISI", "ALLEN", "ISAAC", "APRES", "CROIS", "SANOI", "PASSE", "ELSIE", 
     "REINE", "ELLER", "AARON", "CLARE", "IRENE", "ANNIE", "ELLOS", "PARLE", "ALLAN", 
@@ -166,7 +166,7 @@ static uint8_t get_next_pos(uint8_t curr_pos, WordleLetterResult *word_elements_
 
 static uint8_t get_prev_pos(uint8_t curr_pos, WordleLetterResult *word_elements_result) {
     if (curr_pos == 0) return 0;
-    for (size_t pos = curr_pos-1; pos > 0; pos--) {
+    for (int8_t pos = curr_pos-1; pos >= 0; pos--) {
         if (word_elements_result[pos] != WORDLE_LETTER_CORRECT)
             return pos;
     }
