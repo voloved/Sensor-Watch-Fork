@@ -62,11 +62,11 @@ static const char _legal_words[][WORDLE_LENGTH + 1] = {
     "ROSES", "COLON", "REPEL", "ASSES", "INANE", "SCENE", "SLAPS", "PEEPS", "LAPEL", 
     "PIECE", "LEPER", "REELS", "INNER", "PROPS", "SILLS", "LEASE", "SOLES", "CIRCA", 
     "CRESS", "SCANS", "SPOON", "REARS", "CACAO", "ERASE", "CANON", "SOARS", "SLOOP", 
-    "AREAS", "SPINS", "OASIS", "OASES", "POPES", "ELOPE", "CEASE", "CINCO", "APPLE", 
+    "AREAS", "SPINS", "OASIS", "OASES", "POPES", "ELOPE", "CEASE", "CALLS", "APPLE", 
     "NOOSE", "PEERS", "SENSE", "POOLS", "RISER", "PENCE", "POSSE", "ALIAS", "PESOS", 
     "SCOOP", "EASEL", "LOONS", "CONIC", "SPANS", "SPIES", "PRIOR", "SALSA", "SELLS", 
     "PILLS", "RISES", "RARES", "SNEER", "SOILS", "ARENA", "CASES", "CANAL", "SAILS", 
-    "LASSO", "COCOA", "ERROR", "CALLS",
+    "LASSO", "COCOA", "ERROR",
 #if (USE_EXPANDED_DICT != 1)
 };
 // These are words that'll never be used, but still need to be in the dictionary for guesses.
@@ -127,7 +127,7 @@ static const char _expanded_words[][WORDLE_LENGTH + 1] = {
     "OLSON", "IRREN", "ARIAS", "ARION", "PASEO", "CAERE", "PISAN", "CARRO", "PAROI", 
     "NOONE", "SEPPI", "OPPIA", "SEALE", "LIPPI", "PELAS", "COCOS", "PLACA", "CONOR", 
     "LANCA", "OSASI", "ALOIS", "NAIRN", "PIENO", "SPASS", "SAONE", "ALNAR", "CARIA", 
-    "PIENA",
+    "PIENA", "CINCO",
 #endif
 };
 
@@ -139,6 +139,7 @@ static const uint16_t _num_unique_words = 155;  // The _legal_words array begins
 static const uint16_t _num_words = (sizeof(_legal_words) / sizeof(_legal_words[0]));
 static const uint16_t _num_expanded_words = (sizeof(_expanded_words) / sizeof(_expanded_words[0]));
 static const uint8_t _num_valid_letters = (sizeof(_valid_letters) / sizeof(_valid_letters[0]));
+static bool _using_random_guess = false;
 
 static uint32_t get_random(uint32_t max) {
     #if __EMSCRIPTEN__
@@ -157,8 +158,8 @@ static uint8_t get_first_pos(WordleLetterResult *word_elements_result) {
 }
 
 static uint8_t get_next_pos(uint8_t curr_pos, WordleLetterResult *word_elements_result) {
-    for (size_t pos = curr_pos+1; pos < WORDLE_LENGTH; pos++) {
-        if (word_elements_result[pos] != WORDLE_LETTER_CORRECT)
+    for (size_t pos = curr_pos; pos < WORDLE_LENGTH;) {
+        if (word_elements_result[++pos] != WORDLE_LETTER_CORRECT)
             return pos;
     }
     return WORDLE_LENGTH;
@@ -166,8 +167,8 @@ static uint8_t get_next_pos(uint8_t curr_pos, WordleLetterResult *word_elements_
 
 static uint8_t get_prev_pos(uint8_t curr_pos, WordleLetterResult *word_elements_result) {
     if (curr_pos == 0) return 0;
-    for (int8_t pos = curr_pos-1; pos >= 0; pos--) {
-        if (word_elements_result[pos] != WORDLE_LETTER_CORRECT)
+    for (int8_t pos = curr_pos; pos >= 0;) {
+        if (word_elements_result[--pos] != WORDLE_LETTER_CORRECT)
             return pos;
     }
     return curr_pos;
@@ -287,7 +288,7 @@ static void reset_board(wordle_state_t *state) {
         state->guessed_words[i] = _num_words + _num_expanded_words;
     }
     state->curr_answer = get_random(_num_words);
-    state->using_random_guess = false;
+    _using_random_guess = false;
     state->attempt = 0;
     watch_clear_colon();
     watch_display_string(" ", 4);
@@ -456,7 +457,7 @@ static void get_result(wordle_state_t *state) {
 #endif
         return;
     }
-    if (state->attempt++ > WORDLE_MAX_ATTEMPTS) {
+    if (++state->attempt >= WORDLE_MAX_ATTEMPTS) {
         state->playing = false;
         state->curr_screen = SCREEN_LOSE;
         state->streak = 0;
@@ -480,7 +481,7 @@ static void insert_random_guess(wordle_state_t *state) {
     } 
     state->position = WORDLE_LENGTH - 1;
     display_all_letters(state);
-    state->using_random_guess = true;
+    _using_random_guess = true;
 }
 
 void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
@@ -503,7 +504,7 @@ void wordle_face_activate(movement_settings_t *settings, void *context) {
     if (state->prev_day <= (now + (60 *60 * 24))) state->streak = 0;
     if (state->curr_day != now) state->playing = false;
 #endif
-    state->using_random_guess = false;
+    _using_random_guess = false;
     movement_request_tick_frequency(2);
     display_title(state);
 }
@@ -553,7 +554,7 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
             state->position = get_next_pos(state->position, state->word_elements_result);
             if (state->position >= WORDLE_LENGTH) {
                 get_result(state);
-                state->using_random_guess = false;
+                _using_random_guess = false;
             }
             break;
         case EVENT_ALARM_LONG_PRESS:
@@ -563,7 +564,7 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
             break;
         case EVENT_ALARM_LONGER_PRESS:
             if (state->curr_screen != SCREEN_PLAYING) break;
-            if (state->using_random_guess || (state->attempt == 0 && state->position == 0))
+            if (_using_random_guess || (state->attempt == 0 && state->position == 0))
                 insert_random_guess(state);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
