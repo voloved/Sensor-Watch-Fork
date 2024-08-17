@@ -260,7 +260,7 @@ legal_list = [
     "WORDS", "WORDY", "WORKS", "WORLD", "WORMS", "WORRY", "WORSE", "WORST", "WORTH", "WOULD", "WOUND", "WRACK", 
     "WRAPS", "WRAPT", "WRATH", "WREAK", "WRECK", "WREST", "WRING", "WRIST", "WRITE", "WRITS", "WRONG", "WROTE", 
     "WROTH", "YACHT", "YARDS", "YARNS", "YAWNS", "YEARN", "YEARS", "YEAST", "YELLS", "YELPS", "YIELD", "YOKED", 
-    "YOKES", "YOLKS", "YOUNG", "YOURS", "YOUTH", "ZEBRA", "ZONES", "COLOR", "CINCO", 
+    "YOKES", "YOLKS", "YOUNG", "YOURS", "YOUTH", "ZEBRA", "ZONES", "COLOR", 
 ]
 
 expanded_list = [
