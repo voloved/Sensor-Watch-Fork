@@ -356,6 +356,12 @@ def list_of_valid_words(letters):
     return legal_words
 
 
+def rearrange_words_by_uniqueness(words):
+    unique = [word for word in words if len(word) == len(set(word))]
+    duplicates = [word for word in words if len(word) != len(set(word))]
+    return unique + duplicates, len(unique)
+
+
 def print_valid_words(letters):
     '''
     Prints the array of valid words that the wordle_face.c can use
@@ -365,7 +371,9 @@ def print_valid_words(letters):
         legal_words[i] = word.upper().replace("D","d")
     random.shuffle(legal_words) 
     # Just in case the watch's random function is too pseudo, better to shuffle th elist so it's less likely to always have the same starting letter
-                
+    
+    legal_words, num_uniq = rearrange_words_by_uniqueness(legal_words)
+            
     print("static const char _valid_letters[] = {", end='')
     for letter in letters[:-1]:
         print(f"'{letter}', ", end='')
@@ -383,6 +391,7 @@ def print_valid_words(letters):
             i+=1
         print('')
     print("};")
+    print(f"\nstatic const uint16_t _num_unique_words = {num_uniq};  // The _legal_words array begins with this many words where each letter is different.")
 
 
 def get_sec_val_and_units(seconds):
@@ -449,6 +458,6 @@ def txt_of_all_letter_combos(num_letters_in_set):
 
 
 if __name__ == "__main__":
-    most_used_letters()
+    #most_used_letters()
     print_valid_words(['A', 'C', 'E', 'I', 'L', 'N', 'O', 'P', 'R', 'S'])
     #txt_of_all_letter_combos(10)

@@ -33,42 +33,43 @@
 // From: https://gist.github.com/shmookey/b28e342e1b1756c4700f42f17102c2ff
 static const char _valid_letters[] = {'A', 'C', 'E', 'I', 'L', 'N', 'O', 'P', 'R', 'S'};
 
-// Number of words found: 281
+// Number of words found: 282
 static const char _legal_words[][WORDLE_LENGTH + 1] = {
-    "SPIES", "SOLAR", "RAISE", "RARES", "PAEAN", "PLIES", "CRASS", "PEARS", "SNORE", 
-    "POLES", "ROLLS", "ALOES", "LOSES", "SLICE", "PEACE", "POLLS", "POSES", "LANES", 
-    "COPRA", "SPANS", "CANAL", "LOSER", "PAPER", "PILES", "CLASS", "RACER", "POOLS", 
-    "PLAIN", "SPEAR", "SPARE", "INNER", "ALIEN", "NOSES", "EARLS", "SEALS", "LEARN", 
-    "COLIC", "OPERA", "LOOSE", "SPOOR", "SCALE", "SOARS", "PAILS", "PRONE", "OPALS", 
-    "PIPER", "RILLS", "CAIRN", "POISE", "LEAPS", "ELOPE", "NICER", "SLOOP", "PANES", 
-    "SOLES", "CROSS", "NIECE", "LAIRS", "LEASE", "SALES", "SCENE", "SORES", "SNARL", 
-    "SPIRE", "LASSO", "CLOSE", "OSIER", "SPOOL", "PRICE", "LOANS", "POSSE", "PENAL", 
-    "SLAPS", "RELIC", "SINCE", "CIRCA", "LIARS", "RISES", "OPENS", "ROARS", "PACES", 
-    "ARISE", "RISEN", "PENIS", "LAPEL", "CROPS", "CANON", "LAPSE", "SCION", "ARSON", 
-    "AREAS", "SLAIN", "CANOE", "EERIE", "NOOSE", "PIANO", "PLANE", "CLASP", "SCARE", 
-    "COCOA", "CRESS", "NASAL", "LOCAL", "RINSE", "SCARS", "PROPS", "OASES", "SLEEP", 
-    "SNAPS", "SIRES", "CANES", "RAILS", "RESIN", "COLON", "PEASE", "POPES", "PENCE", 
-    "AROSE", "REELS", "SALSA", "OCEAN", "PESOS", "OPINE", "RACES", "RAINS", "PRIES", 
-    "CRIES", "CALLS", "PIERS", "CELLS", "SCRAP", "EARNS", "IRONS", "SPACE", "LOONS", 
-    "SILLS", "COALS", "PIECE", "PALER", "REINS", "APACE", "SLOPE", "CREPE", "CONES", 
-    "CAPER", "SEERS", "CAPES", "OASIS", "REAPS", "PALES", "CLAPS", "PLEAS", "INANE", 
-    "COINS", "SNAIL", "CLEAR", "ROSIN", "LILAC", "SPARS", "SPINE", "NONCE", "CRISP", 
-    "CRAPE", "AISLE", "CRONE", "SPOIL", "SPOON", "ARENA", "PARSE", "CASES", "SPICE", 
+    "SOLAR", "RAISE", "PLIES", "PEARS", "SNORE", "POLES", "ALOES", "SLICE", "LANES", 
+    "COPRA", "LOSER", "PILES", "PLAIN", "SPEAR", "SPARE", "ALIEN", "EARLS", "LEARN", 
+    "OPERA", "SCALE", "PAILS", "PRONE", "OPALS", "CAIRN", "POISE", "LEAPS", "NICER", 
+    "PANES", "LAIRS", "SNARL", "SPIRE", "CLOSE", "OSIER", "PRICE", "LOANS", "PENAL", 
+    "RELIC", "SINCE", "LIARS", "OPENS", "PACES", "ARISE", "RISEN", "PENIS", "CROPS", 
+    "LAPSE", "SCION", "ARSON", "SLAIN", "CANOE", "PIANO", "PLANE", "CLASP", "SCARE", 
+    "RINSE", "CANES", "RAILS", "RESIN", "AROSE", "OCEAN", "OPINE", "RACES", "RAINS", 
+    "PRIES", "CRIES", "PIERS", "SCRAP", "EARNS", "IRONS", "SPACE", "COALS", "PALER", 
+    "REINS", "SLOPE", "CONES", "CAPER", "CAPES", "REAPS", "PALES", "CLAPS", "PLEAS", 
+    "COINS", "SNAIL", "CLEAR", "ROSIN", "SPINE", "CRISP", "CRAPE", "AISLE", "CRONE", 
+    "SPOIL", "PARSE", "SPICE", "ACRES", "ROPES", "CORAL", "CLEAN", "CLANS", "LOINS", 
+    "PAIRS", "SCORN", "ALONE", "SNARE", "CLIPS", "CAROL", "ASPEN", "SALON", "PEALS", 
+    "PLACE", "ACORN", "LIONS", "NAILS", "CORES", "SCORE", "CAPON", "NOISE", "CARES", 
+    "APRON", "PAINS", "EPICS", "SANER", "COILS", "LACES", "SCALP", "CRANE", "PLANS", 
+    "SPORE", "PANIC", "PORES", "SCRIP", "PEARL", "PANEL", "ENROL", "LANCE", "CORPS", 
+    "LINES", "COPSE", "NEARS", "RIPEN", "LINER", "SCOPE", "SNIPE", "LEANS", "AEONS", 
+    "PINES", "ROLES", "REALS", "PERIL", "POSER", "PROSE", "POLAR", "CORNS", "LIENS", 
+    "SIREN", "PEONS", "NEPAL", "SPIES", "RARES", "PAEAN", "CRASS", "ROLLS", "LOSES", 
+    "PEACE", "POLLS", "POSES", "SPANS", "CANAL", "PAPER", "CLASS", "RACER", "POOLS", 
+    "INNER", "NOSES", "SEALS", "COLIC", "LOOSE", "SPOOR", "SOARS", "PIPER", "RILLS", 
+    "ELOPE", "SLOOP", "SOLES", "CROSS", "NIECE", "LEASE", "SALES", "SCENE", "SORES", 
+    "LASSO", "SPOOL", "POSSE", "SLAPS", "CIRCA", "RISES", "ROARS", "LAPEL", "CANON", 
+    "AREAS", "EERIE", "NOOSE", "COCOA", "CRESS", "NASAL", "LOCAL", "SCARS", "PROPS", 
+    "OASES", "SLEEP", "SNAPS", "SIRES", "COLON", "PEASE", "POPES", "PENCE", "REELS", 
+    "SALSA", "PESOS", "CALLS", "CELLS", "LOONS", "SILLS", "PIECE", "APACE", "CREPE", 
+    "SEERS", "OASIS", "INANE", "LILAC", "SPARS", "NONCE", "SPOON", "ARENA", "CASES", 
     "RIPER", "PILLS", "SOLOS", "SPINS", "PEERS", "RARER", "CONIC", "REARS", "CACAO", 
-    "PAPAS", "ACRES", "ROPES", "CORAL", "CLEAN", "EASES", "SPILL", "SENSE", "PIPES", 
-    "CLANS", "PRESS", "LOINS", "PAPAL", "APPLE", "PAIRS", "SCORN", "ALONE", "PEEPS", 
-    "SPREE", "SNARE", "CLIPS", "EASEL", "CAROL", "ASPEN", "SALON", "LOOPS", "PEALS", 
-    "SNEER", "PLACE", "SELLS", "LINEN", "CRIER", "ACORN", "SLIPS", "ERASE", "LIONS", 
-    "NAILS", "REPEL", "CORES", "LEPER", "APPAL", "ROSES", "SCORE", "RISER", "CREEP", 
-    "CAPON", "ERROR", "NOISE", "CARES", "APRON", "SOILS", "SLOPS", "PAINS", "EPICS", 
-    "SANER", "SAILS", "PRIOR", "ASSES", "COILS", "SCOOP", "LACES", "SCALP", "CRANE", 
-    "PLANS", "ISLES", "SPORE", "PANIC", "COOLS", "SPELL", "ALIAS", "PORES", "SCRIP", 
-    "PEARL", "PANEL", "ENROL", "LANCE", "CORPS", "LINES", "COPSE", "ONION", "NEARS", 
-    "RIPEN", "LINER", "SCOPE", "SCANS", "SNIPE", "CEASE", "LEANS", "AEONS", "PINES", 
-    "POPPA", "ROLES", "REALS", "PERIL", "POSER", "PROSE", "POLAR", "CORNS", "LIENS", 
-    "SIREN", "PEONS", 
+    "PAPAS", "EASES", "SPILL", "SENSE", "PIPES", "PRESS", "PAPAL", "APPLE", "PEEPS", 
+    "SPREE", "EASEL", "LOOPS", "SNEER", "SELLS", "LINEN", "CRIER", "SLIPS", "ERASE", 
+    "REPEL", "LEPER", "APPAL", "ROSES", "RISER", "CREEP", "ERROR", "SOILS", "SLOPS", 
+    "SAILS", "PRIOR", "ASSES", "SCOOP", "ISLES", "COOLS", "SPELL", "ALIAS", "ONION", 
+    "SCANS", "CEASE", "POPPA", 
 };
 
+static const uint16_t _num_unique_words = 155;  // The _legal_words array begins with this many words where each letter is different.
 static const uint16_t _num_words = (sizeof(_legal_words) / sizeof(_legal_words[0]));
 static const uint8_t _num_valid_letters = (sizeof(_valid_letters) / sizeof(_valid_letters[0]));
 
@@ -209,6 +210,7 @@ static void reset_board(wordle_state_t *state) {
         state->guessed_words[i] = _num_words;
     }
     state->curr_answer = get_random(_num_words);
+    state->using_random_guess = false;
     state->attempt = 0;
     watch_clear_colon();
     watch_display_string(" ", 4);
@@ -387,6 +389,23 @@ static void get_result(wordle_state_t *state) {
     return;
 }
 
+static void insert_random_guess(wordle_state_t *state) {
+    uint16_t random_guess;
+    do {  // Don't allow the guess to be the same as the answer
+        random_guess = get_random(_num_unique_words);
+    } while (random_guess == state->curr_answer); 
+    for (size_t i = 0; i < WORDLE_LENGTH; i++) {
+        for (size_t j = 0; j < _num_valid_letters; j++)
+        {
+            if (_legal_words[random_guess][i] == _valid_letters[j])
+                state->word_elements[i] = j;
+        }
+    } 
+    state->position = WORDLE_LENGTH - 1;
+    display_all_letters(state);
+    state->using_random_guess = true;
+}
+
 void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -407,6 +426,7 @@ void wordle_face_activate(movement_settings_t *settings, void *context) {
     if (state->prev_day <= (now + (60 *60 * 24))) state->streak = 0;
     if (state->curr_day != now) state->playing = false;
 #endif
+    state->using_random_guess = false;
     movement_request_tick_frequency(2);
     display_title(state);
 }
@@ -454,13 +474,20 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
             if (state->word_elements[state->position] == _num_valid_letters) break;
             state->playing = true;
             state->position = get_next_pos(state->position, state->word_elements_result);
-            if (state->position >= WORDLE_LENGTH)
+            if (state->position >= WORDLE_LENGTH) {
                 get_result(state);
+                state->using_random_guess = false;
+            }
             break;
         case EVENT_ALARM_LONG_PRESS:
             if (state->curr_screen != SCREEN_PLAYING) break;
             display_letter(state, true);
             state->position = get_prev_pos(state->position, state->word_elements_result);
+            break;
+        case EVENT_ALARM_LONGER_PRESS:
+            if (state->curr_screen != SCREEN_PLAYING) break;
+            if (state->using_random_guess || (state->attempt == 0 && state->position == 0))
+                insert_random_guess(state);
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
         case EVENT_ACTIVATE:

@@ -90,7 +90,7 @@ typedef struct {
     uint8_t attempt : 3;
     uint8_t position : 3;
     bool playing : 1;
-    bool unused : 1;
+    bool using_random_guess : 1;
     uint16_t curr_answer;
     uint8_t streak;
     WordleScreen curr_screen;
