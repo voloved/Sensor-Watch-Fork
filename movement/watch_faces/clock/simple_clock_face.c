@@ -173,7 +173,7 @@ bool simple_clock_face_loop(movement_event_t event, movement_settings_t *setting
             state->signal_enabled = !state->signal_enabled;
             watch_clear_all_indicators();
             watch_clear_colon();
-            watch_display_string("     CHUFF", 0);
+            watch_display_string("    GAm&ES", 0);
             break;
         case EVENT_ALARM_LONG_PRESS:
             state->signal_enabled = !state->signal_enabled;
