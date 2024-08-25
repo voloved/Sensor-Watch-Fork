@@ -62,18 +62,18 @@ static uint8_t get_prev_pos(uint8_t curr_pos, WordleLetterResult *word_elements_
     return curr_pos;
 }
 
-static void get_next_letter(const uint8_t curr_pos, uint8_t *word_elements, const bool *known_wrong_letters) {
+static void get_next_letter(const uint8_t curr_pos, uint8_t *word_elements, const bool *known_wrong_letters, const bool skip_wrong_letter) {
     do {
         if (word_elements[curr_pos] >= WORDLE_NUM_VALID_LETTERS) word_elements[curr_pos] = 0;
         else word_elements[curr_pos] = (word_elements[curr_pos] + 1) % WORDLE_NUM_VALID_LETTERS;
-    } while (known_wrong_letters[word_elements[curr_pos]]);  
+    } while (skip_wrong_letter && known_wrong_letters[word_elements[curr_pos]]);  
 }
 
-static void get_prev_letter(const uint8_t curr_pos, uint8_t *word_elements, const bool *known_wrong_letters) {
+static void get_prev_letter(const uint8_t curr_pos, uint8_t *word_elements, const bool *known_wrong_letters, const bool skip_wrong_letter) {
     do {
         if (word_elements[curr_pos] >= WORDLE_NUM_VALID_LETTERS) word_elements[curr_pos] = WORDLE_NUM_VALID_LETTERS - 1;
         else word_elements[curr_pos] = (word_elements[curr_pos] + WORDLE_NUM_VALID_LETTERS - 1) % WORDLE_NUM_VALID_LETTERS;
-    } while (known_wrong_letters[word_elements[curr_pos]]);  
+    } while (skip_wrong_letter && known_wrong_letters[word_elements[curr_pos]]);  
 }
 
 static void display_letter(wordle_state_t *state, bool display_dash) {
@@ -166,8 +166,14 @@ static bool check_word(wordle_state_t *state) {
     return false;
 }
 
+static void show_skip_wrong_letter_indicator(bool skipping) {
+    if (skipping)
+       watch_set_indicator(WATCH_INDICATOR_LAP);
+    else
+        watch_clear_indicator(WATCH_INDICATOR_LAP);
+}
+
 static void update_known_wrong_letters(wordle_state_t *state) {
-#if WORDLE_SKIP_WRONG_LETTERS
     for (size_t i = 0; i < WORDLE_LENGTH; i++) {
         if (state->word_elements_result[i] == WORDLE_LETTER_WRONG) {
             for (size_t j = 0; j < WORDLE_NUM_VALID_LETTERS; j++) {
@@ -176,7 +182,6 @@ static void update_known_wrong_letters(wordle_state_t *state) {
             }
         }
     }
-#endif
 }
 
 static void display_attempt(uint8_t attempt) {
@@ -186,9 +191,9 @@ static void display_attempt(uint8_t attempt) {
 }
 
 static void display_playing(wordle_state_t *state) {
+    state->curr_screen = SCREEN_PLAYING;
     display_attempt(state->attempt);
     display_all_letters(state);
-    state->curr_screen = SCREEN_PLAYING;
 }
 
 static void reset_all_elements(wordle_state_t *state) {
@@ -464,6 +469,7 @@ void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, 
         memset(*context_ptr, 0, sizeof(wordle_state_t));
         wordle_state_t *state = (wordle_state_t *)*context_ptr;
         state->curr_screen = SCREEN_TITLE;
+        state->skip_wrong_letter = false;
         reset_all_elements(state);
     }
     // Do any pin or peripheral setup here; this will be called whenever the watch wakes from deep sleep.
@@ -483,6 +489,7 @@ void wordle_face_activate(movement_settings_t *settings, void *context) {
         state->position = get_first_pos(state->word_elements_result); 
     }
     movement_request_tick_frequency(2);
+    show_skip_wrong_letter_indicator(state->skip_wrong_letter);
     display_title(state);
 }
 
@@ -515,12 +522,16 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
             break;
         case EVENT_LIGHT_BUTTON_UP:
             if (act_on_btn(state, BTN_LIGHT)) break;
-            get_next_letter(state->position, state->word_elements, state->known_wrong_letters);
+            get_next_letter(state->position, state->word_elements, state->known_wrong_letters, state->skip_wrong_letter);
             display_letter(state, true);
             break;
         case EVENT_LIGHT_LONG_PRESS:
+            if (state->curr_screen < SCREEN_PLAYING) {
+                state->skip_wrong_letter = !state->skip_wrong_letter;
+                show_skip_wrong_letter_indicator(state->skip_wrong_letter);
+            }
             if (state->curr_screen != SCREEN_PLAYING) break;
-            get_prev_letter(state->position, state->word_elements, state->known_wrong_letters);
+            get_prev_letter(state->position, state->word_elements, state->known_wrong_letters, state->skip_wrong_letter);
             display_letter(state, true);
             break; 
         case EVENT_ALARM_BUTTON_UP:
