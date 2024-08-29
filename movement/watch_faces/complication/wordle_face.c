@@ -25,9 +25,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "wordle_face.h"
-#if WORDLE_USE_DAILY_STREAK
 #include "watch_utility.h"
-#endif
 
 static uint32_t get_random(uint32_t max) {
     #if __EMSCRIPTEN__
@@ -250,7 +248,7 @@ static void display_title(wordle_state_t *state) {
     show_skip_wrong_letter_indicator(state->skip_wrong_letter, state->curr_screen);
 }
 
-#if !WORDLE_USE_DAILY_STREAK
+#if WORDLE_USE_DAILY_STREAK != 2
 static void display_continue_result(bool continuing) {
     watch_display_string(continuing ? "y" : "n", 9);
 }
@@ -266,7 +264,7 @@ static void display_continue(wordle_state_t *state) {
 static void display_streak(wordle_state_t *state) {
     char buf[12];
     state->curr_screen = SCREEN_STREAK;
-#if WORDLE_USE_DAILY_STREAK
+#if WORDLE_USE_DAILY_STREAK == 2
     if (state->streak > 99)
         sprintf(buf, "WO  St--dy");
     else
@@ -279,7 +277,7 @@ static void display_streak(wordle_state_t *state) {
     show_skip_wrong_letter_indicator(state->skip_wrong_letter, state->curr_screen);
 }
 
-#if WORDLE_USE_DAILY_STREAK
+#if WORDLE_USE_DAILY_STREAK == 2
 static void display_wait(wordle_state_t *state) {
     state->curr_screen = SCREEN_WAIT;
     if (state->streak < 40) {
@@ -292,13 +290,15 @@ static void display_wait(wordle_state_t *state) {
     }
     show_skip_wrong_letter_indicator(state->skip_wrong_letter, state->curr_screen);
 }
+#endif
 
 static uint32_t get_day_unix_time(void) {
     watch_date_time now = watch_rtc_get_date_time();
+#if WORDLE_USE_DAILY_STREAK == 2
     now.unit.hour = now.unit.minute = now.unit.second = 0;
+#endif
     return watch_utility_date_time_to_unix_time(now, 0);
 }
-#endif
 
 static void display_lose(wordle_state_t *state, uint8_t subsecond) {
     char buf[WORDLE_LENGTH + 6];
@@ -355,8 +355,8 @@ static bool act_on_btn(wordle_state_t *state, const uint8_t pin) {
         display_playing(state);
         return true;
     case SCREEN_TITLE:
-#if WORDLE_USE_DAILY_STREAK
-        if (state->prev_day == get_day_unix_time()) {
+#if WORDLE_USE_DAILY_STREAK == 2
+        if (state->day_last_game_started == get_day_unix_time()) {
             display_wait(state);
         }
         else if (is_playing(state))
@@ -373,9 +373,7 @@ static bool act_on_btn(wordle_state_t *state, const uint8_t pin) {
 #endif
         return true;
     case SCREEN_STREAK:
-#if WORDLE_USE_DAILY_STREAK
-        state->curr_day = get_day_unix_time();
-#endif
+        state->day_last_game_started = get_day_unix_time();
         reset_board(state);
         return true;
     case SCREEN_WIN:
@@ -387,7 +385,7 @@ static bool act_on_btn(wordle_state_t *state, const uint8_t pin) {
         state->position = get_first_pos(state->word_elements_result);
         display_playing(state);
         return true;
-#if WORDLE_USE_DAILY_STREAK
+#if WORDLE_USE_DAILY_STREAK == 2
     case SCREEN_WAIT:
         (void) pin;
         display_title(state);
@@ -401,6 +399,7 @@ static bool act_on_btn(wordle_state_t *state, const uint8_t pin) {
                 display_playing(state);
             else {
                 reset_board(state);
+                state->streak = 0;
                 display_streak(state);
             }
             break;
@@ -442,8 +441,8 @@ static void get_result(wordle_state_t *state) {
         state->curr_screen = SCREEN_WIN;
         if (state->streak < 0x7F)
             state->streak++;
-#if WORDLE_USE_DAILY_STREAK
-        state->prev_day = get_day_unix_time();
+#if WORDLE_USE_DAILY_STREAK == 2
+        state->day_last_game_started = get_day_unix_time();  // On the edge-case where we solve the puzzle at midnight
 #endif
         return;
     }
@@ -494,10 +493,14 @@ void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, 
 void wordle_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     wordle_state_t *state = (wordle_state_t *)context;
-#if WORDLE_USE_DAILY_STREAK
-    uint32_t now = get_day_unix_time() ;
-    if (state->prev_day <= (now + (60 *60 * 24))) state->streak = 0;
-    if (state->curr_day != now) reset_all_elements(state);
+#if WORDLE_USE_DAILY_STREAK != 0
+    uint32_t now = get_day_unix_time();
+    uint32_t one_day = 60 *60 * 24;
+    if ((WORDLE_USE_DAILY_STREAK == 2 && now >= (state->day_last_game_started + (2*one_day)))
+        || (now >= (state->day_last_game_started + one_day) && is_playing(state))) {
+        state->streak = 0;
+        reset_board(state);
+    }
 #endif
     state->using_random_guess = false;
     if (is_playing(state) && state->curr_screen >= SCREEN_RESULT) {
@@ -541,6 +544,11 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
             display_letter(state, true);
             break;
         case EVENT_LIGHT_LONG_PRESS:
+            if (state->curr_screen < SCREEN_PLAYING) {
+                state->skip_wrong_letter = !state->skip_wrong_letter;
+                show_skip_wrong_letter_indicator(state->skip_wrong_letter, state->curr_screen);
+                break;
+            }
             if (state->curr_screen != SCREEN_PLAYING) break;
             get_prev_letter(state->position, state->word_elements, state->known_wrong_letters, state->skip_wrong_letter);
             display_letter(state, true);
@@ -556,11 +564,6 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
             }
             break;
         case EVENT_ALARM_LONG_PRESS:
-            if (state->curr_screen < SCREEN_PLAYING) {
-                state->skip_wrong_letter = !state->skip_wrong_letter;
-                show_skip_wrong_letter_indicator(state->skip_wrong_letter, state->curr_screen);
-                break;
-            }
             if (state->curr_screen != SCREEN_PLAYING) break;
             display_letter(state, true);
             state->position = get_prev_pos(state->position, state->word_elements_result);

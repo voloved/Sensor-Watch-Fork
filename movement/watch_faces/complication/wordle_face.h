@@ -46,7 +46,8 @@
  *        Else: Next screen
  *    Light Hold
  *        If Playing: Previous letter
- *        Else: None
+ *        Else: Toggle Hard-Mode. This is skipping over letters that have been confirmed
+ *              to not be in the word (indicated via 'H' in the top-right)
  *
  *    Alarm Press
  *        If Playing: If WORDLE_USE_RANDOM_GUESS is set and Light btn held and 
@@ -56,8 +57,7 @@
  *        Else: Next screen
  *    Alarm Hold
  *        If Playing: Previous position
- *        Else: Toggle Hard-Mode. This is skipping over letters that have been confirmed
- *              to not be in the word (indicated via 'H' in the top-right)
+ *        Else: None
  * 
  * Note: Actual Hard Mode in Wordle game is "Any revealed hints must be used in subsequent guesses"
  *       But that came off as clunky UX on the Casio. So instead it only removes unused letters from the keyboard
@@ -66,7 +66,16 @@
 
 #define WORDLE_LENGTH 5
 #define WORDLE_MAX_ATTEMPTS 6
-#define WORDLE_USE_DAILY_STREAK false
+/*  WORDLE_USE_DAILY_STREAK
+ *  0 = Don't ever reset the streak or the puzzle.
+ *  1 = Reset the streak and puzzle 24hrs after starting a puzzle and not finishing it.
+ *      If the last puzzle was started at 8AM, it'll be considered failed at 8AM the next day.
+ *  2 = Reset the streak and puzzle if a puzzle goes unsolved or not started a day after the previous one.
+ *      If the last puzzle was started at 8AM, it'll be considered failed at midnight the next day.
+ *      This will not be the case if the puzzle is started at 8AM, continued at 11:59PM and solved at 12:01AM, the game will let that slide.
+ *      Starting a new game instead of continuing is not allowed in this state.
+*/
+#define WORDLE_USE_DAILY_STREAK 1
 #define WORDLE_ALLOW_NON_WORD_AND_REPEAT_GUESSES false  // This allows non-words to be entered and repeat guesses to be made. It saves ~11.5KB of ROM.
 /*  WORDLE_USE_RANDOM_GUESS
  *  0 = Don't allow quickly choosing a random quess
@@ -119,10 +128,7 @@ typedef struct {
     uint8_t streak;
     WordleScreen curr_screen;
     bool known_wrong_letters[WORDLE_NUM_VALID_LETTERS];
-#if WORDLE_USE_DAILY_STREAK
-    uint32_t prev_day;
-    uint32_t curr_day;
-#endif
+    uint32_t day_last_game_started;
 } wordle_state_t;
 
 void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
