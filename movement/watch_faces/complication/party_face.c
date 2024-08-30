@@ -50,8 +50,8 @@ void party_face_activate(movement_settings_t *settings, void *context) {
 
 static void _party_face_init_lcd(party_state_t *state) {
     char text[11];
-    const int partyTextNum = 3;
     const char partyTime[][7] = {" It's","Party", "Tin&e"};
+    const int partyTextNum = sizeof(partyTime) / sizeof(partyTime[0]);
     watch_date_time date_time;
     uint8_t disp_loc = 0;
     switch (state->text)
