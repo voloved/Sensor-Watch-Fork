@@ -106,7 +106,7 @@ bool repetition_minute_face_loop(movement_event_t event, movement_settings_t *se
                 watch_disable_adc();
                 // 2.2 volts will happen when the battery has maybe 5-10% remaining?
                 // we can refine this later.
-                state->battery_low = (voltage < 2200);
+                state->battery_low = (voltage < 2400);
             }
 
             // ...and set the LAP indicator if low.
