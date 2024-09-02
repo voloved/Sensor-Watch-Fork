@@ -50,43 +50,47 @@ void party_face_activate(movement_settings_t *settings, void *context) {
 
 static void _party_face_init_lcd(party_state_t *state) {
     char text[11];
-    const char partyTime[][7] = {" It's","Party", "Tin&e"};
+    const char partyTime[][7] = {"Party", "Tin&e", " It's"};
+    const char secondaryText[][7] = {"Pron&"};
     const int partyTextNum = sizeof(partyTime) / sizeof(partyTime[0]);
+    const int secondaryTextNum = sizeof(secondaryText) / sizeof(secondaryText[0]);
+    const char (*textArray)[7];
+    int textArrayNum;
     watch_date_time date_time;
     uint8_t disp_loc = 0;
     switch (state->text)
     {
     case 1:
-        if (state->prev_text == state->text)
-        {
-            disp_loc = 5;
-            sprintf(text, "Pron&");
-        }
-        else{
-            watch_clear_indicator(WATCH_INDICATOR_BELL);
-            sprintf(text, "     Pron&");
-        }
+        textArray = secondaryText;
+        textArrayNum = secondaryTextNum;
         break;
     case 0:
     default:
-        if (!state->blink){
-            state->party_text = 1;  // Party location
-            watch_clear_indicator(WATCH_INDICATOR_BELL);
-        }
-        else{
-            state->party_text = (state->party_text + 1)  % partyTextNum;
-            watch_set_indicator(WATCH_INDICATOR_BELL);
-        }
-        date_time = watch_rtc_get_date_time();
-        if (state->prev_text == state->text && date_time.unit.day == state->curr_day){
-            disp_loc = 5;
-            sprintf(text, "%s",partyTime[state->party_text]);
-        }
-        else {
-            sprintf(text, "%s%2d %s", watch_utility_get_weekday(date_time), date_time.unit.day, partyTime[state->party_text]);
-            state->curr_day = date_time.unit.day;
-        }
+        textArray = partyTime;
+        textArrayNum = partyTextNum;
         break;
+    }
+    if (!state->blink){
+        state->party_text = 0;
+        watch_clear_indicator(WATCH_INDICATOR_BELL);
+    }
+    else{
+        state->party_text = (state->party_text + 1)  % textArrayNum;
+        watch_set_indicator(WATCH_INDICATOR_BELL);
+    }
+    date_time = watch_rtc_get_date_time();
+    if (state->prev_text == state->text && date_time.unit.day == state->curr_day){
+        disp_loc = 5;
+        sprintf(text, "%s",textArray[state->party_text]);
+    }
+    else if (state->text == 1) {
+        disp_loc = 5;
+        sprintf(text, "%s",textArray[state->party_text]);
+        watch_clear_display();
+    }
+    else {
+        sprintf(text, "%s%2d %s", watch_utility_get_weekday(date_time), date_time.unit.day, textArray[state->party_text]);
+        state->curr_day = date_time.unit.day;
     }
     watch_display_string(text, disp_loc);
     state->prev_text = state->text;
@@ -178,14 +182,7 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             // You can override any of these behaviors by adding a case for these events to this switch statement.
             return movement_default_loop_handler(event, settings);
     }
-
-    // return true if the watch can enter standby mode. Generally speaking, you should always return true.
-    // Exceptions:
-    //  * If you are displaying a color using the low-level watch_set_led_color function, you should return false.
-    //  * If you are sounding the buzzer using the low-level watch_set_buzzer_on function, you should return false.
-    // Note that if you are driving the LED or buzzer using Movement functions like movement_illuminate_led or
-    // movement_play_alarm, you can still return true. This guidance only applies to the low-level watch_ functions.
-    return true;
+    return !state->blink;  // Only sleep if not blinking
 }
 
 void party_face_resign(movement_settings_t *settings, void *context) {
