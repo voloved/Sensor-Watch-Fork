@@ -83,7 +83,7 @@
  *  2 = Allow using a random guess of any value that can be an answer where all of its letters are unique
  *  3 = Allow using a random guess of any value that can be an answer, and it's considered one of the best initial choices.
 */
-#define WORDLE_USE_RANDOM_GUESS 2
+#define WORDLE_USE_RANDOM_GUESS 3
 #include "wordle_face_dict.h"
 
 #define WORDLE_NUM_WORDS (sizeof(_valid_words) / sizeof(_valid_words[0]))
