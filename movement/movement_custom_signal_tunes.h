@@ -70,16 +70,15 @@ int8_t signal_tune_mario_theme[] = {
 
 int8_t signal_tune_kim_possible[] = {
     BUZZER_NOTE_G7, 6,
-    BUZZER_NOTE_REST, 1,
-    BUZZER_NOTE_G4, 3,
+    BUZZER_NOTE_G4, 2,
     BUZZER_NOTE_REST, 5,
     BUZZER_NOTE_G7, 6,
-    BUZZER_NOTE_REST, 1,
-    BUZZER_NOTE_G4, 3,
+    BUZZER_NOTE_G4, 2,
     BUZZER_NOTE_REST, 5,
     BUZZER_NOTE_A7SHARP_B7FLAT, 6,
     BUZZER_NOTE_REST, 2,
     BUZZER_NOTE_G7, 6,
+    BUZZER_NOTE_G4, 2,
     0
 };
 
@@ -118,6 +117,38 @@ int8_t signal_tune_happy_birthday[] = {
     0
 };
 
+int8_t signal_tune_power_rangers[] = {
+    BUZZER_NOTE_D8, 6,
+    BUZZER_NOTE_REST, 8,
+    BUZZER_NOTE_D8, 6,
+    BUZZER_NOTE_REST, 8,
+    BUZZER_NOTE_C8, 6,
+    BUZZER_NOTE_REST, 2,
+    BUZZER_NOTE_D8, 6,
+    BUZZER_NOTE_REST, 8,
+    BUZZER_NOTE_F8, 6,
+    BUZZER_NOTE_REST, 8,
+    BUZZER_NOTE_D8, 6,
+    0
+};
+
+int8_t signal_tune_layla[] = {
+    BUZZER_NOTE_A6, 5,
+    BUZZER_NOTE_REST, 1,
+    BUZZER_NOTE_C7, 5,
+    BUZZER_NOTE_REST, 1,
+    BUZZER_NOTE_D7, 5,
+    BUZZER_NOTE_REST, 1,
+    BUZZER_NOTE_F7, 5,
+    BUZZER_NOTE_REST, 1,
+    BUZZER_NOTE_D7, 5,
+    BUZZER_NOTE_REST, 1,
+    BUZZER_NOTE_C7, 5,
+    BUZZER_NOTE_REST, 1,
+    BUZZER_NOTE_D7, 20,
+    0
+};
+
 // DON'T FORGET TO UPDATE signal_tune_t IN movements.h
 int8_t *signal_tune[] = {
     signal_tune_original,
@@ -128,6 +159,8 @@ int8_t *signal_tune[] = {
     signal_tune_deep_cover,
     signal_tune_song_of_storms,
     signal_tune_happy_birthday,
+    signal_tune_power_rangers,
+    signal_tune_layla,
 };
 
 #endif // MOVEMENT_CUSTOM_SIGNAL_TUNES_H_

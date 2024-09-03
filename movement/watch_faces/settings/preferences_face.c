@@ -197,7 +197,9 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
         default:
             return movement_default_loop_handler(event, settings);
     }
-
+#ifdef CLOCK_FACE_24H_ONLY
+    if (current_page == 1) current_page++;  // Skips past 12/24HR mode
+#endif
     if (state->current_page == 0)
         state->prev_screen_off_pref = settings->bit.screen_off_after_le;
     watch_display_string((char *)preferences_face_titles[state->current_page], 0);

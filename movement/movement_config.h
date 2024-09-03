@@ -99,12 +99,12 @@ const watch_face_t watch_faces[] = {
 /* Set the timeout before switching to low energy mode
  * Valid values are:
  * 0: Never
- * 1: 1 hour
- * 2: 2 hours
- * 3: 6 hours
- * 4: 12 hours
- * 5: 1 day
- * 6: 2 days
+ * 1: 10 mins
+ * 2: 1 hour
+ * 3: 2 hours
+ * 4: 6 hours
+ * 5: 12 hours
+ * 6: 1 day
  * 7: 7 days
  */
 #define MOVEMENT_DEFAULT_LOW_ENERGY_INTERVAL 1
@@ -117,24 +117,6 @@ const watch_face_t watch_faces[] = {
  * 3: 3 seconds
  */
 #define MOVEMENT_DEFAULT_LED_DURATION 2
-
-/* The latitude and longitude used for the wearers location
- * Set signed values in 1/100ths of a degree
- * Set lat and long for Raleigh (3578, -7864)
- * Double JJ Ranch (4354, -8636)
- */
-#define MOVEMENT_DEFAULT_LATITUDE 3578
-#define MOVEMENT_DEFAULT_LONGITUDE -7864
-
-/* The wearers birthdate
- * Valid values:
- * Year: 1 - 4095
- * Month: 1 - 12
- * Day: 1 - 31
- */
-#define MOVEMENT_DEFAULT_BIRTHDATE_YEAR 1994
-#define MOVEMENT_DEFAULT_BIRTHDATE_MONTH 6
-#define MOVEMENT_DEFAULT_BIRTHDATE_DAY 3
 
 /* Set if the watch will chime every hour and ignorethe start and end chimes
  * Valid values are:
@@ -171,5 +153,23 @@ const watch_face_t watch_faces[] = {
 #define MOVEMENT_DEFAULT_LE_DEEP_SLEEP true
 
 #define TEMPERATURE_ASSUME_WEARING 27 //C
+
+/* The latitude and longitude used for the wearers location
+ * Set signed values in 1/100ths of a degree
+ * Set lat and long for Raleigh (3578, -7864)
+ * Double JJ Ranch (4354, -8636)
+ */
+#define MOVEMENT_DEFAULT_LATITUDE 3578
+#define MOVEMENT_DEFAULT_LONGITUDE -7864
+
+/* The wearers birthdate
+ * Valid values:
+ * Year: 1 - 4095
+ * Month: 1 - 12
+ * Day: 1 - 31
+ */
+#define MOVEMENT_DEFAULT_BIRTHDATE_YEAR 1994
+#define MOVEMENT_DEFAULT_BIRTHDATE_MONTH 6
+#define MOVEMENT_DEFAULT_BIRTHDATE_DAY 3
 
 #endif // MOVEMENT_CONFIG_H_
