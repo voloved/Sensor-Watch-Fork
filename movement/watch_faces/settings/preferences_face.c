@@ -286,9 +286,15 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 watch_display_string(settings->bit.dst_active ? "Y" : "N", 9);
                 break;
             case PREFERENCE_HOURLY_CHIME_START:
-                _watch_display_hourly_chime_string(settings, Hourly_Chime_Start[settings->bit.hourly_chime_start]);
+                if (watch_get_backup_data(1) && settings->bit.hourly_chime_start == 3)
+                    watch_display_string("SUNRIS", 4);
+                else
+                    _watch_display_hourly_chime_string(settings, Hourly_Chime_Start[settings->bit.hourly_chime_start]);
                 break;
             case PREFERENCE_HOURLY_CHIME_END:
+                if (watch_get_backup_data(1)  && settings->bit.hourly_chime_end == 3)
+                    watch_display_string("SUNSET", 4);
+                else
                 _watch_display_hourly_chime_string(settings, Hourly_Chime_End[settings->bit.hourly_chime_end]);
                 break;
             case PREFERENCE_LIGHT_DUR:

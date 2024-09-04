@@ -335,7 +335,7 @@ static const uint8_t Hourly_Chime_Start[] =
     6,  // 6am
     7,  // 7am
     10, // 10am
-    12  // 12pm
+    12  // 12pm if no long and lat set; sunset otherwise
 };
 
 static const uint8_t Hourly_Chime_End[] =
@@ -343,7 +343,7 @@ static const uint8_t Hourly_Chime_End[] =
     20, // 8pm
     21, // 9pm
     22, // 10pm
-    00  // 12am
+    00  // 12am if no long and lat set; sunrise otherwise
 };
 
 typedef enum {
