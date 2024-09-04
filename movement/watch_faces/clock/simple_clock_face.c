@@ -27,6 +27,40 @@
 #include "watch.h"
 #include "watch_utility.h"
 #include "watch_private_display.h"
+#include "sunriset.h"
+
+static uint8_t _time_to_chime_hour(double time, double hours_from_utc, bool use_end_of_hour) {
+    time += hours_from_utc;
+    uint8_t hour_to_start = (uint8_t)time;
+    double minutes = (time - hour_to_start) * 60;
+    if (!use_end_of_hour) return hour_to_start;
+    if (minutes >= 0.5)
+        hour_to_start = (hour_to_start + 1) % 24;
+    return hour_to_start;
+}
+
+static bool _get_chime_times(watch_date_time date_time, movement_settings_t *settings, uint8_t *start_hour, uint8_t *end_hour) {
+    int16_t tz = movement_timezone_offsets[settings->bit.time_zone];
+    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, tz * 60, 0); // the current date / time in UTC
+    movement_location_t movement_location = (movement_location_t) watch_get_backup_data(1);
+    if (movement_location.reg == 0) {
+        return false;
+    }
+    double rise, set;
+    uint8_t rise_hour, set_hour;
+    double lat = (double)movement_location.bit.latitude / 100.0;
+    double lon = (double)movement_location.bit.longitude / 100.0;
+    double hours_from_utc = ((double)tz) / 60.0;
+    uint8_t result = sun_rise_set(utc_now.unit.year + WATCH_RTC_REFERENCE_YEAR, utc_now.unit.month, utc_now.unit.day, lon, lat, &rise, &set);
+    if (result != 0) {
+        return false;
+    }
+    rise_hour = _time_to_chime_hour(rise, hours_from_utc, true);
+    set_hour = _time_to_chime_hour(set, hours_from_utc, false);
+    *start_hour = rise_hour;
+    *end_hour = set_hour;
+    return true;
+}
 
 static void _update_alarm_indicator(bool settings_alarm_enabled, simple_clock_state_t *state) {
     state->alarm_enabled = settings_alarm_enabled;
@@ -163,5 +197,13 @@ bool simple_clock_face_wants_background_task(movement_settings_t *settings, void
 
     watch_date_time date_time = watch_rtc_get_date_time();
 
-    return date_time.unit.minute == 0;
+    if (date_time.unit.minute != 0) return false;
+
+    uint8_t chime_start, chime_end;
+    if (_get_chime_times(date_time, settings, &chime_start, &chime_end)) {
+        if (chime_end == 0) chime_end = 24;
+        if (date_time.unit.hour < chime_start || date_time.unit.hour >= chime_end) return false;
+    }
+
+    return true;
 }
