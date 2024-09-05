@@ -282,6 +282,7 @@ bool simple_clock_face_wants_background_task(movement_settings_t *settings, void
     (void) settings;
     simple_clock_state_t *state = (simple_clock_state_t *)context;
     if (!state->signal_enabled) return false;
+    if (date_time.unit.minute != 0) return false;
 
     date_time = watch_rtc_get_date_time();
     uint8_t chime_start, chime_end;
@@ -289,5 +290,5 @@ bool simple_clock_face_wants_background_task(movement_settings_t *settings, void
     if (chime_end == 0) chime_end = 24;
     if (!settings->bit.hourly_chime_always && (date_time.unit.hour < chime_start || date_time.unit.hour >= chime_end)) return false;
 
-    return date_time.unit.minute == 0;
+    return true;
 }
