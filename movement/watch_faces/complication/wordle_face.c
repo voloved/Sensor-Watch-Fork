@@ -476,6 +476,27 @@ static void insert_random_guess(wordle_state_t *state) {
 }
 #endif
 
+static void _activate(wordle_state_t *state) {
+#if WORDLE_USE_DAILY_STREAK != 0
+    uint32_t now = get_day_unix_time();
+    uint32_t one_day = 60 *60 * 24;
+    if ((WORDLE_USE_DAILY_STREAK == 2 && now >= (state->day_last_game_started + (2*one_day)))
+        || (now >= (state->day_last_game_started + one_day) && is_playing(state))) {
+        state->streak = 0;
+        reset_board(state);
+    }
+#endif
+    state->using_random_guess = false;
+    if (is_playing(state) && state->curr_screen >= SCREEN_RESULT) {
+        reset_incorrect_elements(state);
+        state->position = get_first_pos(state->word_elements_result); 
+    }
+    movement_request_tick_frequency(2);
+    watch_clear_all_indicators();
+    watch_clear_colon();
+    display_title(state);
+}
+
 void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -493,22 +514,8 @@ void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, 
 void wordle_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     wordle_state_t *state = (wordle_state_t *)context;
-#if WORDLE_USE_DAILY_STREAK != 0
-    uint32_t now = get_day_unix_time();
-    uint32_t one_day = 60 *60 * 24;
-    if ((WORDLE_USE_DAILY_STREAK == 2 && now >= (state->day_last_game_started + (2*one_day)))
-        || (now >= (state->day_last_game_started + one_day) && is_playing(state))) {
-        state->streak = 0;
-        reset_board(state);
-    }
-#endif
-    state->using_random_guess = false;
-    if (is_playing(state) && state->curr_screen >= SCREEN_RESULT) {
-        reset_incorrect_elements(state);
-        state->position = get_first_pos(state->word_elements_result); 
-    }
-    movement_request_tick_frequency(2);
-    display_title(state);
+    _activate(state);
+
 }
 
 bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -588,6 +595,13 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
         case EVENT_LOW_ENERGY_UPDATE:
             if (state->curr_screen != SCREEN_TITLE)
                 display_title(state);
+            break;
+        case EVENT_MODE_LONG_PRESS:
+            if (state->curr_screen >= SCREEN_PLAYING) {
+                _activate(state);
+            } else {
+                movement_move_to_face(0);
+            }
             break;
         default:
             return movement_default_loop_handler(event, settings);
