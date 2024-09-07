@@ -113,6 +113,7 @@
 #include "higher_lower_game_face.h"
 #include "butterfly_game_face.h"
 #include "wordle_face.h"
+#include "simple_calculator_face.h"
 // New includes go above this line.
 
 #endif // MOVEMENT_FACES_H_
