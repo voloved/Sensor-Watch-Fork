@@ -484,7 +484,7 @@ void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, 
         memset(*context_ptr, 0, sizeof(wordle_state_t));
         wordle_state_t *state = (wordle_state_t *)*context_ptr;
         state->curr_screen = SCREEN_TITLE;
-        state->skip_wrong_letter = false;
+        state->skip_wrong_letter = true;
         reset_all_elements(state);
     }
     // Do any pin or peripheral setup here; this will be called whenever the watch wakes from deep sleep.
