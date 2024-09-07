@@ -130,18 +130,18 @@ const watch_face_t watch_faces[] = {
  * 0: 6am
  * 1: 7am
  * 2: 10am
- * 3: 12pm
+ * 3: 12pm or sunrise in long and lat set;
  */
-#define MOVEMENT_DEFAULT_HOURLY_CHIME_START 1
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_START 3
 
 /* When hourly chiming should end (MOVEMENT_DEFAULT_HOURLY_CHIME_ALWAYS must be 0)
  * Valid values are:
  * 0: 8pm
  * 1: 9pm
  * 2: 10pm
- * 3: 12am
+ * 3: 12am or sunset in long and lat set;
  */
-#define MOVEMENT_DEFAULT_HOURLY_CHIME_END 1
+#define MOVEMENT_DEFAULT_HOURLY_CHIME_END 3
 
 /* Set if using DST
  * Valid values are:

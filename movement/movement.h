@@ -64,8 +64,8 @@ typedef union {
         bool use_imperial_units : 1;        // indicates whether to use metric units (the default) or imperial.
         bool alarm_enabled : 1;             // indicates whether there is at least one alarm enabled.
         bool hourly_chime_always : 1;       // if true, then ignore the 
-        uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm; 
-        uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
+        uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm or sunrise in long and lat set; 
+        uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am or sunset in long and lat set;
         bool screen_off_after_le : 1;
         bool dst_active : 1;                // indicates whether daylight savings time is active
     } bit;

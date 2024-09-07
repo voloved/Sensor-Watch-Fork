@@ -23,7 +23,6 @@
  */
 
 #include <stdlib.h>
-#include <math.h>
 #include "simple_clock_face.h"
 #include "watch.h"
 #include "watch_utility.h"
@@ -38,16 +37,11 @@ static void _load_default_chime_times(uint8_t hourly_chime_start, uint8_t hourly
 }
 
 static uint8_t _time_to_chime_hour(double time, double hours_from_utc, bool use_end_of_hour) {
-    double minutes, seconds;
-    uint8_t hour_to_start;
     time += hours_from_utc;
-    minutes = 60.0 * fmod(time, 1);
-    seconds = 60.0 * fmod(minutes, 1);
-    hour_to_start = floor(time);
+    uint8_t hour_to_start = (uint8_t)time;
+    double minutes = (time - hour_to_start) * 60;
     if (!use_end_of_hour) return hour_to_start;
-    if (seconds < 30) minutes = floor(minutes);
-    else minutes = ceil(minutes);
-    if (minutes != 0)
+    if (minutes >= 0.5)
         hour_to_start = (hour_to_start + 1) % 24;
     return hour_to_start;
 }
@@ -59,19 +53,17 @@ static void _get_chime_times(watch_date_time date_time, movement_settings_t *set
         _load_default_chime_times(hourly_chime_start, hourly_chime_end, start_hour, end_hour);
         return;
     }
-    int16_t tz = get_timezone_offset(settings->bit.time_zone, watch_rtc_get_date_time());
+    int16_t tz = get_timezone_offset(settings->bit.time_zone, date_time);
     watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, tz * 60, 0); // the current date / time in UTC
     movement_location_t movement_location = (movement_location_t) watch_get_backup_data(1);
     if (movement_location.reg == 0) {
         _load_default_chime_times(hourly_chime_start, hourly_chime_end, start_hour, end_hour);
         return;
     }
-    int16_t lat_centi = (int16_t)movement_location.bit.latitude;
-    int16_t lon_centi = (int16_t)movement_location.bit.longitude;
     double rise, set;
     uint8_t rise_hour, set_hour;
-    double lat = (double)lat_centi / 100.0;
-    double lon = (double)lon_centi / 100.0;
+    double lat = (double)movement_location.bit.latitude / 100.0;
+    double lon = (double)movement_location.bit.longitude / 100.0;
     double hours_from_utc = ((double)tz) / 60.0;
     uint8_t result = sun_rise_set(utc_now.unit.year + WATCH_RTC_REFERENCE_YEAR, utc_now.unit.month, utc_now.unit.day, lon, lat, &rise, &set);
     if (result != 0) {
