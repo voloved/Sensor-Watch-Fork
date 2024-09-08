@@ -32,8 +32,7 @@
  *
  * Alarm
  *    Press: Decrement
- *    Hold : On initial value: Toggle Sound
- *                       Else: Fast Decrement
+ *    Hold : Fast Decrement
  *
  * Light
  *    Press: Increment
@@ -44,6 +43,8 @@
  *    Press: Next face
  *    Hold : On initial value: Go to first face.
  *                       Else: Resets counter
+ * 
+ * Incrementing or Decrementing the tally will beep if Beeping is set in the global Preferences
  */
 
 #include "movement.h"
