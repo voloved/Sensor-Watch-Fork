@@ -100,7 +100,7 @@ static void shuffle_deck(uint8_t *array, uint8_t n) {
     // Randomize shuffle with Fisher Yates
     uint8_t i, j, tmp;
      for (i = n - 1; i > 0; i--) {
-         j = generate_random_number(0xFF) % (i + 1);
+         j = generate_random_number(i + 1);
          tmp = array[j];
          array[j] = array[i];
          array[i] = tmp;
