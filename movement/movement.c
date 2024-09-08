@@ -546,7 +546,10 @@ static void set_initial_clock_mode(void) {
 #ifdef CLOCK_FACE_24H_ONLY
     movement_state.settings.bit.clock_mode_24h = true;
 #else
-    movement_state.settings.bit.clock_mode_24h = MOVEMENT_DEFAULT_24H_MODE;
+    if(MOVEMENT_DEFAULT_24H_MODE == 1)
+        movement_state.settings.bit.clock_mode_24h = true;
+    else
+        movement_state.settings.bit.clock_mode_24h = false;
 #endif
 }
 
