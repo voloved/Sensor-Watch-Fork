@@ -38,6 +38,7 @@ const watch_face_t watch_faces[] = {
     moon_phase_face,
     party_face,
     periodic_face,
+    simple_calculator_face,
     kitchen_conversions_face,
     festival_schedule_face,
     wyoscan_face,
@@ -52,8 +53,6 @@ const watch_face_t watch_faces[] = {
     higher_lower_game_face,
     lander_face,
     simon_face,
-    invaders_face,
-    butterfly_game_face,
     tarot_face,
 };
 
@@ -65,7 +64,7 @@ const watch_face_t watch_faces[] = {
  * Some folks also like to use this to hide the preferences and time set faces from the normal rotation.
  * If you don't want any faces to be excluded, set this to 0 and a long Mode press will have no effect.
  */
-#define MOVEMENT_TERIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 8)
+#define MOVEMENT_TERIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 6)
 #define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_TERIARY_FACE_INDEX - 4) // or (0)
 
 /* Custom hourly chime tune. Check movement_custom_signal_tunes.h for options. */
@@ -80,7 +79,7 @@ const watch_face_t watch_faces[] = {
 /* Set to true for 24h mode or false for 12h mode
  * 0: 12Hr
  * 1: 24Hr
- * 2: tOGGLE WITH aLARM BTN
+ * 2: Toggle with Alarm Btn
  */
 #define MOVEMENT_DEFAULT_24H_MODE 2
 
