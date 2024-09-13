@@ -314,6 +314,7 @@ bool stock_stopwatch_face_loop(movement_event_t event, movement_settings_t *sett
 void stock_stopwatch_face_resign(movement_settings_t *settings, void *context) {
     (void) settings;
     (void) context;
+    watch_set_led_off();
     // cancel the keepalive task
     movement_cancel_background_task();
 }
