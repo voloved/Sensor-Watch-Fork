@@ -24,6 +24,7 @@ INCLUDES += \
   -I../lib/vsop87/ \
   -I../lib/astrolib/ \
   -I../lib/morsecalc/ \
+  -I../lib/smallchesslib/ \
 
 # If you add any other source files you wish to compile, add them after ../app.c
 # Note that you will need to add a backslash at the end of any line you wish to continue, i.e.
@@ -139,6 +140,7 @@ SRCS += \
   ../watch_faces/complication/butterfly_game_face.c \
   ../watch_faces/complication/wordle_face.c \
   ../watch_faces/complication/simple_calculator_face.c \
+  ../watch_faces/complication/smallchess_face.c \
 # New watch faces go above this line.
 
 # Leave this line at the bottom of the file; it has all the targets for making your project.
