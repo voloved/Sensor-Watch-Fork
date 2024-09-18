@@ -254,6 +254,8 @@ static void do_game_loop(guess_t user_guess) {
                 // Incorrect guess, game over
                 watch_display_string(" L", STATUS_DISPLAY_START);
                 game_board[guess_position].revealed = true;
+                watch_display_string("------", BOARD_DISPLAY_START);
+                render_board_position(guess_position - 1);
                 render_board_position(guess_position);
                 game_state = HL_GS_LOSE;
                 return;
@@ -263,7 +265,7 @@ static void do_game_loop(guess_t user_guess) {
                 // Win, perhaps some kind of animation sequence?
                 watch_display_string("WI", STATUS_DISPLAY_START);
                 watch_display_string("  ", BOARD_SCORE_DISPLAY_START);
-                watch_display_string("------", BOARD_DISPLAY_START);
+                watch_display_string("winnEr", BOARD_DISPLAY_START);
                 game_state = HL_GS_WIN;
                 return;
             }
