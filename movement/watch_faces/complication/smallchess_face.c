@@ -77,7 +77,7 @@ static void _smallchess_calc_moveable_pieces(smallchess_face_state_t *state) {
     state->moveable_pieces_idx = 0;
 }
 
-static void _smallchess_make_ai_move(smallchess_face_state_t *state) {
+static void _smallchess_make_ai_move(smallchess_face_state_t *state, bool play_buzzer) {
     char ai_from_str[3] = {0};
     char ai_to_str[3] = {0};
     uint8_t rep_from, rep_to;
@@ -98,7 +98,8 @@ static void _smallchess_make_ai_move(smallchess_face_state_t *state) {
     SCL_gameMakeMove(state->game, state->ai_from_square, state->ai_to_square, ai_prom);
     watch_stop_blink();
 
-    watch_buzzer_play_sequence(cpu_done_beep, NULL);
+    if (play_buzzer)
+        watch_buzzer_play_sequence(cpu_done_beep, NULL);
 
     /* cache the move as a string for SHOW_CPU_MOVE state */
     SCL_squareToString(state->ai_from_square, ai_from_str);
@@ -209,7 +210,7 @@ static void _smallchess_face_update_lcd(smallchess_face_state_t *state) {
     watch_display_string(buf, 0);
 }
 
-static void _smallchess_select_main_menu_subitem(smallchess_face_state_t *state) {
+static void _smallchess_select_main_menu_subitem(smallchess_face_state_t *state, bool play_buzzer) {
     char from_str[3] = {0};
     char to_str[3] = {0};
     char prom;
@@ -233,7 +234,7 @@ static void _smallchess_select_main_menu_subitem(smallchess_face_state_t *state)
         case SMALLCHESS_MENU_NEW_BLACK:
             SCL_gameInit((SCL_Game *)state->game, 0);
             /* force a move since black is playing */
-            _smallchess_make_ai_move(state);
+            _smallchess_make_ai_move(state, play_buzzer);
             state->state = SMALLCHESS_SHOW_CPU_MOVE;
             break;
         case SMALLCHESS_MENU_SHOW_LAST_MOVE:
@@ -315,7 +316,7 @@ static void _smallchess_handle_select_piece_button_event(smallchess_face_state_t
     }
 }
 
-static void _smallchess_handle_select_dest_button_event(smallchess_face_state_t *state, movement_event_t event) {
+static void _smallchess_handle_select_dest_button_event(smallchess_face_state_t *state, movement_event_t event, bool play_buzzer) {
     switch (event.event_type) {
         case EVENT_ALARM_BUTTON_UP:
             // check for no moves possible state (shouldn't happen but this will prevent weirdness)
@@ -357,7 +358,7 @@ static void _smallchess_handle_select_dest_button_event(smallchess_face_state_t 
 
             /* if the player didn't win or draw here, calculate a move */
             if (((SCL_Game *)state->game)->state == SCL_GAME_STATE_PLAYING) {
-                _smallchess_make_ai_move(state);
+                _smallchess_make_ai_move(state, play_buzzer);
                 state->state = SMALLCHESS_SHOW_CPU_MOVE;
             } else {
                 /* player ended the game through mate or draw; jump to select piece screen to show state */
@@ -396,11 +397,11 @@ static void _smallchess_handle_show_last_move_button_event(smallchess_face_state
     }
 }
 
-static void _smallchess_handle_playing_button_event(smallchess_face_state_t *state, movement_event_t event) {
+static void _smallchess_handle_playing_button_event(smallchess_face_state_t *state, movement_event_t event, bool play_buzzer) {
     if (state->state == SMALLCHESS_SELECT_PIECE) {
         _smallchess_handle_select_piece_button_event(state, event);
     } else if (state->state == SMALLCHESS_SELECT_DEST) {
-        _smallchess_handle_select_dest_button_event(state, event);
+        _smallchess_handle_select_dest_button_event(state, event, play_buzzer);
     } else if (state->state == SMALLCHESS_SHOW_CPU_MOVE) {
         _smallchess_handle_show_cpu_move_button_event(state, event);
     } else if (state->state == SMALLCHESS_SHOW_LAST_MOVE) {
@@ -408,7 +409,7 @@ static void _smallchess_handle_playing_button_event(smallchess_face_state_t *sta
     }
 }
 
-static void _smallchess_handle_main_menu_button_event(smallchess_face_state_t *state, movement_event_t event) {
+static void _smallchess_handle_main_menu_button_event(smallchess_face_state_t *state, movement_event_t event, bool play_buzzer) {
     uint16_t ply = ((SCL_Game *)state->game)->ply;
 
     switch (event.event_type) {
@@ -446,20 +447,20 @@ static void _smallchess_handle_main_menu_button_event(smallchess_face_state_t *s
 
             break;
         case EVENT_ALARM_LONG_PRESS:
-            _smallchess_select_main_menu_subitem(state);
+            _smallchess_select_main_menu_subitem(state, play_buzzer);
             break;
         default:
             break;
     }
 }
 
-static void _smallchess_handle_button_event(smallchess_face_state_t *state, movement_event_t event) {
+static void _smallchess_handle_button_event(smallchess_face_state_t *state, movement_event_t event, bool play_buzzer) {
     if (state->state < SMALLCHESS_PLAYING_SPLIT) {
         /* in main menu */
-        _smallchess_handle_main_menu_button_event(state, event);
+        _smallchess_handle_main_menu_button_event(state, event, play_buzzer);
     } else if (state->state > SMALLCHESS_PLAYING_SPLIT) {
         /* in piece selection */
-        _smallchess_handle_playing_button_event(state, event);
+        _smallchess_handle_playing_button_event(state, event, play_buzzer);
     }
 }
 
@@ -480,7 +481,7 @@ bool smallchess_face_loop(movement_event_t event, movement_settings_t *settings,
         case EVENT_LIGHT_LONG_PRESS:
         case EVENT_ALARM_BUTTON_UP:
         case EVENT_ALARM_LONG_PRESS:
-            _smallchess_handle_button_event(state, event);
+            _smallchess_handle_button_event(state, event, settings->bit.button_should_sound);
             _smallchess_face_update_lcd(state);
             break;
         case EVENT_TICK:
