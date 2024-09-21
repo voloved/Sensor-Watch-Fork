@@ -45,6 +45,10 @@
 #define DECK_COUNT (DUPLICATES_OF_CARD * (MAX_CARD_VALUE - MIN_CARD_VALUE + 1))
 #define FLIP_BOARD_DIRECTION false
 
+#define KING   12
+#define QUEEN  11
+#define JACK   10
+
 typedef struct card_t {
     uint8_t value;
     bool revealed;
@@ -143,39 +147,33 @@ static void set_segment_at_position(segment_t segment, uint8_t position) {
     watch_set_pixel(com_pin, seg);
 }
 
+static inline size_t get_display_position(size_t board_position) {
+    return FLIP_BOARD_DIRECTION ? BOARD_DISPLAY_START + board_position : BOARD_DISPLAY_END - board_position;
+}
+
 static void render_board_position(size_t board_position) {
-    const size_t display_position = FLIP_BOARD_DIRECTION
-            ? BOARD_DISPLAY_START + board_position
-            : BOARD_DISPLAY_END - board_position;
+    const size_t display_position = get_display_position(board_position);
     const bool revealed = game_board[board_position].revealed;
-
-    //// Current position indicator spot
-    //if (board_position == guess_position) {
-    //    watch_display_character('-', display_position);
-    //    return;
-    //}
-
     if (!revealed) {
         // Higher or lower indicator (currently just an empty space)
         watch_display_character(' ', display_position);
-        //set_segment_at_position(F, display_position);
         return;
     }
 
     const uint8_t value = game_board[board_position].value;
     switch (value) {
-        case 12: // K (≡)
+        case KING: // K (≡)
             watch_display_character(' ', display_position);
             set_segment_at_position(A, display_position);
             set_segment_at_position(D, display_position);
             set_segment_at_position(G, display_position);
             break;
-        case 11: // Q (=)
+        case QUEEN: // Q (=)
             watch_display_character(' ', display_position);
             set_segment_at_position(A, display_position);
             set_segment_at_position(D, display_position);
             break;
-        case 10: // J (-)
+        case JACK: // J (-)
             watch_display_character('-', display_position);
             break;
         default: {
@@ -257,6 +255,8 @@ static void do_game_loop(guess_t user_guess) {
                 watch_display_string("------", BOARD_DISPLAY_START);
                 render_board_position(guess_position - 1);
                 render_board_position(guess_position);
+                if (game_board[guess_position].value == JACK && guess_position < GAME_BOARD_SIZE) // Adds a space in case the revealed option is '-'
+                    watch_display_character(' ', get_display_position(guess_position + 1));
                 game_state = HL_GS_LOSE;
                 return;
             }
