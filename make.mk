@@ -269,7 +269,7 @@ CFLAGS += -DMAKEFILE_CURR_MONTH=$(CURRENT_MONTH)
 CFLAGS += -DMAKEFILE_CURR_DAY=$(CURRENT_DAY)
 CFLAGS += -DMAKEFILE_CURR_HOUR=$(CURRENT_HOUR)
 CFLAGS += -DMAKEFILE_CURR_MINUTE=$(CURRENT_MINUTE)
-$(info Default time set to $(CURRENT_HOUR):$(CURRENT_MINUTE) on $(shell date +"%b") $(CURRENT_DAY) $(shell date +"%Y") $(shell date +%Z))
+$(info Default time set to $(CURRENT_HOUR):$(shell printf "%02d" $(CURRENT_MINUTE)) on $(shell date +"%b") $(CURRENT_DAY) $(shell date +"%Y") $(shell date +%Z))
 else
 $(error DATE must be YEAR, DAY, or MIN if used.)
 endif
