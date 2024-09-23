@@ -4,3 +4,6 @@
 [submodule "littlefs"]
 	path = littlefs
 	url = https://github.com/littlefs-project/littlefs.git
+[submodule "utz"]
+	path = utz
+	url = git@github.com:joeycastillo/utz.git
