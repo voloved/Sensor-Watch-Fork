@@ -26,9 +26,10 @@
 #include "set_time_face.h"
 #include "watch.h"
 #include "watch_utility.h"
+#include "zones.h"
 
 #define SET_TIME_FACE_NUM_SETTINGS (7)
-const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "ZO"};
+const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "  "};
 
 static bool _quick_ticks_running;
 
@@ -57,7 +58,7 @@ static void _handle_alarm_button(movement_settings_t *settings, watch_date_time 
         }
         case 6: // time zone
             settings->bit.time_zone++;
-            if (settings->bit.time_zone > 40) settings->bit.time_zone = 0;
+            if (settings->bit.time_zone >= NUM_ZONE_NAMES) settings->bit.time_zone = 0;
             break;
     }
     if (date_time.unit.day > days_in_month(date_time.unit.month, date_time.unit.year + WATCH_RTC_REFERENCE_YEAR))
@@ -147,7 +148,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             sprintf(buf, "%s        ", set_time_face_titles[current_page]);
         } else {
             watch_set_colon();
-            sprintf(buf, "%s %3d%02d  ", set_time_face_titles[current_page], (int8_t) (movement_timezone_offsets[settings->bit.time_zone] / 60), (int8_t) (movement_timezone_offsets[settings->bit.time_zone] % 60) * (movement_timezone_offsets[settings->bit.time_zone] < 0 ? -1 : 1));
+            sprintf(buf, "%s %s", set_time_face_titles[current_page], (char *) (3 + zone_names + 11 * settings->bit.time_zone));
         }
     }
 
