@@ -221,6 +221,13 @@ static guess_t get_answer() {
         return HL_GUESS_EQUAL;
 }
 
+static void show_title_screen(void) {
+    watch_clear_display();
+    watch_display_string(TITLE_TEXT, BOARD_DISPLAY_START);
+    watch_display_string("HL", STATUS_DISPLAY_START);
+    game_state = HL_GS_TITLE_SCREEN;
+}
+
 static void do_game_loop(guess_t user_guess) {
     switch (game_state) {
         case HL_GS_TITLE_SCREEN:
@@ -294,10 +301,7 @@ static void do_game_loop(guess_t user_guess) {
             game_state = HL_GS_SHOW_SCORE;
             break;
         case HL_GS_SHOW_SCORE:
-            watch_clear_display();
-            watch_display_string(TITLE_TEXT, BOARD_DISPLAY_START);
-            watch_display_string("HL", STATUS_DISPLAY_START);
-            game_state = HL_GS_TITLE_SCREEN;
+            show_title_screen();
             break;
         default:
             watch_display_string("ERROR", BOARD_DISPLAY_START);
@@ -331,7 +335,6 @@ void higher_lower_game_face_activate(movement_settings_t *settings, void *contex
     higher_lower_game_face_state_t *state = (higher_lower_game_face_state_t *) context;
     (void) state;
     // Handle any tasks related to your watch face coming on screen.
-    game_state = HL_GS_TITLE_SCREEN;
 }
 
 bool higher_lower_game_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -340,9 +343,7 @@ bool higher_lower_game_face_loop(movement_event_t event, movement_settings_t *se
 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
-            // Show your initial UI here.
-            watch_display_string(TITLE_TEXT, BOARD_DISPLAY_START);
-            watch_display_string("HL", STATUS_DISPLAY_START);
+            show_title_screen();
             break;
         case EVENT_TICK:
             // If needed, update your display here.
@@ -357,9 +358,10 @@ bool higher_lower_game_face_loop(movement_event_t event, movement_settings_t *se
             alarm_button_handler();
             break;
         case EVENT_TIMEOUT:
-            // Your watch face will receive this event after a period of inactivity. If it makes sense to resign,
-            // you may uncomment this line to move back to the first watch face in the list:
-            // movement_move_to_face(0);
+            if (game_state > HL_GS_GUESSING)
+                show_title_screen();
+            else
+                watch_display_string("HL", STATUS_DISPLAY_START);
             break;
         default:
             return movement_default_loop_handler(event, settings);
