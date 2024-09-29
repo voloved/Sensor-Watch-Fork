@@ -395,28 +395,12 @@ int32_t movement_get_current_timezone_offset(void) {
     return movement_get_current_timezone_offset_for_zone(movement_state.settings.bit.time_zone);
 }
 
-int32_t movement_get_current_timezone_offset_for_zone(uint8_t zone_index) {
-    watch_date_time date_time = watch_rtc_get_date_time();
-    uzone_t time_zone;
-    uoffset_t offset;
-    udatetime_t udate_time = {
-        .date.dayofmonth = date_time.unit.day,
-        .date.dayofweek = dayofweek(date_time.unit.year + WATCH_RTC_REFERENCE_YEAR - UYEAR_OFFSET, date_time.unit.month, date_time.unit.day),
-        .date.month = date_time.unit.month,
-        .date.year = date_time.unit.year + WATCH_RTC_REFERENCE_YEAR - UYEAR_OFFSET,
-        .time.hour = date_time.unit.hour,
-        .time.minute = date_time.unit.minute,
-        .time.second = date_time.unit.second
-    };
-
-    unpack_zone(&zone_defns[zone_index], "", &time_zone);
-    get_current_offset(&time_zone, &udate_time, &offset);
-
-    return offset.hours * 3600 + offset.minutes * 60;
+int32_t movement_get_timezone_index(void) {
+    return movement_state.settings.bit.time_zone;
 }
 
-int32_t movement_get_current_timezone_offset(void) {
-    return movement_get_current_timezone_offset_for_zone(movement_state.settings.bit.time_zone);
+void movement_set_timezone_index(uint8_t value) {
+    movement_state.settings.bit.time_zone = value;
 }
 
 void app_init(void) {

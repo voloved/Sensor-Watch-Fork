@@ -57,8 +57,8 @@ static void _handle_alarm_button(movement_settings_t *settings, watch_date_time 
             break;
         }
         case 6: // time zone
-            settings->bit.time_zone++;
-            if (settings->bit.time_zone >= NUM_ZONE_NAMES) settings->bit.time_zone = 0;
+            movement_set_timezone_index(movement_get_timezone_index() + 1);
+            if (movement_get_timezone_index() >= NUM_ZONE_NAMES) movement_set_timezone_index(0);
             break;
     }
     if (date_time.unit.day > days_in_month(date_time.unit.month, date_time.unit.year + WATCH_RTC_REFERENCE_YEAR))
@@ -148,7 +148,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             sprintf(buf, "%s        ", set_time_face_titles[current_page]);
         } else {
             watch_set_colon();
-            sprintf(buf, "%s %s", set_time_face_titles[current_page], (char *) (3 + zone_names + 11 * settings->bit.time_zone));
+            sprintf(buf, "%s %s", set_time_face_titles[current_page], (char *) (3 + zone_names + 11 * movement_get_timezone_index()));
         }
     }
 
