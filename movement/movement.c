@@ -329,8 +329,8 @@ static void set_initial_clock_mode(void) {
     movement_state.settings.bit.clock_mode_24h = true;
 #else
     movement_state.settings.bit.clock_mode_24h = MOVEMENT_DEFAULT_24H_MODE;
-    movement_state.settings.bit.time_zone = 15;
 #endif
+    movement_state.settings.bit.time_zone = 15;
 }
 
 void movement_play_signal(void) {
