@@ -32,6 +32,7 @@
 const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "  "};
 
 static bool _quick_ticks_running;
+static int32_t current_offset;
 
 static void _handle_alarm_button(movement_settings_t *settings, watch_date_time date_time, uint8_t current_page) {
     // handles short or long pressing of the alarm button
@@ -59,6 +60,7 @@ static void _handle_alarm_button(movement_settings_t *settings, watch_date_time 
         case 6: // time zone
             movement_set_timezone_index(movement_get_timezone_index() + 1);
             if (movement_get_timezone_index() >= NUM_ZONE_NAMES) movement_set_timezone_index(0);
+            current_offset = movement_get_current_timezone_offset_for_zone(movement_get_timezone_index());
             break;
     }
     if (date_time.unit.day > days_in_month(date_time.unit.month, date_time.unit.year + WATCH_RTC_REFERENCE_YEAR))
@@ -84,6 +86,7 @@ void set_time_face_activate(movement_settings_t *settings, void *context) {
     *((uint8_t *)context) = 0;
     movement_request_tick_frequency(4);
     _quick_ticks_running = false;
+    current_offset = movement_get_current_timezone_offset();
 }
 
 bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
@@ -143,12 +146,17 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
         watch_clear_indicator(WATCH_INDICATOR_PM);
         sprintf(buf, "%s  %2d%02d%02d", set_time_face_titles[current_page], date_time.unit.year + 20, date_time.unit.month, date_time.unit.day);
     } else {
+        if (current_offset < 0) watch_display_string("- ", 0);
+        else watch_display_string("* ", 0);
         if (event.subsecond % 2) {
-            watch_clear_colon();
-            sprintf(buf, "%s        ", set_time_face_titles[current_page]);
-        } else {
+            uint8_t hours = abs(current_offset) / 3600;
+            uint8_t minutes = (abs(current_offset) % 3600) / 60;
+
+            sprintf(buf, "%2d%02d  ", hours % 100, minutes % 100);
             watch_set_colon();
-            sprintf(buf, "%s %s", set_time_face_titles[current_page], (char *) (3 + zone_names + 11 * movement_get_timezone_index()));
+        } else {
+            sprintf(buf, "%s", (char *) (3 + zone_names + 11 * movement_get_timezone_index()));
+            watch_clear_colon();
         }
     }
 
