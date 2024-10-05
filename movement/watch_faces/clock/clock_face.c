@@ -246,11 +246,11 @@ bool clock_face_loop(movement_event_t event, movement_settings_t *settings, void
     switch (event.event_type) {
         case EVENT_LOW_ENERGY_UPDATE:
             clock_start_tick_tock_animation();
-            clock_display_low_energy(watch_rtc_get_date_time());
+            clock_display_low_energy(movement_get_local_date_time());
             break;
         case EVENT_TICK:
         case EVENT_ACTIVATE:
-            current = watch_rtc_get_date_time();
+            current = movement_get_local_date_time();
 
             clock_display_clock(settings, state, current);
 
@@ -284,7 +284,10 @@ bool clock_face_wants_background_task(movement_settings_t *settings, void *conte
     clock_state_t *state = (clock_state_t *) context;
     if (!state->time_signal_enabled) return false;
 
-    watch_date_time date_time = watch_rtc_get_date_time();
+    if (state->time_signal_enabled) {
+        watch_date_time date_time = movement_get_local_date_time();
+        retval.wants_background_task = date_time.unit.minute == 0;
+    }
 
     return date_time.unit.minute == 0;
 }

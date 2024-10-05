@@ -65,7 +65,7 @@ static void _handle_alarm_button(movement_settings_t *settings, watch_date_time 
     }
     if (date_time.unit.day > days_in_month(date_time.unit.month, date_time.unit.year + WATCH_RTC_REFERENCE_YEAR))
         date_time.unit.day = 1;
-    watch_rtc_set_date_time(date_time);
+    movement_set_local_date_time(date_time);
 }
 
 static void _abort_quick_ticks() {
@@ -91,7 +91,7 @@ void set_time_face_activate(movement_settings_t *settings, void *context) {
 
 bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
     uint8_t current_page = *((uint8_t *)context);
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
 
     switch (event.event_type) {
         case EVENT_TICK:
