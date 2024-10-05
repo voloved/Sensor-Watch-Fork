@@ -387,7 +387,6 @@ static void set_initial_clock_mode(void) {
 #else
     movement_state.settings.bit.clock_mode_24h = MOVEMENT_DEFAULT_24H_MODE;
 #endif
-    movement_state.settings.bit.time_zone = 15;
 }
 
 void movement_play_signal(void) {
@@ -488,6 +487,7 @@ void app_init(void) {
 
     memset(&movement_state, 0, sizeof(movement_state));
     set_initial_clock_mode();
+    movement_state.settings.bit.time_zone = UTZ_UTC;
     movement_state.settings.bit.led_red_color = MOVEMENT_DEFAULT_RED_COLOR;
     movement_state.settings.bit.led_green_color = MOVEMENT_DEFAULT_GREEN_COLOR;
     movement_state.settings.bit.button_should_sound = MOVEMENT_DEFAULT_BUTTON_SOUND;
