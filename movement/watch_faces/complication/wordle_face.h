@@ -84,6 +84,11 @@
  *  3 = Allow using a random guess of any value that can be an answer, and it's considered one of the best initial choices.
 */
 #define WORDLE_USE_RANDOM_GUESS 3
+#define WORDLE_FREQ 2
+// To avoid a button press immedietly skipping a screen, we wait this many ticks
+#define WORDLE_TICKS_RESULT 4  
+#define WORDLE_TICK_WIN_LOSE 2
+#define WORDLE_TICK_BAD_GUESS 0
 #include "wordle_face_dict.h"
 
 #define WORDLE_NUM_WORDS (sizeof(_valid_words) / sizeof(_valid_words[0]))
@@ -130,6 +135,7 @@ typedef struct {
     WordleScreen curr_screen;
     bool known_wrong_letters[WORDLE_NUM_VALID_LETTERS];
     uint32_t day_last_game_started;
+    uint8_t ignore_btn_ticks;
 } wordle_state_t;
 
 void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);

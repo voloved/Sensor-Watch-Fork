@@ -101,11 +101,13 @@ static void display_all_letters(wordle_state_t *state) {
 static void display_not_in_dict(wordle_state_t *state) {
     state->curr_screen = SCREEN_NO_DICT;
     watch_display_string("nodict", 4);
+    state->ignore_btn_ticks = WORDLE_TICK_BAD_GUESS;
 }
 
 static void display_already_guessed(wordle_state_t *state) {
     state->curr_screen = SCREEN_ALREADY_GUESSED;
     watch_display_string("GUESSD", 4);
+    state->ignore_btn_ticks = WORDLE_TICK_BAD_GUESS;
 }
 
 static uint32_t check_word_in_dict(uint8_t *word_elements) {
@@ -347,6 +349,7 @@ static void display_result(wordle_state_t *state, uint8_t subsecond) {
 }
 
 static bool act_on_btn(wordle_state_t *state, const uint8_t pin) {
+    if (state->ignore_btn_ticks > 0) return true;
     switch (state->curr_screen)
     {
     case SCREEN_RESULT:
@@ -439,6 +442,7 @@ static void get_result(wordle_state_t *state) {
     if (exact_match) {
         reset_all_elements(state);
         state->curr_screen = SCREEN_WIN;
+        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
         if (state->streak < 0x7F)
             state->streak++;
 #if WORDLE_USE_DAILY_STREAK == 2
@@ -449,11 +453,13 @@ static void get_result(wordle_state_t *state) {
     if (++state->attempt >= WORDLE_MAX_ATTEMPTS) {
         reset_all_elements(state);
         state->curr_screen = SCREEN_LOSE;
+        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
         state->streak = 0;
         return;
     }
     update_known_wrong_letters(state);
     state->curr_screen = SCREEN_RESULT;
+    state->ignore_btn_ticks = WORDLE_TICKS_RESULT;
     return;
 }
 
@@ -491,7 +497,7 @@ static void _activate(wordle_state_t *state) {
         reset_incorrect_elements(state);
         state->position = get_first_pos(state->word_elements_result); 
     }
-    movement_request_tick_frequency(2);
+    movement_request_tick_frequency(WORDLE_FREQ);
     watch_clear_all_indicators();
     watch_clear_colon();
     display_title(state);
@@ -523,6 +529,7 @@ bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, voi
 
     switch (event.event_type) {
         case EVENT_TICK:
+            if (state->ignore_btn_ticks > 0) state->ignore_btn_ticks--;
             switch (state->curr_screen)
             {
             case SCREEN_PLAYING:
