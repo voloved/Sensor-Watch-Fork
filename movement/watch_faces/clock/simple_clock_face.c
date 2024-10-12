@@ -161,7 +161,7 @@ bool simple_clock_face_wants_background_task(movement_settings_t *settings, void
     simple_clock_state_t *state = (simple_clock_state_t *)context;
     if (!state->signal_enabled) return false;
 
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
 
     return date_time.unit.minute == 0;
 }

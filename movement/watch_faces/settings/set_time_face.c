@@ -34,7 +34,7 @@ const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "S
 static bool _quick_ticks_running;
 static int32_t current_offset;
 
-static void _handle_alarm_button(movement_settings_t *settings, watch_date_time date_time, uint8_t current_page) {
+static void _handle_alarm_button(watch_date_time date_time, uint8_t current_page) {
     // handles short or long pressing of the alarm button
 
     switch (current_page) {
@@ -96,7 +96,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
     switch (event.event_type) {
         case EVENT_TICK:
             if (_quick_ticks_running) {
-                if (watch_get_pin_level(BTN_ALARM)) _handle_alarm_button(settings, date_time, current_page);
+                if (watch_get_pin_level(BTN_ALARM)) _handle_alarm_button(date_time, current_page);
                 else _abort_quick_ticks();
             }
             break;
@@ -119,7 +119,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             break;
         case EVENT_ALARM_BUTTON_UP:
             _abort_quick_ticks();
-            _handle_alarm_button(settings, date_time, current_page);
+            _handle_alarm_button(date_time, current_page);
             break;
         case EVENT_TIMEOUT:
             _abort_quick_ticks();

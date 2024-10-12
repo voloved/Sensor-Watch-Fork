@@ -59,7 +59,7 @@ static const char astronomy_celestial_body_names[NUM_AVAILABLE_BODIES][3] = {
     "NE"    // Neptune
 };
 
-static void _astronomy_face_recalculate(movement_settings_t *settings, astronomy_state_t *state) {
+static void _astronomy_face_recalculate(astronomy_state_t *state) {
 #if __EMSCRIPTEN__
     int16_t browser_lat = EM_ASM_INT({
         return lat;
@@ -116,7 +116,7 @@ static void _astronomy_face_recalculate(movement_settings_t *settings, astronomy
             state->distance);
 }
 
-static void _astronomy_face_update(movement_event_t event, movement_settings_t *settings, astronomy_state_t *state) {
+static void _astronomy_face_update(movement_event_t event, astronomy_state_t *state) {
     char buf[16];
     switch (state->mode) {
         case ASTRONOMY_MODE_SELECTING_BODY:
@@ -150,7 +150,7 @@ static void _astronomy_face_update(movement_event_t event, movement_settings_t *
             watch_clear_display();
              // this takes a moment and locks the UI, flash C for "Calculating"
             watch_start_character_blink('C', 100);
-            _astronomy_face_recalculate(settings, state);
+            _astronomy_face_recalculate(state);
             watch_stop_blink();
             state->mode = ASTRONOMY_MODE_DISPLAYING_ALT;
             // fall through
@@ -217,7 +217,7 @@ bool astronomy_face_loop(movement_event_t event, movement_settings_t *settings, 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
         case EVENT_TICK:
-            _astronomy_face_update(event, settings, state);
+            _astronomy_face_update(event, state);
             break;
         case EVENT_ALARM_BUTTON_UP:
             switch (state->mode) {
@@ -237,19 +237,19 @@ bool astronomy_face_loop(movement_event_t event, movement_settings_t *settings, 
                     state->mode++;
                     break;
             }
-            _astronomy_face_update(event, settings, state);
+            _astronomy_face_update(event, state);
             break;
         case EVENT_ALARM_LONG_PRESS:
             if (state->mode == ASTRONOMY_MODE_SELECTING_BODY) {
                 // celestial body selected! this triggers a calculation in the update method.
                 state->mode = ASTRONOMY_MODE_CALCULATING;
                 movement_request_tick_frequency(1);
-                _astronomy_face_update(event, settings, state);
+                _astronomy_face_update(event, state);
             } else if (state->mode != ASTRONOMY_MODE_CALCULATING) {
                 // in all modes except "doing a calculation", return to the selection screen.
                 state->mode = ASTRONOMY_MODE_SELECTING_BODY;
                 movement_request_tick_frequency(4);
-            _astronomy_face_update(event, settings, state);
+            _astronomy_face_update(event, state);
             }
             break;
         case EVENT_TIMEOUT:

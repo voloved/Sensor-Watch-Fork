@@ -67,7 +67,7 @@ static void _h_to_hms(mars_clock_hms_t *date_time, double h) {
 	date_time->second = round(seconds % 60);
 }
 
-static void _update(movement_settings_t *settings, mars_time_state_t *state) {
+static void _update(mars_time_state_t *state) {
     char buf[11];
     watch_date_time date_time = watch_rtc_get_date_time();
     uint32_t now = watch_utility_date_time_to_unix_time(date_time, movement_get_current_timezone_offset());
@@ -127,18 +127,18 @@ bool mars_time_face_loop(movement_event_t event, movement_settings_t *settings, 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
         case EVENT_TICK:
-            _update(settings, state);
+            _update(state);
             break;
         case EVENT_LIGHT_BUTTON_UP:
             state->displaying_sol = !state->displaying_sol;
-            _update(settings, state);
+            _update(state);
             break;
         case EVENT_LIGHT_LONG_PRESS:
             movement_illuminate_led();
             break;
         case EVENT_ALARM_BUTTON_UP:
             state->current_site = (state->current_site + 1) % MARS_TIME_NUM_SITES;
-            _update(settings, state);
+            _update(state);
             break;
         case EVENT_TIMEOUT:
             // TODO: make this lower power so we can avoid timeout

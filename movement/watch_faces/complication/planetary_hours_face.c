@@ -113,7 +113,7 @@ static void _planetary_icon(uint8_t planet) {
  *  This function calculates the start and end of the current phase based on a given geographic location.
  *  It also calculates the start of the next following phase.
  */
-static void _planetary_solar_phases(movement_settings_t *settings, planetary_hours_state_t *state) {
+static void _planetary_solar_phases(planetary_hours_state_t *state) {
     uint8_t phase, h;
     double sunrise, sunset;
     double hour_duration, next_hour_duration;
@@ -249,7 +249,7 @@ static void _planetary_hours(movement_settings_t *settings, planetary_hours_stat
 
     // when current phase ends calculate the next phase
     if ( watch_utility_date_time_to_unix_time(utc_now, 0) >= state->phase_end ) {
-        _planetary_solar_phases(settings, state);
+        _planetary_solar_phases(state);
         return;
     }
 
@@ -359,7 +359,7 @@ void planetary_hours_face_activate(movement_settings_t *settings, void *context)
 #endif
 
     planetary_hours_state_t *state = (planetary_hours_state_t *)context; 
-    _planetary_solar_phases(settings, state);
+    _planetary_solar_phases(state);
 
 }
 

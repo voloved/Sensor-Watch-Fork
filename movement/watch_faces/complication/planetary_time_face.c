@@ -112,7 +112,7 @@ static void _planetary_icon(uint8_t planet) {
 /** @details solar phase can be a day phase between sunrise and sunset or an alternating night phase.
  *  This function calculates the start and end of the current phase based on a given geographic location.
  */
-static void _planetary_solar_phase(movement_settings_t *settings, planetary_time_state_t *state) {
+static void _planetary_solar_phase(planetary_time_state_t *state) {
     uint8_t phase;
     double sunrise, sunset;
     uint32_t now_epoch, sunrise_epoch, sunset_epoch, midnight_epoch;
@@ -214,7 +214,7 @@ static void _planetary_time(movement_event_t event, movement_settings_t *setting
 
     // when current phase ends calculate the next phase
     if ( watch_utility_date_time_to_unix_time(state->scratch, 0) >= state->phase_end ) {
-        _planetary_solar_phase(settings, state);
+        _planetary_solar_phase(state);
         return;
     }
 
@@ -297,7 +297,7 @@ void planetary_time_face_activate(movement_settings_t *settings, void *context) 
     planetary_time_state_t *state = (planetary_time_state_t *)context;
     
     // calculate phase
-    _planetary_solar_phase(settings, state);
+    _planetary_solar_phase(state);
 }
 
 bool planetary_time_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {

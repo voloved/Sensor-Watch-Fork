@@ -33,7 +33,7 @@
 #define sl_SELECTIONS 6
 #define DEFAULT_MINUTES { 5,4,1,0,0,0 }
 
-static inline int32_t get_tz_offset(movement_settings_t *settings) {
+static inline int32_t get_tz_offset(void) {
     return movement_get_current_timezone_offset();
 }
 
@@ -152,7 +152,7 @@ static void draw(sailing_state_t *state, uint8_t subsecond, movement_settings_t 
     watch_display_string(buf, 0);
 }
 
-static void ring(sailing_state_t *state, movement_settings_t *settings) {    
+static void ring(sailing_state_t *state) {    
 // if ring is called in background (while on another face), a button press can interrupt and cancel the execution.
 // To reduce the probability of cancelling all future alarms, the new alarm is set as soon as possible after calling ring.
     movement_cancel_background_task();
@@ -165,7 +165,7 @@ static void ring(sailing_state_t *state, movement_settings_t *settings) {
         return;
     }
     state->nextbeep_ts = state->target_ts - beepseconds[beepflag+1];
-    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->nextbeep_ts, get_tz_offset(settings));
+    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->nextbeep_ts, get_tz_offset());
     movement_schedule_background_task_for_face(state->watch_face_index, target_dt);
 //background task is set, now we have time to play the tune. If this is cancelled accidentally, the next alarm will still ring. Sound is implemented non-blocking, so that neither buttons nor display output are compromised.
     for (int i = 0; i < 5; i++) {
@@ -185,7 +185,7 @@ static void ring(sailing_state_t *state, movement_settings_t *settings) {
     beepflag++;
 }
 
-static void start(sailing_state_t *state, movement_settings_t *settings) {//gets called by starting / switching to next signal
+static void start(sailing_state_t *state) {//gets called by starting / switching to next signal
     while (beepseconds[beepflag] < state->minutes[state->index]*60) {
         state->index++;
     }
@@ -194,7 +194,7 @@ static void start(sailing_state_t *state, movement_settings_t *settings) {//gets
     }
     if (state->index > 5 || state->minutes[state->index] == 0) {
         watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset(settings));
+        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
         state->target_ts = state->now_ts;
         if (alarmflag != 0){
             watch_buzzer_play_sequence(long_beep, NULL);
@@ -205,9 +205,9 @@ static void start(sailing_state_t *state, movement_settings_t *settings) {//gets
     movement_request_tick_frequency(1); //synchronises tick with the moment the button was pressed. Solves 1s offset between sound and display, solves up to +-0.5s offset between button action and display.
     state->mode = sl_running;
     watch_date_time now = watch_rtc_get_date_time();
-    state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset(settings));
+    state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
     state->target_ts = watch_utility_offset_timestamp(state->now_ts, 0, state->minutes[state->index], 0);
-    ring(state, settings);
+    ring(state);
 }
 
 static void settings_increment(sailing_state_t *state) {
@@ -253,11 +253,11 @@ void sailing_face_activate(movement_settings_t *settings, void *context) {
     sailing_state_t *state = (sailing_state_t *)context;
     if(state->mode == sl_running) {
         watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset(settings));
+        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
     }
     if(state->mode == sl_counting) {
         watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset(settings));
+        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
         watch_set_indicator(WATCH_INDICATOR_LAP);
     }
     switch (alarmflag) {
@@ -354,10 +354,10 @@ bool sailing_face_loop(movement_event_t event, movement_settings_t *settings, vo
         case EVENT_ALARM_BUTTON_UP:
             switch(state->mode) {
                 case sl_running:
-                    start(state, settings);
+                    start(state);
                     break;
                 case sl_waiting:
-                    start(state, settings);
+                    start(state);
                     break;
                 case sl_setting:
                     settings_increment(state);
@@ -372,7 +372,7 @@ bool sailing_face_loop(movement_event_t event, movement_settings_t *settings, vo
             draw(state, event.subsecond, settings);
             break;
         case EVENT_BACKGROUND_TASK:
-            ring(state, settings);
+            ring(state);
             break;
         case EVENT_ALARM_LONG_PRESS:
             if (state->mode == sl_setting) {

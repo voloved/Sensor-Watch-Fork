@@ -189,7 +189,7 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
             break;
     }
 
-    char buf[11];
+    char buf[12];
     if (current_page < 3) {
         watch_set_colon();
         if (settings->bit.clock_mode_24h) {

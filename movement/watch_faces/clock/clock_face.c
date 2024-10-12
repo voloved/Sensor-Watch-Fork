@@ -284,10 +284,7 @@ bool clock_face_wants_background_task(movement_settings_t *settings, void *conte
     clock_state_t *state = (clock_state_t *) context;
     if (!state->time_signal_enabled) return false;
 
-    if (state->time_signal_enabled) {
-        watch_date_time date_time = movement_get_local_date_time();
-        retval.wants_background_task = date_time.unit.minute == 0;
-    }
+    watch_date_time date_time = movement_get_local_date_time();
 
     return date_time.unit.minute == 0;
 }

@@ -122,7 +122,7 @@ static watch_date_time jde_to_date_time(double JDE) {
     return result;
 }
 
-static void calculate_datetimes(solstice_state_t *state, movement_settings_t *settings) {
+static void calculate_datetimes(solstice_state_t *state) {
     for (int i = 0; i < 4; i++) {
         // TODO: handle DST changes
         state->datetimes[i] = jde_to_date_time(calculate_solstice_equinox(2020 + state->year, i) + (movement_get_current_timezone_offset() / (3600.0*24.0)));
@@ -139,7 +139,7 @@ void solstice_face_setup(movement_settings_t *settings, uint8_t watch_face_index
         watch_date_time now = watch_rtc_get_date_time();
         state->year = now.unit.year;
         state->index = 0;
-        calculate_datetimes(state, settings);
+        calculate_datetimes(state);
 
         uint32_t now_unix = watch_utility_date_time_to_unix_time(now, 0);
         for (int i = 0; i < 4; i++) {
@@ -193,7 +193,7 @@ bool solstice_face_loop(movement_event_t event, movement_settings_t *settings, v
                 }
                 state->year--;
                 state->index = 3;
-                calculate_datetimes(state, settings);
+                calculate_datetimes(state);
             } else {
                 state->index--;
             }
@@ -207,7 +207,7 @@ bool solstice_face_loop(movement_event_t event, movement_settings_t *settings, v
                 }
                 state->year++;
                 state->index = 0;
-                calculate_datetimes(state, settings);
+                calculate_datetimes(state);
             }
             show_main_screen(state);
             break;
