@@ -17,6 +17,7 @@ INCLUDES += \
   -I../watch_faces/sensor/ \
   -I../watch_faces/demo/ \
   -I../../littlefs/ \
+  -I../../utz \
   -I../lib/chirpy_tx/ \
   -I../lib/TOTP/ \
   -I../lib/base32/ \
@@ -47,6 +48,8 @@ SRCS += \
   ../lib/morsecalc/morsecalc_display.c \
   ../../littlefs/lfs.c \
   ../../littlefs/lfs_util.c \
+  ../../utz/utz.c \
+  ../../utz/zones.c \
   ../movement.c \
   ../filesystem.c \
   ../shell.c \

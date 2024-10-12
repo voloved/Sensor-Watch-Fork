@@ -27,7 +27,6 @@
 #include "world_clock_face.h"
 #include "watch.h"
 #include "watch_utility.h"
-#include "watch_common_display.h"
 #include "zones.h"
 
 void _update_timezone_offset(world_clock_state_t *state);
@@ -88,8 +87,6 @@ static bool world_clock_face_do_display_mode(movement_event_t event, movement_se
                 // everything before minutes is the same.
                 pos = 6;
                 sprintf(buf, "%02d%02d", date_time.unit.minute, date_time.unit.second);
-                watch_display_text(WATCH_POSITION_MINUTES, buf);
-                watch_display_text(WATCH_POSITION_SECONDS, buf + 2);
                 if (date_time.unit.minute % 15 == 0) {
                     _update_timezone_offset(state);
                 }
