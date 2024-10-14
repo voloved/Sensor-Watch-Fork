@@ -466,6 +466,10 @@ watch_date_time movement_get_utc_date_time(void) {
     return watch_rtc_get_date_time();
 }
 
+bool movement_update_dst_offset_cache(void) {
+    return _movement_update_dst_offset_cache();
+}
+
 watch_date_time movement_get_date_time_in_zone(uint8_t zone_index) {
     watch_date_time date_time = watch_rtc_get_date_time();
     int32_t offset = movement_get_current_timezone_offset_for_zone(zone_index);
