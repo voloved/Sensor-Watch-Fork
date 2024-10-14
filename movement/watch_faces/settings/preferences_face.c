@@ -33,7 +33,6 @@ enum {
     PREFERENCE_TIMEOUT,
     PREFERENCE_LOW_ENERGY,
     PREFERENCE_LE_DEEP_SLEEP,
-    PREFERENCE_AUTO_DST,
     PREFERENCE_HOURLY_CHIME_START,
     PREFERENCE_HOURLY_CHIME_END,
     PREFERENCE_LIGHT_DUR,
@@ -42,14 +41,13 @@ enum {
     PREFERENCE_COUNT
 };
 
-#define PREFERENCES_FACE_NUM_PREFERENCES (11)
+#define PREFERENCES_FACE_NUM_PREFERENCES (10)
 const char preferences_face_titles[PREFERENCES_FACE_NUM_PREFERENCES][11] = {
     "BT  Beep  ",   // Buttons: should they beep?
     "CL        ",   // Clock: 12 or 24 hour
     "TO        ",   // Timeout: how long before we snap back to the clock face?
     "LE        ",   // Low Energy mode: how long before it engages?
     "LEds      ",   // Low Energy deep sleep
-    "au   dst  ",   // Enable auto-DST
     "CHSt      ",   // Hourly Chime Start
     "CHEd      ",   // Hourly Chime End
     "LT        ",   // Light: duration
@@ -163,9 +161,6 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                         state->do_deepsleep = 0;
                         settings->bit.screen_off_after_le = !(settings->bit.screen_off_after_le);
                     }
-                    break;
-                case PREFERENCE_AUTO_DST:
-                    settings->bit.dst_active = !settings->bit.dst_active;
                     break;
                 case PREFERENCE_HOURLY_CHIME_START:
                     if (settings->bit.hourly_chime_always){
@@ -281,9 +276,6 @@ bool preferences_face_loop(movement_event_t event, movement_settings_t *settings
                 if(state->do_deepsleep != 0) watch_display_string("Nowj", 6);
                 else if (settings->bit.screen_off_after_le) watch_display_string("ON", 7);
                 else watch_display_string("OFF", 7);
-                break;
-            case PREFERENCE_AUTO_DST:
-                watch_display_string(settings->bit.dst_active ? "Y" : "N", 9);
                 break;
             case PREFERENCE_HOURLY_CHIME_START:
                 if (watch_get_backup_data(1) && settings->bit.hourly_chime_start == 3)

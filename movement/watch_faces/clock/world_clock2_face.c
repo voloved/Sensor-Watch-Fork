@@ -154,7 +154,6 @@ void world_clock2_face_activate(movement_settings_t *settings, void *context)
             movement_request_tick_frequency(4);
             break;
     }
-    state->tz = get_timezone_offset(settings->bit.time_zone, watch_rtc_get_date_time());
     refresh_face = true;
 }
 
@@ -184,8 +183,8 @@ static bool mode_display(movement_event_t event, movement_settings_t *settings, 
 
             /* Determine current time at time zone and store date/time */
 	    date_time = watch_rtc_get_date_time();
-        timestamp = watch_utility_date_time_to_unix_time(date_time, state->tz * 60);
-	    date_time = watch_utility_date_time_from_unix_time(timestamp, state->tz_curr * 60);
+	    timestamp = watch_utility_date_time_to_unix_time(date_time, movement_timezone_offsets[settings->bit.time_zone] * 60);
+	    date_time = watch_utility_date_time_from_unix_time(timestamp, movement_timezone_offsets[state->current_zone] * 60);
 	    previous_date_time = state->previous_date_time;
 	    state->previous_date_time = date_time.reg;
 
@@ -234,16 +233,14 @@ static bool mode_display(movement_event_t event, movement_settings_t *settings, 
 	    break;
 	case EVENT_ALARM_BUTTON_UP:
 	    state->current_zone = find_selected_zone(state, FORWARD);
-        state->tz_curr = get_timezone_offset(state->current_zone, watch_rtc_get_date_time());
-        state->previous_date_time = REFRESH_TIME;
+            state->previous_date_time = REFRESH_TIME;
 	    break;
 	case EVENT_LIGHT_BUTTON_DOWN:
 	    /* Do nothing. */
 	    break;
 	case EVENT_LIGHT_BUTTON_UP:
 	    state->current_zone = find_selected_zone(state, BACKWARD);
-        state->tz_curr = get_timezone_offset(state->current_zone, watch_rtc_get_date_time());
-        state->previous_date_time = REFRESH_TIME;
+            state->previous_date_time = REFRESH_TIME;
 	    break;
 	case EVENT_LIGHT_LONG_PRESS:
 	    movement_illuminate_led();
@@ -286,7 +283,7 @@ static bool mode_settings(movement_event_t event, movement_settings_t *settings,
                 watch_clear_indicator(WATCH_INDICATOR_PM);
                 refresh_face = false;
             }
-	    result = div(state->tz_curr, 60);
+	    result = div(movement_timezone_offsets[state->current_zone], 60);
 	    hours = result.quot;
 	    minutes = result.rem;
 
@@ -315,21 +312,17 @@ static bool mode_settings(movement_event_t event, movement_settings_t *settings,
 	    break;
 	case EVENT_ALARM_BUTTON_UP:
 	    state->current_zone = mod(state->current_zone + FORWARD, NUM_TIME_ZONES);
-        state->tz_curr = get_timezone_offset(state->current_zone, watch_rtc_get_date_time());
 	    break;
 	case EVENT_LIGHT_BUTTON_UP:
 	    state->current_zone = mod(state->current_zone + BACKWARD, NUM_TIME_ZONES);
-        state->tz_curr = get_timezone_offset(state->current_zone, watch_rtc_get_date_time());
 	    break;
 	case EVENT_LIGHT_BUTTON_DOWN:
 	    /* Do nothing */
 	    break;
 	case EVENT_ALARM_LONG_PRESS:
 	    /* Find next selected zone */
-	    if (!state->zones[state->current_zone].selected) {
-            state->current_zone = find_selected_zone(state, FORWARD);
-            state->tz_curr = get_timezone_offset(state->current_zone, watch_rtc_get_date_time());
-        }
+	    if (!state->zones[state->current_zone].selected)
+		state->current_zone = find_selected_zone(state, FORWARD);
 
 	    /* Switch to display mode */
 	    state->current_mode = WORLD_CLOCK2_MODE_DISPLAY;

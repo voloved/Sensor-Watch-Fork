@@ -52,16 +52,13 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
     int16_t tz;
     watch_date_time date_time = watch_rtc_get_date_time(); // the current local date / time
     if (state->longLatToUse == 0 || _location_count <= 1) {
-        tz = get_timezone_offset(settings->bit.time_zone, date_time);
+        tz = movement_timezone_offsets[settings->bit.time_zone];
         movement_location = (movement_location_t) watch_get_backup_data(1);
     }
     else{
         movement_location.bit.latitude = longLatPresets[state->longLatToUse].latitude;
         movement_location.bit.longitude = longLatPresets[state->longLatToUse].longitude;
-        if (longLatPresets[state->longLatToUse].uses_dst && dst_occurring(date_time))
-            tz = movement_timezone_dst_offsets[longLatPresets[state->longLatToUse].timezone];
-        else
-            tz = movement_timezone_offsets[longLatPresets[state->longLatToUse].timezone];
+        tz = movement_timezone_offsets[longLatPresets[state->longLatToUse].timezone];
     }
 
     if (movement_location.reg == 0) {

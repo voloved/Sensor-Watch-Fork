@@ -49,7 +49,7 @@ static void _get_chime_times(watch_date_time date_time, movement_settings_t *set
     if (hourly_chime_start != 3 && hourly_chime_end != 3) {
         return;
     }
-    int16_t tz = get_timezone_offset(settings->bit.time_zone, date_time);
+    int16_t tz = movement_timezone_offsets[settings->bit.time_zone];
     watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, tz * 60, 0); // the current date / time in UTC
     movement_location_t movement_location = (movement_location_t) watch_get_backup_data(1);
     if (movement_location.reg == 0) {

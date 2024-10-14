@@ -125,7 +125,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             return movement_default_loop_handler(event, settings);
     }
 
-    char buf[13];
+    char buf[11];
     if (current_page < 3) {
         watch_set_colon();
         if (settings->bit.clock_mode_24h) {
@@ -142,14 +142,12 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
         watch_clear_indicator(WATCH_INDICATOR_PM);
         sprintf(buf, "%s  %2d%02d%02d", set_time_face_titles[current_page], date_time.unit.year + 20, date_time.unit.month, date_time.unit.day);
     } else {
-        char dst_char = (settings->bit.dst_active && dst_occurring(watch_rtc_get_date_time())) ? 'd' : ' ';
         if (event.subsecond % 2) {
             watch_clear_colon();
-            sprintf(buf, "%s       %c", set_time_face_titles[current_page], dst_char);
+            sprintf(buf, "%s        ", set_time_face_titles[current_page]);
         } else {
-            int16_t tz = get_timezone_offset(settings->bit.time_zone, date_time);
             watch_set_colon();
-            sprintf(buf, "%s %3d%02d %c", set_time_face_titles[current_page], (int8_t) (tz / 60), (int8_t) (tz % 60) * (tz < 0 ? -1 : 1), dst_char);
+            sprintf(buf, "%s %3d%02d  ", set_time_face_titles[current_page], (int8_t) (movement_timezone_offsets[settings->bit.time_zone] / 60), (int8_t) (movement_timezone_offsets[settings->bit.time_zone] % 60) * (movement_timezone_offsets[settings->bit.time_zone] < 0 ? -1 : 1));
         }
     }
 

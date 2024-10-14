@@ -51,8 +51,8 @@ typedef union {
         bool to_always : 1;                 // if true, always time out from the active face to face 0. otherwise only faces that time out will resign (the default).
         uint8_t le_interval : 3;            // 0 to disable low energy mode, or an inactivity interval for going into low energy mode.
         uint8_t led_duration : 2;           // how many seconds to shine the LED for (x2), or 0 to disable it.
-        uint8_t led_red_color : 3;          // for general purpose illumination, the red LED value (0-15)
-        uint8_t led_green_color : 3;        // for general purpose illumination, the green LED value (0-15)
+        uint8_t led_red_color : 3;          // for general purpose illumination, the red LED value (0-7)
+        uint8_t led_green_color : 3;        // for general purpose illumination, the green LED value (0-7)
         uint8_t time_zone : 6;              // an integer representing an index in the time zone table.
 
         // while Movement itself doesn't implement a clock or display units, it may make sense to include some
@@ -64,10 +64,10 @@ typedef union {
         bool use_imperial_units : 1;        // indicates whether to use metric units (the default) or imperial.
         bool alarm_enabled : 1;             // indicates whether there is at least one alarm enabled.
         bool hourly_chime_always : 1;       // if true, then ignore the 
-        uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm or sunrise in long and lat set; 
-        uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am or sunset in long and lat set;
-        bool screen_off_after_le : 1;
-        bool dst_active : 1;                // indicates whether daylight savings time is active
+        uint8_t hourly_chime_start : 2;     // 0: 6am; 1: 7am; 2: 10am; 3: 12pm; 
+        uint8_t hourly_chime_end : 2;       // 0: 8pm; 1: 9pm; 2: 10pm; 3: 12am;
+        bool screen_off_after_le : 1;       // If true and we're in LE mode and it's the top of the hour and the temp is below #DEFAULT_TEMP_ASSUME_WEARING but not zero, then turn off the screen and other tasks.
+        uint8_t unused : 2;
     } bit;
     uint32_t reg;
 } movement_settings_t;
@@ -134,7 +134,6 @@ typedef struct {
 } movement_event_t;
 
 extern const int16_t movement_timezone_offsets[];
-extern const int16_t movement_timezone_dst_offsets[];
 extern const char movement_valid_position_0_chars[];
 extern const char movement_valid_position_1_chars[];
 extern int8_t g_temperature_c;
@@ -327,8 +326,6 @@ void movement_play_alarm(void);
 void movement_play_alarm_beeps(uint8_t rounds, BuzzerNote alarm_note);
 
 uint8_t movement_claim_backup_register(void);
-bool check_and_act_on_daylight_savings(watch_date_time date_time);  // Returns if the time was changed due to DST
-int16_t get_timezone_offset(uint8_t timezone_idx, watch_date_time date_time);
 
 static const uint8_t Hourly_Chime_Start[] =
 {
