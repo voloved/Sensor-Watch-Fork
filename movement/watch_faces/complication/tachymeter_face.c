@@ -173,7 +173,7 @@ bool tachymeter_face_loop(movement_event_t event, movement_settings_t *settings,
                 if (!state->editing) {
                     // Start running
                     state->running = true;
-                    state->start_seconds = watch_rtc_get_date_time();
+                    state->start_seconds = movement_get_utc_date_time();
                     state->start_subsecond = event.subsecond;
                     state->total_time = 0;
                 } else {
@@ -205,7 +205,7 @@ bool tachymeter_face_loop(movement_event_t event, movement_settings_t *settings,
                 }
                 // Stop running
                 state->running = false;
-                watch_date_time now = watch_rtc_get_date_time();
+                watch_date_time now = movement_get_utc_date_time();
                 uint32_t now_timestamp = watch_utility_date_time_to_unix_time(now, 0);
                 uint32_t start_timestamp = watch_utility_date_time_to_unix_time(state->start_seconds, 0);
                 // Total time in centiseconds

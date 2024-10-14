@@ -30,10 +30,6 @@
 static uint8_t focus_min = 25;
 static uint8_t break_min = 5;
 
-static inline int32_t get_tz_offset(void) {
-    return movement_get_current_timezone_offset();
-}
-
 static uint8_t get_length(tomato_state_t *state) {
     uint8_t length;
     if (state->kind == tomato_focus) {
@@ -46,13 +42,13 @@ static uint8_t get_length(tomato_state_t *state) {
 }
 
 static void tomato_start(tomato_state_t *state) {
-    watch_date_time now = watch_rtc_get_date_time();
+    watch_date_time now = movement_get_utc_date_time();
     int8_t length = (int8_t) get_length(state);
 
     state->mode = tomato_run;
-    state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
+    state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
     state->target_ts = watch_utility_offset_timestamp(state->now_ts, 0, length, 0);
-    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->target_ts, get_tz_offset());
+    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->target_ts, 0);
     movement_schedule_background_task(target_dt);
     watch_set_indicator(WATCH_INDICATOR_BELL);
 }
@@ -126,8 +122,8 @@ void tomato_face_activate(movement_settings_t *settings, void *context) {
     (void)settings;
     tomato_state_t *state = (tomato_state_t *)context;
     if (state->mode == tomato_run) {
-        watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
+        watch_date_time now = movement_get_utc_date_time();
+        state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
         watch_set_indicator(WATCH_INDICATOR_BELL);
     }
     watch_set_colon();
