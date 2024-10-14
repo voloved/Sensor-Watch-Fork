@@ -246,10 +246,10 @@ endif
 #  MIN = Sets the default time down to the minute (year, month, day, timezone, hour, minute)
 TIMEZONE := $(shell date +%z | awk '{print substr($$0, 1, 3) * 60 + substr($$0, 4, 2)}')
 CURRENT_YEAR := $(shell echo $$(($(shell date +"%Y") - 2020)))
-CURRENT_MONTH := $(shell date +"%-m")
-CURRENT_DAY := $(shell date +"%-d")
-CURRENT_HOUR := $(shell date +"%-H")
-CURRENT_MINUTE := $(shell date +"%-M")
+CURRENT_MONTH := $(shell date -u +"%-m")
+CURRENT_DAY := $(shell date -u +"%-d")
+CURRENT_HOUR := $(shell date -u +"%-H")
+CURRENT_MINUTE := $(shell date -u +"%-M")
 ifndef DATE
 DATE := MIN
 endif
@@ -269,7 +269,7 @@ CFLAGS += -DMAKEFILE_CURR_MONTH=$(CURRENT_MONTH)
 CFLAGS += -DMAKEFILE_CURR_DAY=$(CURRENT_DAY)
 CFLAGS += -DMAKEFILE_CURR_HOUR=$(CURRENT_HOUR)
 CFLAGS += -DMAKEFILE_CURR_MINUTE=$(CURRENT_MINUTE)
-$(info Default time set to $(CURRENT_HOUR):$(shell printf "%02d" $(CURRENT_MINUTE)) on $(shell date +"%b") $(CURRENT_DAY) $(shell date +"%Y") $(shell date +%Z))
+$(info Default time set to $(shell date +"%H:%M") on $(shell date +"%b") $(CURRENT_DAY) $(shell date +"%Y") $(shell date +%Z) (In UTC, which is what the watch is set to, it's $(CURRENT_HOUR):$(shell printf "%02d" $(CURRENT_MINUTE))))
 else
 $(error DATE must be YEAR, DAY, or MIN if used.)
 endif
