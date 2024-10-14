@@ -27,6 +27,7 @@
 #include "set_time_hackwatch_face.h"
 #include "watch.h"
 #include "watch_utility.h"
+#include "zones.h"
 
 char set_time_hackwatch_face_titles[][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "ZO"};
 #define set_time_hackwatch_face_NUM_SETTINGS (sizeof(set_time_hackwatch_face_titles) / sizeof(*set_time_hackwatch_face_titles))
@@ -125,10 +126,10 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
                         date_time_settings.unit.day++;
                     break;
                 case 6: // time zone
-                    if (settings->bit.time_zone > 0) {
-                        settings->bit.time_zone--;
+                    if (movement_get_timezone_index() > 0) {
+                        movement_set_timezone_index(movement_get_timezone_index() - 1);
                     } else {
-                        settings->bit.time_zone = 40;
+                        movement_set_timezone_index(NUM_ZONE_NAMES - 1);
                     }
                     break;
             }
@@ -167,8 +168,8 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
                     date_time_settings.unit.day = date_time_settings.unit.day + 1;
                     break;
                 case 6: // time zone
-                    settings->bit.time_zone++;
-                    if (settings->bit.time_zone > 40) settings->bit.time_zone = 0;
+                    movement_set_timezone_index(movement_get_timezone_index() + 1);
+                    if (movement_get_timezone_index() >= NUM_ZONE_NAMES) movement_set_timezone_index(0);
                     break;
             }
             if (current_page != 2) // Do not set time when we are at seconds, it was already set previously
@@ -186,7 +187,7 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
             break;
     }
 
-    char buf[11];
+    char buf[12];
     if (current_page < 3) {
         watch_set_colon();
         if (settings->bit.clock_mode_24h) {
@@ -229,8 +230,8 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
             sprintf(buf,
                     "%s %3d%02d  ",
                     set_time_hackwatch_face_titles[current_page],
-                    (int8_t)(movement_timezone_offsets[settings->bit.time_zone] / 60),
-                    (int8_t)(movement_timezone_offsets[settings->bit.time_zone] % 60) * (movement_timezone_offsets[settings->bit.time_zone] < 0 ? -1 : 1));
+                    (int8_t)(movement_get_current_timezone_offset() / 3600),
+                    (int8_t)(movement_get_current_timezone_offset() % 3600) * (movement_get_current_timezone_offset() < 0 ? -1 : 1));
         }
     }
 

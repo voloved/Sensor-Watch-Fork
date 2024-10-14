@@ -56,7 +56,7 @@ static const char activity_types[][3] = {
 static void update(accelerometer_data_acquisition_state_t *state);
 static void update_settings(accelerometer_data_acquisition_state_t *state);
 static void advance_current_setting(accelerometer_data_acquisition_state_t *state);
-static void start_reading(accelerometer_data_acquisition_state_t *state, movement_settings_t *settings);
+static void start_reading(accelerometer_data_acquisition_state_t *state);
 static void continue_reading(accelerometer_data_acquisition_state_t *state);
 static void finish_reading(accelerometer_data_acquisition_state_t *state);
 static bool wait_for_flash_ready(void);
@@ -131,7 +131,7 @@ bool accelerometer_data_acquisition_face_loop(movement_event_t event, movement_s
                             state->reading_ticks = SECONDS_TO_RECORD + 1;
                             // also beep if the user asked for it
                             if (state->beep_with_countdown) watch_buzzer_play_note(BUZZER_NOTE_C6, 75);
-                            start_reading(state, settings);
+                            start_reading(state);
                         } else if (state->countdown_ticks < 3) {
                             // beep for last two ticks before reading
                             if (state->beep_with_countdown) watch_buzzer_play_note(BUZZER_NOTE_C5, 75);
@@ -429,7 +429,7 @@ static void log_data_point(accelerometer_data_acquisition_state_t *state, lis2dw
     }
 }
 
-static void start_reading(accelerometer_data_acquisition_state_t *state, movement_settings_t *settings) {
+static void start_reading(accelerometer_data_acquisition_state_t *state) {
     printf("Start reading\n");
     watch_enable_i2c();
     lis2dw_begin();
@@ -442,7 +442,7 @@ static void start_reading(accelerometer_data_acquisition_state_t *state, movemen
 
     accelerometer_data_acquisition_record_t record;
     watch_date_time date_time = watch_rtc_get_date_time();
-    state->starting_timestamp = watch_utility_date_time_to_unix_time(date_time, movement_timezone_offsets[settings->bit.time_zone] * 60);
+    state->starting_timestamp = watch_utility_date_time_to_unix_time(date_time, movement_get_current_timezone_offset());
     record.header.info.record_type = ACCELEROMETER_DATA_ACQUISITION_HEADER;
     record.header.info.range = ACCELEROMETER_RANGE;
     record.header.info.temperature = lis2dw_get_temperature();

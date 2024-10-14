@@ -44,8 +44,8 @@ static void abort_quick_ticks(countdown_state_t *state) {
     }
 }
 
-static inline int32_t get_tz_offset(movement_settings_t *settings) {
-    return movement_timezone_offsets[settings->bit.time_zone] * 60;
+static inline int32_t get_tz_offset(void) {
+    return movement_get_current_timezone_offset();
 }
 
 static inline void store_countdown(countdown_state_t *state) {
@@ -68,14 +68,11 @@ static inline void button_beep(movement_settings_t *settings) {
         watch_buzzer_play_note(BUZZER_NOTE_C7, 50);
 }
 
-static void start(countdown_state_t *state, movement_settings_t *settings) {
-    (void) settings;
-    watch_date_time now = watch_rtc_get_date_time();
-
+static void start(countdown_state_t *state) {
     state->mode = cd_running;
-    state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset(settings));
+    state->now_ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
     state->target_ts = watch_utility_offset_timestamp(state->now_ts, state->hours, state->minutes, state->seconds);
-    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->target_ts, get_tz_offset(settings));
+    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->target_ts, get_tz_offset());
     movement_schedule_background_task(target_dt);
     watch_set_indicator(WATCH_INDICATOR_BELL);
 }
@@ -179,8 +176,7 @@ void countdown_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     countdown_state_t *state = (countdown_state_t *)context;
     if(state->mode == cd_running) {
-        watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset(settings));
+        state->now_ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
         watch_set_indicator(WATCH_INDICATOR_BELL);
     }
     watch_set_colon();
@@ -250,7 +246,7 @@ bool countdown_face_loop(movement_event_t event, movement_settings_t *settings, 
                 case cd_paused:
                     if (!(state->hours == 0 && state->minutes == 0 && state->seconds == 0)) {
                         // Only start the timer if we have a valid time.
-                        start(state, settings);
+                        start(state);
                         button_beep(settings);
                     }
                     break;

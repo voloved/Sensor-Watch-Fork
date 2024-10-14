@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "watch.h"
+#include "utz.h"
 
 // Movement Preferences
 // These four 32-bit structs store information about the wearer and their preferences. Tentatively, the plan is
@@ -133,7 +134,6 @@ typedef struct {
     uint8_t subsecond;
 } movement_event_t;
 
-extern const int16_t movement_timezone_offsets[];
 extern const char movement_valid_position_0_chars[];
 extern const char movement_valid_position_1_chars[];
 extern int8_t g_temperature_c;
@@ -326,6 +326,18 @@ void movement_play_alarm(void);
 void movement_play_alarm_beeps(uint8_t rounds, BuzzerNote alarm_note);
 
 uint8_t movement_claim_backup_register(void);
+
+int32_t movement_get_current_timezone_offset_for_zone(uint8_t zone_index);
+int32_t movement_get_current_timezone_offset(void);
+
+int32_t movement_get_timezone_index(void);
+void movement_set_timezone_index(uint8_t value);
+
+watch_date_time movement_get_utc_date_time(void);
+watch_date_time movement_get_local_date_time(void);
+watch_date_time movement_get_date_time_in_zone(uint8_t zone_index);
+
+void movement_set_local_date_time(watch_date_time date_time);
 
 static const uint8_t Hourly_Chime_Start[] =
 {

@@ -157,8 +157,8 @@ static void totp_generate_and_display(totp_state_t *totp_state) {
     totp_display(totp_state);
 }
 
-static inline uint32_t totp_compute_base_timestamp(movement_settings_t *settings) {
-    return watch_utility_date_time_to_unix_time(watch_rtc_get_date_time(), movement_timezone_offsets[settings->bit.time_zone] * 60);
+static inline uint32_t totp_compute_base_timestamp(void) {
+    return watch_utility_date_time_to_unix_time(watch_rtc_get_date_time(), movement_get_current_timezone_offset());
 }
 
 void totp_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
@@ -179,7 +179,7 @@ void totp_face_activate(movement_settings_t *settings, void *context) {
 
     totp_state_t *totp = (totp_state_t *) context;
 
-    totp->timestamp = totp_compute_base_timestamp(settings);
+    totp->timestamp = totp_compute_base_timestamp();
     totp->steps = 0;
     totp->current_code = 0;
     totp->current_index = 0;

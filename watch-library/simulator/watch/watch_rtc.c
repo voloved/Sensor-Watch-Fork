@@ -24,6 +24,7 @@
 
 #include "watch_rtc.h"
 #include "watch_main_loop.h"
+#include "watch_utility.h"
 
 #include <emscripten.h>
 #include <emscripten/html5.h>
@@ -44,6 +45,11 @@ bool _watch_rtc_is_enabled(void) {
 }
 
 void _watch_rtc_init(void) {
+    int32_t time_zone_offset = EM_ASM_INT({
+        return -new Date().getTimezoneOffset() * 60;
+    });
+    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_rtc_set_date_time(watch_utility_date_time_convert_zone(date_time, time_zone_offset, 0));
 }
 
 void watch_rtc_set_date_time(watch_date_time date_time) {

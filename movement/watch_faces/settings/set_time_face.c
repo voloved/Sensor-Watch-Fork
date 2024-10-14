@@ -26,43 +26,55 @@
 #include "set_time_face.h"
 #include "watch.h"
 #include "watch_utility.h"
+#include "zones.h"
 
 #define SET_TIME_FACE_NUM_SETTINGS (7)
 const char set_time_face_titles[SET_TIME_FACE_NUM_SETTINGS][3] = {"HR", "M1", "SE", "YR", "MO", "DA", "ZO"};
 
-static bool _quick_ticks_running;
+typedef enum {
+    SET_TIME_HOUR = 0,
+    SET_TIME_MIN,
+    SET_TIME_SEC,
+    SET_TIME_YEAR,
+    SET_TIME_MONTH,
+    SET_TIME_DAY,
+    SET_TIME_TZ
+} set_time_pages;
 
-static void _handle_alarm_button(movement_settings_t *settings, watch_date_time date_time, uint8_t current_page) {
+static bool _quick_ticks_running;
+static int32_t current_offset;
+
+static void _handle_alarm_button(watch_date_time date_time, uint8_t current_page) {
     // handles short or long pressing of the alarm button
 
     switch (current_page) {
-        case 0: // hour
+        case SET_TIME_HOUR: // hour
             date_time.unit.hour = (date_time.unit.hour + 1) % 24;
             break;
-        case 1: // minute
+        case SET_TIME_MIN: // minute
             date_time.unit.minute = (date_time.unit.minute + 1) % 60;
             break;
-        case 2: // second
+        case SET_TIME_SEC: // second
             date_time.unit.second = 0;
             break;
-        case 3: // year
+        case SET_TIME_YEAR: // year
             date_time.unit.year = ((date_time.unit.year % 60) + 1);
             break;
-        case 4: // month
+        case SET_TIME_MONTH: // month
             date_time.unit.month = (date_time.unit.month % 12) + 1;
             break;
-        case 5: { // day
+        case SET_TIME_DAY: // day
             date_time.unit.day = date_time.unit.day + 1;
             break;
-        }
-        case 6: // time zone
-            settings->bit.time_zone++;
-            if (settings->bit.time_zone > 40) settings->bit.time_zone = 0;
+        case SET_TIME_TZ: // time zone
+            movement_set_timezone_index(movement_get_timezone_index() + 1);
+            if (movement_get_timezone_index() >= NUM_ZONE_NAMES) movement_set_timezone_index(0);
+            current_offset = movement_get_current_timezone_offset();
             break;
     }
     if (date_time.unit.day > days_in_month(date_time.unit.month, date_time.unit.year + WATCH_RTC_REFERENCE_YEAR))
         date_time.unit.day = 1;
-    watch_rtc_set_date_time(date_time);
+    movement_set_local_date_time(date_time);
 }
 
 static void _abort_quick_ticks() {
@@ -83,21 +95,22 @@ void set_time_face_activate(movement_settings_t *settings, void *context) {
     *((uint8_t *)context) = 0;
     movement_request_tick_frequency(4);
     _quick_ticks_running = false;
+    current_offset = movement_get_current_timezone_offset();
 }
 
 bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
     uint8_t current_page = *((uint8_t *)context);
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
 
     switch (event.event_type) {
         case EVENT_TICK:
             if (_quick_ticks_running) {
-                if (watch_get_pin_level(BTN_ALARM)) _handle_alarm_button(settings, date_time, current_page);
+                if (watch_get_pin_level(BTN_ALARM)) _handle_alarm_button(date_time, current_page);
                 else _abort_quick_ticks();
             }
             break;
         case EVENT_ALARM_LONG_PRESS:
-            if (current_page != 2) {
+            if (current_page != SET_TIME_SEC) {
                 _quick_ticks_running = true;
                 movement_request_tick_frequency(8);
             }
@@ -115,7 +128,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             break;
         case EVENT_ALARM_BUTTON_UP:
             _abort_quick_ticks();
-            _handle_alarm_button(settings, date_time, current_page);
+            _handle_alarm_button(date_time, current_page);
             break;
         case EVENT_TIMEOUT:
             _abort_quick_ticks();
@@ -126,7 +139,7 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
     }
 
     char buf[11];
-    if (current_page < 3) {
+    if (current_page < SET_TIME_YEAR) {
         watch_set_colon();
         if (settings->bit.clock_mode_24h) {
             watch_set_indicator(WATCH_INDICATOR_24H);
@@ -136,19 +149,26 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             if (date_time.unit.hour < 12) watch_clear_indicator(WATCH_INDICATOR_PM);
             else watch_set_indicator(WATCH_INDICATOR_PM);
         }
-    } else if (current_page < 6) {
+    } else if (current_page == SET_TIME_TZ) {
+        if (event.subsecond % 2 && !_quick_ticks_running) {
+            uint8_t hours = abs(current_offset) / 3600;
+            uint8_t minutes = (abs(current_offset) % 3600) / 60;
+
+            sprintf(buf, "%s  %2d%02d  ", set_time_face_titles[current_page], hours % 100, minutes % 100);
+            if (current_offset < 0) {
+                if (hours > 9) buf[3] = '-';
+                else buf[4] = '-';
+            }
+            watch_set_colon();
+        } else {
+            sprintf(buf, "%s  %s", set_time_face_titles[current_page], (char *) (3 + zone_names + 11 * movement_get_timezone_index()));
+            watch_clear_colon();
+        }
+    } else {
         watch_clear_colon();
         watch_clear_indicator(WATCH_INDICATOR_24H);
         watch_clear_indicator(WATCH_INDICATOR_PM);
         sprintf(buf, "%s  %2d%02d%02d", set_time_face_titles[current_page], date_time.unit.year + 20, date_time.unit.month, date_time.unit.day);
-    } else {
-        if (event.subsecond % 2) {
-            watch_clear_colon();
-            sprintf(buf, "%s        ", set_time_face_titles[current_page]);
-        } else {
-            watch_set_colon();
-            sprintf(buf, "%s %3d%02d  ", set_time_face_titles[current_page], (int8_t) (movement_timezone_offsets[settings->bit.time_zone] / 60), (int8_t) (movement_timezone_offsets[settings->bit.time_zone] % 60) * (movement_timezone_offsets[settings->bit.time_zone] < 0 ? -1 : 1));
-        }
     }
 
     // blink up the parameter we're setting

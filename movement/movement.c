@@ -41,10 +41,13 @@ of debounce time.
 #include <stdlib.h>
 #include <stdio.h>
 #include "watch.h"
+#include "watch_utility.h"
 #include "filesystem.h"
 #include "movement.h"
 #include "shell.h"
 #include "thermistor_driver.h"
+#include "utz.h"
+#include "zones.h"
 
 #ifndef MOVEMENT_FIRMWARE
 #include "movement_config.h"
@@ -165,49 +168,8 @@ int8_t g_temperature_c = -128;
 uint8_t g_force_sleep; // 0 = no sleep forced; 1 = normal sleep; 2 = deep sleep
 movement_event_t event;
 
-const int16_t movement_timezone_offsets[] = {
-    0,      //  0 :   0:00:00 (UTC)
-    60,     //  1 :   1:00:00 (Central European Time)
-    120,    //  2 :   2:00:00 (South African Standard Time)
-    180,    //  3 :   3:00:00 (Arabia Standard Time)
-    210,    //  4 :   3:30:00 (Iran Standard Time)
-    240,    //  5 :   4:00:00 (Georgia Standard Time)
-    270,    //  6 :   4:30:00 (Afghanistan Time)
-    300,    //  7 :   5:00:00 (Pakistan Standard Time)
-    330,    //  8 :   5:30:00 (Indian Standard Time)
-    345,    //  9 :   5:45:00 (Nepal Time)
-    360,    // 10 :   6:00:00 (Kyrgyzstan time)
-    390,    // 11 :   6:30:00 (Myanmar Time)
-    420,    // 12 :   7:00:00 (Thailand Standard Time)
-    480,    // 13 :   8:00:00 (China Standard Time, Australian Western Standard Time)
-    525,    // 14 :   8:45:00 (Australian Central Western Standard Time)
-    540,    // 15 :   9:00:00 (Japan Standard Time, Korea Standard Time)
-    570,    // 16 :   9:30:00 (Australian Central Standard Time)
-    600,    // 17 :  10:00:00 (Australian Eastern Standard Time)
-    630,    // 18 :  10:30:00 (Lord Howe Standard Time)
-    660,    // 19 :  11:00:00 (Solomon Islands Time)
-    720,    // 20 :  12:00:00 (New Zealand Standard Time)
-    765,    // 21 :  12:45:00 (Chatham Standard Time)
-    780,    // 22 :  13:00:00 (Tonga Time)
-    825,    // 23 :  13:45:00 (Chatham Daylight Time)
-    840,    // 24 :  14:00:00 (Line Islands Time)
-    -720,   // 25 : -12:00:00 (Baker Island Time)
-    -660,   // 26 : -11:00:00 (Niue Time)
-    -600,   // 27 : -10:00:00 (Hawaii-Aleutian Standard Time)
-    -570,   // 28 :  -9:30:00 (Marquesas Islands Time)
-    -540,   // 29 :  -9:00:00 (Alaska Standard Time)
-    -480,   // 30 :  -8:00:00 (Pacific Standard Time)
-    -420,   // 31 :  -7:00:00 (Mountain Standard Time)
-    -360,   // 32 :  -6:00:00 (Central Standard Time)
-    -300,   // 33 :  -5:00:00 (Eastern Standard Time)
-    -270,   // 34 :  -4:30:00 (Venezuelan Standard Time)
-    -240,   // 35 :  -4:00:00 (Atlantic Standard Time)
-    -210,   // 36 :  -3:30:00 (Newfoundland Standard Time)
-    -180,   // 37 :  -3:00:00 (Brasilia Time)
-    -150,   // 38 :  -2:30:00 (Newfoundland Daylight Time)
-    -120,   // 39 :  -2:00:00 (Fernando de Noronha Time)
-    -60,    // 40 :  -1:00:00 (Azores Standard Time)
-};
+int8_t _movement_dst_offset_cache[NUM_ZONE_NAMES] = {0};
+#define TIMEZONE_DOES_NOT_OBSERVE (-127)
 
 const char movement_valid_position_0_chars[] = " AaBbCcDdEeFGgHhIiJKLMNnOoPQrSTtUuWXYZ-='+\\/0123456789";
 const char movement_valid_position_1_chars[] = " ABCDEFHlJLNORTtUX-='01378";
@@ -219,6 +181,62 @@ void cb_alarm_btn_extwake(void);
 void cb_alarm_fired(void);
 void cb_fast_tick(void);
 void cb_tick(void);
+
+static udatetime_t _movement_convert_date_time_to_udate(watch_date_time date_time) {
+    return (udatetime_t) {
+        .date.dayofmonth = date_time.unit.day,
+        .date.dayofweek = dayofweek(UYEAR_FROM_YEAR(date_time.unit.year + WATCH_RTC_REFERENCE_YEAR), date_time.unit.month, date_time.unit.day),
+        .date.month = date_time.unit.month,
+        .date.year = UYEAR_FROM_YEAR(date_time.unit.year + WATCH_RTC_REFERENCE_YEAR),
+        .time.hour = date_time.unit.hour,
+        .time.minute = date_time.unit.minute,
+        .time.second = date_time.unit.second
+    };
+}
+
+static bool _movement_update_dst_offset_cache(void) {
+    uzone_t local_zone;
+    udatetime_t udate_time;
+    bool dst_changed = false;
+    watch_date_time system_date_time = watch_rtc_get_date_time();
+
+    for (uint8_t i = 0; i < NUM_ZONE_NAMES; i++) {
+        unpack_zone(&zone_defns[i], "", &local_zone);
+        watch_date_time date_time = watch_utility_date_time_convert_zone(system_date_time, 0, local_zone.offset.hours * 3600 + local_zone.offset.minutes * 60);
+
+        if (!!local_zone.rules_len) {
+            // if local zone has DST rules, we need to see if DST applies.
+            udate_time = _movement_convert_date_time_to_udate(date_time);
+            uoffset_t offset;
+            get_current_offset(&local_zone, &udate_time, &offset);
+            int8_t new_offset = (offset.hours * 60 + offset.minutes) / 15;
+            if (_movement_dst_offset_cache[i] != new_offset) {
+                _movement_dst_offset_cache[i] = new_offset;
+                dst_changed = true;
+            }
+        } else {
+            // otherwise set the cache to a constant value that indicates no DST check needs to be performed.
+            _movement_dst_offset_cache[i] = TIMEZONE_DOES_NOT_OBSERVE;
+        }
+    }
+
+    return dst_changed;
+}
+
+static bool _movement_check_dst_occurring_this_day(watch_date_time date_time) {
+    urule_packed_t curr_rule;
+    uint8_t rules_idx = zone_defns[movement_get_timezone_index()].rules_idx;
+    uint8_t rules_len = zone_defns[movement_get_timezone_index()].rules_len;
+    if (rules_len == 0) return false;
+    for(uint8_t i = 0; i < rules_len; i++) {
+        curr_rule = zone_rules[rules_idx + i];
+        if (date_time.unit.month != curr_rule.in_month) continue;
+        if (date_time.unit.hour != curr_rule.at_hours) continue;
+        if (date_time.unit.minute != curr_rule.at_inc_minutes * OFFSET_INCREMENT) continue;
+        return true;
+    }
+    return false;
+}
 
 static inline void _movement_reset_inactivity_countdown(void) {
     movement_state.le_mode_ticks = movement_le_inactivity_deadlines[movement_state.settings.bit.le_interval];
@@ -282,6 +300,13 @@ static void _decrement_deep_sleep_counter(void){
 }
 
 static void _movement_handle_background_tasks(void) {
+    watch_date_time date_time = movement_get_local_date_time();
+
+    // update the DST offset cache if the current time matches the DST minute, hour, and month
+    if (_movement_check_dst_occurring_this_day(date_time)) {
+        _movement_update_dst_offset_cache();
+    }
+
     for(uint8_t i = 0; i < MOVEMENT_NUM_FACES; i++) {
         // For each face, if the watch face wants a background task...
         if (watch_faces[i].wants_background_task != NULL && watch_faces[i].wants_background_task(&movement_state.settings, watch_face_contexts[i])) {
@@ -515,6 +540,58 @@ uint8_t movement_claim_backup_register(void) {
     return movement_state.next_available_backup_register++;
 }
 
+int32_t movement_get_current_timezone_offset_for_zone(uint8_t zone_index) {
+    int8_t cached_dst_offset = _movement_dst_offset_cache[zone_index];
+
+    if (cached_dst_offset == TIMEZONE_DOES_NOT_OBSERVE) {
+        // if time zone doesn't observe DST, we can just return the standard time offset from the zone definition.
+        return (int32_t)zone_defns[zone_index].offset_inc_minutes * OFFSET_INCREMENT * 60;
+    } else {
+        // otherwise, we've precalculated the offset for this zone and can return it.
+        return (int32_t)cached_dst_offset * OFFSET_INCREMENT * 60;
+    }
+}
+
+int32_t movement_get_current_timezone_offset(void) {
+    return movement_get_current_timezone_offset_for_zone(movement_state.settings.bit.time_zone);
+}
+
+int32_t movement_get_timezone_index(void) {
+    return movement_state.settings.bit.time_zone;
+}
+
+void movement_set_timezone_index(uint8_t value) {
+    movement_state.settings.bit.time_zone = value;
+}
+
+watch_date_time movement_get_utc_date_time(void) {
+    return watch_rtc_get_date_time();
+}
+
+watch_date_time movement_get_date_time_in_zone(uint8_t zone_index) {
+    watch_date_time date_time = watch_rtc_get_date_time();
+    int32_t offset = movement_get_current_timezone_offset_for_zone(zone_index);
+    // If we're looking at a timezone that isn't ours, recache the DST info every 15 minutes
+    if (date_time.unit.minute % 15 == 0) _movement_update_dst_offset_cache();
+    return watch_utility_date_time_convert_zone(date_time, 0, offset);
+}
+
+watch_date_time movement_get_local_date_time(void) {
+    watch_date_time date_time = watch_rtc_get_date_time();
+    return watch_utility_date_time_convert_zone(date_time, 0, movement_get_current_timezone_offset());
+}
+
+void movement_set_local_date_time(watch_date_time date_time) {
+    int32_t current_offset = movement_get_current_timezone_offset();
+    watch_date_time utc_date_time = watch_utility_date_time_convert_zone(date_time, current_offset, 0);
+    watch_rtc_set_date_time(utc_date_time);
+
+    // this may seem wasteful, but if the user's local time is in a zone that observes DST,
+    // they may have just crossed a DST boundary, which means the next call to this function
+    // could require a different offset to force local time back to UTC. Quelle horreur!
+    if (_movement_check_dst_occurring_this_day(date_time)) _movement_update_dst_offset_cache();
+}
+
 void app_init(void) {
 #if defined(NO_FREQCORR)
     watch_rtc_freqcorr_write(0, 0);
@@ -550,46 +627,12 @@ void app_init(void) {
     movement_state.settings.bit.hourly_chime_end = MOVEMENT_DEFAULT_HOURLY_CHIME_END;
     movement_state.settings.bit.screen_off_after_le = MOVEMENT_DEFAULT_LE_DEEP_SLEEP;
 
-#ifdef MAKEFILE_TIMEZONE
-    for (int i = 0, count = sizeof(movement_timezone_offsets) / sizeof(movement_timezone_offsets[0]); i < count; i++) {
-        if (movement_timezone_offsets[i] == MAKEFILE_TIMEZONE) {
-            movement_state.settings.bit.time_zone = i;
-            break;
-        }
-    }
-#else
-    movement_state.settings.bit.time_zone = 35;  // Atlantic Time as default
-#endif
     movement_state.light_ticks = -1;
     movement_state.alarm_ticks = -1;
     movement_state.next_available_backup_register = 4;
     _movement_reset_inactivity_countdown();
 
     filesystem_init();
-
-#if __EMSCRIPTEN__
-    const int16_t* timezone_offsets;
-    int32_t time_zone_offset = EM_ASM_INT({
-        return -new Date().getTimezoneOffset();
-    });
-    for (int i = 0, count = sizeof(movement_timezone_offsets) / sizeof(movement_timezone_offsets[0]); i < count; i++) {
-        if (movement_timezone_offsets[i] == time_zone_offset) {
-            movement_state.settings.bit.time_zone = i;
-            break;
-        }
-    }
-#elif defined(MAKEFILE_TIMEZONE)
-    const int16_t* timezone_offsets;
-    timezone_offsets = movement_timezone_offsets;
-    for (int i = 0; i < NUM_TIME_ZONES; i++) {
-        if (timezone_offsets[i] == MAKEFILE_TIMEZONE) {
-            movement_state.settings.bit.time_zone = i;
-            break;
-        }
-    }
-#else
-    movement_state.settings.bit.time_zone = 33;  // Atlantic Time as default
-#endif
 }
 
 void app_wake_from_backup(void) {
@@ -617,6 +660,30 @@ void app_setup(void) {
             scheduled_tasks[i].reg = 0;
             is_first_launch = false;
         }
+
+        // populate the DST offset cache
+        _movement_update_dst_offset_cache();
+
+#if __EMSCRIPTEN__
+        int32_t time_zone_offset = EM_ASM_INT({
+            return -new Date().getTimezoneOffset();
+        });
+        for (int i = 0; i < NUM_ZONE_NAMES; i++) {
+            if (movement_get_current_timezone_offset_for_zone(i) == time_zone_offset * 60) {
+                movement_state.settings.bit.time_zone = i;
+                break;
+            }
+        }
+#elif defined(MAKEFILE_TIMEZONE)
+        for (int i = 0; i < NUM_ZONE_NAMES; i++) {
+            if (movement_get_current_timezone_offset_for_zone(i) == MAKEFILE_TIMEZONE * 60) {
+                movement_state.settings.bit.time_zone = i;
+                break;
+            }
+        }
+#else
+        movement_state.settings.bit.time_zone = UTZ_NEW_YORK;  // Atlantic Time as default
+#endif
 
         // set up the 1 minute alarm (for background tasks and low power updates)
         watch_date_time alarm_time;

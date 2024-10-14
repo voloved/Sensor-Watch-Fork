@@ -49,8 +49,8 @@ static void _get_chime_times(watch_date_time date_time, movement_settings_t *set
     if (hourly_chime_start != 3 && hourly_chime_end != 3) {
         return;
     }
-    int16_t tz = movement_timezone_offsets[settings->bit.time_zone];
-    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, tz * 60, 0); // the current date / time in UTC
+    int16_t tz = movement_get_current_timezone_offset();
+    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, tz, 0); // the current date / time in UTC
     movement_location_t movement_location = (movement_location_t) watch_get_backup_data(1);
     if (movement_location.reg == 0) {
         return;
@@ -61,7 +61,7 @@ static void _get_chime_times(watch_date_time date_time, movement_settings_t *set
     int16_t lon_centi = (int16_t)movement_location.bit.longitude;
     double lat = (double)lat_centi / 100.0;
     double lon = (double)lon_centi / 100.0;
-    double hours_from_utc = ((double)tz) / 60.0;
+    double hours_from_utc = ((double)tz) / 3600.0;
     uint8_t result = sun_rise_set(utc_now.unit.year + WATCH_RTC_REFERENCE_YEAR, utc_now.unit.month, utc_now.unit.day, lon, lat, &rise, &set);
     if (result != 0) {
         return;
@@ -260,7 +260,7 @@ bool simple_clock_bin_led_face_wants_background_task(movement_settings_t *settin
     simple_clock_bin_led_state_t *state = (simple_clock_bin_led_state_t *)context;
     if (!state->signal_enabled) return false;
 
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
     if (date_time.unit.minute != 0) return false;
     if (settings->bit.hourly_chime_always) return true;
     uint8_t chime_start, chime_end;

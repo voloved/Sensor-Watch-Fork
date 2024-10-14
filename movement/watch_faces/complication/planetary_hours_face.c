@@ -113,7 +113,7 @@ static void _planetary_icon(uint8_t planet) {
  *  This function calculates the start and end of the current phase based on a given geographic location.
  *  It also calculates the start of the next following phase.
  */
-static void _planetary_solar_phases(movement_settings_t *settings, planetary_hours_state_t *state) {
+static void _planetary_solar_phases(planetary_hours_state_t *state) {
     uint8_t phase, h;
     double sunrise, sunset;
     double hour_duration, next_hour_duration;
@@ -134,7 +134,7 @@ static void _planetary_solar_phases(movement_settings_t *settings, planetary_hou
     state->no_location = false;
 
     watch_date_time date_time = watch_rtc_get_date_time(); // the current local date / time
-    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, movement_timezone_offsets[settings->bit.time_zone] * 60, 0); // the current date / time in UTC
+    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, movement_get_current_timezone_offset(), 0); // the current date / time in UTC
     watch_date_time scratch_time; // scratchpad, contains different values at different times
     watch_date_time midnight;
     scratch_time.reg = midnight.reg = utc_now.reg;
@@ -147,7 +147,7 @@ static void _planetary_solar_phases(movement_settings_t *settings, planetary_hou
     double lon = (double)lon_centi / 100.0;
 
     // save UTC offset
-    state->utc_offset = ((double)movement_timezone_offsets[settings->bit.time_zone]) / 60.0;
+    state->utc_offset = ((double)movement_get_current_timezone_offset()) / 3600.0;
 
     // calculate sunrise and sunset of current day in decimal hours after midnight
     sun_rise_set(scratch_time.unit.year + WATCH_RTC_REFERENCE_YEAR, scratch_time.unit.month, scratch_time.unit.day, lon, lat, &sunrise, &sunset);
@@ -237,7 +237,7 @@ static void _planetary_hours(movement_settings_t *settings, planetary_hours_stat
 
     // get current time
     watch_date_time date_time = watch_rtc_get_date_time(); // the current local date / time
-    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, movement_timezone_offsets[settings->bit.time_zone] * 60, 0); // the current date / time in UTC
+    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, movement_get_current_timezone_offset(), 0); // the current date / time in UTC
     current_hour_epoch = watch_utility_date_time_to_unix_time(utc_now, 0);
     
     // set the current planetary hour as default screen
@@ -249,7 +249,7 @@ static void _planetary_hours(movement_settings_t *settings, planetary_hours_stat
 
     // when current phase ends calculate the next phase
     if ( watch_utility_date_time_to_unix_time(utc_now, 0) >= state->phase_end ) {
-        _planetary_solar_phases(settings, state);
+        _planetary_solar_phases(state);
         return;
     }
 
@@ -359,7 +359,7 @@ void planetary_hours_face_activate(movement_settings_t *settings, void *context)
 #endif
 
     planetary_hours_state_t *state = (planetary_hours_state_t *)context; 
-    _planetary_solar_phases(settings, state);
+    _planetary_solar_phases(state);
 
 }
 
