@@ -250,6 +250,7 @@ static bool mode_settings(movement_event_t event, movement_settings_t *settings,
                     hours < 0 ? '-' : '+',
                     abs(hours) % 24,
 		    abs(minutes) % 60);
+            if (buf[2]=='4') buf[2] = 'W'; // W looks the closest like 4
 
             /* Let the zone number blink */
             if (event.subsecond % 2)
