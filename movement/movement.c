@@ -176,8 +176,6 @@ static bool _movement_update_dst_offset_cache(void) {
     bool dst_changed = false;
     watch_date_time system_date_time = watch_rtc_get_date_time();
 
-    printf("current zone: %d\n", movement_state.settings.bit.time_zone);
-
     for (uint8_t i = 0; i < NUM_ZONE_NAMES; i++) {
         unpack_zone(&zone_defns[i], "", &local_zone);
         watch_date_time date_time = watch_utility_date_time_convert_zone(system_date_time, 0, local_zone.offset.hours * 3600 + local_zone.offset.minutes * 60);
@@ -192,15 +190,28 @@ static bool _movement_update_dst_offset_cache(void) {
                 _movement_dst_offset_cache[i] = new_offset;
                 dst_changed = true;
             }
-            printf("zone %d: %d\n", i, new_offset);
         } else {
             // otherwise set the cache to a constant value that indicates no DST check needs to be performed.
             _movement_dst_offset_cache[i] = TIMEZONE_DOES_NOT_OBSERVE;
-            printf("zone %d: %d\n", i, TIMEZONE_DOES_NOT_OBSERVE);
         }
     }
 
     return dst_changed;
+}
+
+static bool _movement_check_dst_occurring_this_day(watch_date_time date_time) {
+    urule_packed_t curr_rule;
+    uint8_t rules_idx = zone_defns[movement_get_timezone_index()].rules_idx;
+    uint8_t rules_len = zone_defns[movement_get_timezone_index()].rules_len;
+    if (rules_len == 0) return false;
+    for(uint8_t i = 0; i < rules_len; i++) {
+        curr_rule = zone_rules[rules_idx + i];
+        if (date_time.unit.month != curr_rule.in_month) continue;
+        if (date_time.unit.hour != curr_rule.at_hours) continue;
+        if (date_time.unit.minute != curr_rule.at_inc_minutes * OFFSET_INCREMENT) continue;
+        return true;
+    }
+    return false;
 }
 
 static inline void _movement_reset_inactivity_countdown(void) {
@@ -230,10 +241,10 @@ static inline void _movement_disable_fast_tick_if_possible(void) {
 }
 
 static void _movement_handle_background_tasks(void) {
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
 
-    // update the DST offset cache every 15 minutes, since someplace in the world could change.
-    if (date_time.unit.minute % 15 == 0) {
+    // update the DST offset cache if the current time matches the DST minute, hour, and month
+    if (_movement_check_dst_occurring_this_day(date_time)) {
         _movement_update_dst_offset_cache();
     }
 
@@ -456,8 +467,11 @@ watch_date_time movement_get_utc_date_time(void) {
 }
 
 watch_date_time movement_get_date_time_in_zone(uint8_t zone_index) {
+    watch_date_time date_time = watch_rtc_get_date_time();
     int32_t offset = movement_get_current_timezone_offset_for_zone(zone_index);
-    return watch_utility_date_time_convert_zone(watch_rtc_get_date_time(), 0, offset);
+    // If we're looking at a timezone that isn't ours, recache the DST info every 15 minutes
+    if (date_time.unit.minute % 15 == 0) _movement_update_dst_offset_cache();
+    return watch_utility_date_time_convert_zone(date_time, 0, offset);
 }
 
 watch_date_time movement_get_local_date_time(void) {
@@ -473,7 +487,7 @@ void movement_set_local_date_time(watch_date_time date_time) {
     // this may seem wasteful, but if the user's local time is in a zone that observes DST,
     // they may have just crossed a DST boundary, which means the next call to this function
     // could require a different offset to force local time back to UTC. Quelle horreur!
-    _movement_update_dst_offset_cache();
+    if (_movement_check_dst_occurring_this_day(date_time)) _movement_update_dst_offset_cache();
 }
 
 void app_init(void) {
@@ -487,7 +501,7 @@ void app_init(void) {
 
     memset(&movement_state, 0, sizeof(movement_state));
     set_initial_clock_mode();
-    movement_state.settings.bit.time_zone = UTZ_UTC;
+    movement_state.settings.bit.time_zone = UTZ_NEW_YORK;
     movement_state.settings.bit.led_red_color = MOVEMENT_DEFAULT_RED_COLOR;
     movement_state.settings.bit.led_green_color = MOVEMENT_DEFAULT_GREEN_COLOR;
     movement_state.settings.bit.button_should_sound = MOVEMENT_DEFAULT_BUTTON_SOUND;
