@@ -28,7 +28,7 @@
 #include "ships_bell_face.h"
 
 static void ships_bell_ring() {
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
 
     date_time.unit.hour %= 4;
     date_time.unit.hour = date_time.unit.hour == 0 && date_time.unit.minute < 30 ? 4 : date_time.unit.hour;
@@ -54,7 +54,7 @@ static void ships_bell_draw(ships_bell_state_t *state) {
         sprintf(buf, " ");
     }
 
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
     date_time.unit.hour %= 4;
 
     sprintf(buf + 1, " %d%02d%02d", date_time.unit.hour, date_time.unit.minute, date_time.unit.second);
@@ -134,7 +134,7 @@ bool ships_bell_face_wants_background_task(movement_settings_t *settings, void *
     ships_bell_state_t *state = (ships_bell_state_t *) context;
     if (!state->bell_enabled) return false;
 
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
     if (!(date_time.unit.minute == 0 || date_time.unit.minute == 30)) return false;
 
     date_time.unit.hour %= 12;

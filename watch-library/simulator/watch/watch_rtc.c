@@ -45,6 +45,7 @@ bool _watch_rtc_is_enabled(void) {
 }
 
 void _watch_rtc_init(void) {
+    // Shifts the timezone so our local time is converted to UTC and set
     int32_t time_zone_offset = EM_ASM_INT({
         return -new Date().getTimezoneOffset() * 60;
     });
