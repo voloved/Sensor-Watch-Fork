@@ -109,7 +109,7 @@ bool minute_repeater_decimal_face_loop(movement_event_t event, movement_settings
         case EVENT_ACTIVATE:
         case EVENT_TICK:
         case EVENT_LOW_ENERGY_UPDATE:
-            date_time = watch_rtc_get_date_time();
+            date_time = movement_get_local_date_time();
             previous_date_time = state->previous_date_time;
             state->previous_date_time = date_time.reg;
 
@@ -175,7 +175,7 @@ bool minute_repeater_decimal_face_loop(movement_event_t event, movement_settings
              * boring at 00:00 or 1:00 and very quite musical at 23:59 or 12:59.
              */
 
-            date_time = watch_rtc_get_date_time();
+            date_time = movement_get_local_date_time();
             
             
             int hours = date_time.unit.hour;
@@ -232,7 +232,7 @@ bool minute_repeater_decimal_face_wants_background_task(movement_settings_t *set
     minute_repeater_decimal_state_t *state = (minute_repeater_decimal_state_t *)context;
     if (!state->signal_enabled) return false;
 
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_local_date_time();
 
     return date_time.unit.minute == 0;
 }

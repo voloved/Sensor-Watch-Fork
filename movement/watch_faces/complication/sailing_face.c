@@ -193,8 +193,8 @@ static void start(sailing_state_t *state) {//gets called by starting / switching
         beepflag++;
     }
     if (state->index > 5 || state->minutes[state->index] == 0) {
-        watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
+        watch_date_time now = movement_get_utc_date_time();
+        state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
         state->target_ts = state->now_ts;
         if (alarmflag != 0){
             watch_buzzer_play_sequence(long_beep, NULL);
@@ -204,8 +204,8 @@ static void start(sailing_state_t *state) {//gets called by starting / switching
     }
     movement_request_tick_frequency(1); //synchronises tick with the moment the button was pressed. Solves 1s offset between sound and display, solves up to +-0.5s offset between button action and display.
     state->mode = sl_running;
-    watch_date_time now = watch_rtc_get_date_time();
-    state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
+    watch_date_time now = movement_get_utc_date_time();
+    state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
     state->target_ts = watch_utility_offset_timestamp(state->now_ts, 0, state->minutes[state->index], 0);
     ring(state);
 }
@@ -252,12 +252,12 @@ void sailing_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     sailing_state_t *state = (sailing_state_t *)context;
     if(state->mode == sl_running) {
-        watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
+        watch_date_time now = movement_get_utc_date_time();
+        state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
     }
     if(state->mode == sl_counting) {
-        watch_date_time now = watch_rtc_get_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
+        watch_date_time now = movement_get_utc_date_time();
+        state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
         watch_set_indicator(WATCH_INDICATOR_LAP);
     }
     switch (alarmflag) {

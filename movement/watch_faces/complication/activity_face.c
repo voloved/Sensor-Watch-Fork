@@ -199,7 +199,7 @@ static void _activity_activate(movement_settings_t *settings, activity_state_t *
     // Those are not up-to-date because ticks have not been coming
     if (state->le_state != 0 && state->mode == ACTM_LOGGING) {
         state->le_state = 2;
-        watch_date_time now = watch_rtc_get_date_time();
+        watch_date_time now = movement_get_local_date_time();
         uint32_t now_timestamp = watch_utility_date_time_to_unix_time(now, 0);
         uint32_t start_timestamp = watch_utility_date_time_to_unix_time(state->start_time, 0);
         uint32_t total_seconds = now_timestamp - start_timestamp;
@@ -246,7 +246,7 @@ static void _activity_update_logging_screen(movement_settings_t *settings, activ
 
     // If we're in LE state: per-minute update is special
     if (state->le_state == 1) {
-        watch_date_time now = watch_rtc_get_date_time();
+        watch_date_time now = movement_get_local_date_time();
         uint32_t now_timestamp = watch_utility_date_time_to_unix_time(now, 0);
         uint32_t start_timestamp = watch_utility_date_time_to_unix_time(state->start_time, 0);
         uint32_t total_seconds = now_timestamp - start_timestamp;
@@ -294,7 +294,7 @@ static void _activity_update_logging_screen(movement_settings_t *settings, activ
     // Briefly, show time without seconds
     else {
         watch_clear_indicator(WATCH_INDICATOR_LAP);
-        watch_date_time now = watch_rtc_get_date_time();
+        watch_date_time now = movement_get_local_date_time();
         uint8_t hour = now.unit.hour;
         if (!settings->bit.clock_mode_24h) {
             watch_clear_indicator(WATCH_INDICATOR_24H);
@@ -543,7 +543,7 @@ static void _activity_alarm_long(movement_settings_t *settings, activity_state_t
         if (activity_log_count >= ACTIVITY_LOG_SZ)
             return;
         // OK, we go ahead and start logging
-        state->start_time = watch_rtc_get_date_time();
+        state->start_time = movement_get_local_date_time();
         state->curr_total_sec = 0;
         state->curr_pause_sec = 0;
         state->counter = -1;

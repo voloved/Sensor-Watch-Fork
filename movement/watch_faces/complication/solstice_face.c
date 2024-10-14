@@ -136,7 +136,7 @@ void solstice_face_setup(movement_settings_t *settings, uint8_t watch_face_index
         *context_ptr = malloc(sizeof(solstice_state_t));
         solstice_state_t *state = (solstice_state_t *)*context_ptr;
 
-        watch_date_time now = watch_rtc_get_date_time();
+        watch_date_time now = movement_get_local_date_time();
         state->year = now.unit.year;
         state->index = 0;
         calculate_datetimes(state);

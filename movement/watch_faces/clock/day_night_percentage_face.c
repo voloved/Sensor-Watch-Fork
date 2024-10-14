@@ -62,7 +62,7 @@ void day_night_percentage_face_setup(movement_settings_t *settings, uint8_t watc
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(day_night_percentage_state_t));
         day_night_percentage_state_t *state = (day_night_percentage_state_t *)*context_ptr;
-        watch_date_time utc_now = watch_utility_date_time_convert_zone(watch_rtc_get_date_time(), movement_get_current_timezone_offset(), 0);
+        watch_date_time utc_now = movement_get_utc_date_time();
         recalculate(utc_now, state);
     }
 }
@@ -76,8 +76,8 @@ bool day_night_percentage_face_loop(movement_event_t event, movement_settings_t 
     day_night_percentage_state_t *state = (day_night_percentage_state_t *)context;
 
     char buf[12];
-    watch_date_time date_time = watch_rtc_get_date_time();
-    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, movement_get_current_timezone_offset(), 0);
+    watch_date_time utc_now = movement_get_utc_date_time();
+    watch_date_time date_time = watch_utility_date_time_convert_zone(utc_now, 0, movement_get_current_timezone_offset());
 
     switch (event.event_type) {
         case EVENT_ACTIVATE:
