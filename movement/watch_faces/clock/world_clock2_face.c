@@ -163,9 +163,6 @@ static bool mode_display(movement_event_t event, movement_settings_t *settings, 
 
 		pos = 0;
 		if (event.event_type == EVENT_LOW_ENERGY_UPDATE) {
-		    if (!watch_tick_animation_is_running())
-			watch_start_tick_animation(500);
-
 		    sprintf(buf, "%.2s%2d%2d%02d  ",
                             (char *)(zone_abrevs + zone_defns[state->current_zone].abrev_formatter),
                             date_time.unit.day,

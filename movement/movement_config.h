@@ -35,6 +35,7 @@ const watch_face_t watch_faces[] = {
     probability_face,
     tally_face,
     sunrise_sunset_face,
+    world_clock2_face,
     moon_phase_face,
     party_face,
     periodic_face,
