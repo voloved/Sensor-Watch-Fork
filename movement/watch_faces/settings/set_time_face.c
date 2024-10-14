@@ -72,7 +72,7 @@ static void _handle_alarm_button(watch_date_time date_time, uint8_t current_page
             current_offset = movement_get_current_timezone_offset();
             break;
     }
-    if (date_time.unit.day > days_in_month(date_time.unit.month, date_time.unit.year + WATCH_RTC_REFERENCE_YEAR))
+    if (date_time.unit.day > watch_utility_days_in_month(date_time.unit.month, date_time.unit.year + WATCH_RTC_REFERENCE_YEAR))
         date_time.unit.day = 1;
     movement_set_local_date_time(date_time);
 }
