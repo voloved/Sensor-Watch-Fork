@@ -797,7 +797,9 @@ bool app_loop(void) {
         if (movement_state.is_buzzing) {
             woke_up_for_buzzer = true;
         }
-        event.event_type = EVENT_ACTIVATE;
+        else {
+            event.event_type = EVENT_ACTIVATE;
+        }
         _reset_debounce_ticks();  // Likely unneeded, but good to reset the debounce timers on wake.
         // this is a hack tho: waking from sleep mode, app_setup does get called, but it happens before we have reset our ticks.
         // need to figure out if there's a better heuristic for determining how we woke up.
