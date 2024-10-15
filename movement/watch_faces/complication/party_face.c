@@ -182,7 +182,13 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             // You can override any of these behaviors by adding a case for these events to this switch statement.
             return movement_default_loop_handler(event, settings);
     }
-    return !state->blink;  // Only sleep if not blinking
+    // return true if the watch can enter standby mode. Generally speaking, you should always return true.
+    // Exceptions:
+    //  * If you are displaying a color using the low-level watch_set_led_color function, you should return false.
+    //  * If you are sounding the buzzer using the low-level watch_set_buzzer_on function, you should return false.
+    // Note that if you are driving the LED or buzzer using Movement functions like movement_illuminate_led or
+    // movement_play_alarm, you can still return true. This guidance only applies to the low-level watch_ functions.
+    return true;
 }
 
 void party_face_resign(movement_settings_t *settings, void *context) {
