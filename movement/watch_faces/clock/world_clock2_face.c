@@ -201,13 +201,13 @@ static bool mode_display(movement_event_t event, movement_settings_t *settings, 
         movement_request_tick_frequency(1);
 
         if (settings->bit.button_should_sound)
-            watch_buzzer_play_note(BUZZER_NOTE_C8, 50);
+        watch_buzzer_play_note(BUZZER_NOTE_C8, 50);
 	    break;
-        case EVENT_MODE_BUTTON_UP:
-            /* Reset frequency and move to next face */
-            movement_request_tick_frequency(1);
-            movement_move_to_next_face();
-            break;
+    case EVENT_MODE_BUTTON_UP:
+        /* Reset frequency and move to next face */
+        movement_request_tick_frequency(1);
+        movement_move_to_next_face();
+        break;
 	default:
 	    return movement_default_loop_handler(event, settings);
     }
@@ -274,7 +274,7 @@ static bool mode_settings(movement_event_t event, movement_settings_t *settings,
         movement_request_tick_frequency(1);
 
         if (settings->bit.button_should_sound)
-            watch_buzzer_play_note(BUZZER_NOTE_C8, 50);
+        watch_buzzer_play_note(BUZZER_NOTE_C8, 50);
 	    break;
 	case EVENT_LIGHT_LONG_PRESS:
 	    /* Toggle selection of current zone */
