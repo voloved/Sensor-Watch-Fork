@@ -37,6 +37,7 @@
  */
 
 #include "movement.h"
+#include "zones.h"
 
 typedef struct {
     uint8_t sign: 1;    // 0-1
@@ -75,14 +76,18 @@ typedef struct {
     char name[2];
     int16_t latitude;
     int16_t longitude;
+    uint8_t timezone;
 } long_lat_presets_t;
 
 static const long_lat_presets_t longLatPresets[] =
 {
-    { .name = "  "},  // Default, the long and lat get replaced by what's set in the watch
-//    { .name = "Ny", .latitude = 4072, .longitude = -7401 },  // New York City, NY
-//    { .name = "LA", .latitude = 3405, .longitude = -11824 },  // Los Angeles, CA
-//    { .name = "dE", .latitude = 4221, .longitude = -8305 },  // Detroit, MI
+    { .name = "  "},  // Default, the long, lat, and timezone get replaced by what's set in the watch
+//    { .name = "Ny", .latitude = 4072, .longitude = -7401, .timezone = UTZ_NEW_YORK },  // New York City, NY
+//    { .name = "dE", .latitude = 4221, .longitude = -8305, .timezone = UTZ_NEW_YORK },  // Detroit, MI
+//    { .name = "LA", .latitude = 3405, .longitude = -11824, .timezone = UTZ_LOS_ANGELES },  // Los Angeles, CA
+//    { .name = "EF", .latitude = 4354, .longitude = -8636, .timezone = UTZ_NEW_YORK },  // Electric Forest
+//    { .name = "RA", .latitude = 3578, .longitude = -7864, .timezone = UTZ_NEW_YORK },  // Raleigh, NC
+//    { .name = "To", .latitude = 3567, .longitude = 13965, .timezone = UTZ_TOKYO },  // Tokyo, JP
 };
 
 #endif // SUNRISE_SUNSET_FACE_H_
