@@ -77,18 +77,17 @@ typedef struct {
     int16_t latitude;
     int16_t longitude;
     uint8_t timezone;
-    bool uses_dst;
 } long_lat_presets_t;
 
 static const long_lat_presets_t longLatPresets[] =
 {
-    { .name = "  "},  // Default, the long, lat, and timezone get replaced by what's set in the watch
-//    { .name = "Ny", .latitude = 4072, .longitude = -7401, .timezone = UTZ_NEW_YORK, .uses_dst = true },  // New York City, NY
-    { .name = "dE", .latitude = 4221, .longitude = -8305, .timezone = UTZ_NEW_YORK, .uses_dst = true },  // Detroit, MI
-    { .name = "LA", .latitude = 3405, .longitude = -11824, .timezone = UTZ_LOS_ANGELES, .uses_dst = true },  // Los Angeles, CA
-//    { .name = "EF", .latitude = 4354, .longitude = -8636, .timezone = UTZ_NEW_YORK, .uses_dst = true },  // Electric Forest
-//    { .name = "RA", .latitude = 3578, .longitude = -7864, .timezone = UTZ_NEW_YORK, .uses_dst = true },  // Raleigh, NC
-//    { .name = "To", .latitude = 3567, .longitude = 13965, .timezone = UTZ_TOKYO, .uses_dst = false },  // Tokyo, JP
+    { .name = "  " },  // Default, the long, lat, and timezone get replaced by what's set in the watch
+//    { .name = "Ny", .latitude = 4072, .longitude = -7401, .timezone = UTZ_NEW_YORK },  // New York City, NY
+    { .name = "dE", .latitude = 4221, .longitude = -8305, .timezone = UTZ_NEW_YORK },  // Detroit, MI
+    { .name = "LA", .latitude = 3405, .longitude = -11824, .timezone = UTZ_LOS_ANGELES },  // Los Angeles, CA
+//    { .name = "EF", .latitude = 4354, .longitude = -8636, .timezone = UTZ_NEW_YORK },  // Electric Forest
+//    { .name = "RA", .latitude = 3578, .longitude = -7864, .timezone = UTZ_NEW_YORK },  // Raleigh, NC
+//    { .name = "To", .latitude = 3567, .longitude = 13965, .timezone = UTZ_TOKYO },  // Tokyo, JP
 };
 
 #endif // SUNRISE_SUNSET_FACE_H_

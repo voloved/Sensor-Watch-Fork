@@ -42,6 +42,7 @@ typedef enum {
 } set_time_pages;
 
 static bool _quick_ticks_running;
+static bool _display_tz_offset;
 static int32_t current_offset;
 
 static void _handle_alarm_button(watch_date_time date_time, uint8_t current_page) {
@@ -123,8 +124,14 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             movement_move_to_next_face();
             return false;
         case EVENT_LIGHT_BUTTON_DOWN:
+            break;
+        case EVENT_LIGHT_BUTTON_UP:
             current_page = (current_page + 1) % SET_TIME_FACE_NUM_SETTINGS;
             *((uint8_t *)context) = current_page;
+            break;
+        case EVENT_LIGHT_LONG_PRESS:
+            if (current_page != SET_TIME_TZ) break;
+            _display_tz_offset = !_display_tz_offset;
             break;
         case EVENT_ALARM_BUTTON_UP:
             _abort_quick_ticks();
@@ -150,20 +157,21 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             else watch_set_indicator(WATCH_INDICATOR_PM);
         }
     } else if (current_page == SET_TIME_TZ) {
-        if (event.subsecond % 2 && !_quick_ticks_running) {
+        uint8_t curr_idx = movement_get_timezone_index();
+        if (_display_tz_offset) {
             uint8_t hours = abs(current_offset) / 3600;
             uint8_t minutes = (abs(current_offset) % 3600) / 60;
 
-            sprintf(buf, "%s  %2d%02d  ", set_time_face_titles[current_page], hours % 100, minutes % 100);
-            if (current_offset < 0) {
-                if (hours > 9) buf[3] = '-';
-                else buf[4] = '-';
-            }
-            watch_set_colon();
+            sprintf(buf, "%2s%2d %c%02d%02d", 
+                    set_time_face_titles[current_page],
+                    curr_idx % 100,
+                    current_offset < 0 ? '-' : '+',
+                    hours % 100, 
+                    minutes % 100);
         } else {
-            sprintf(buf, "%s  %s", set_time_face_titles[current_page], (char *) (3 + zone_names + 11 * movement_get_timezone_index()));
-            watch_clear_colon();
+            sprintf(buf, "%s%2d%s", set_time_face_titles[current_page], curr_idx % 100, (char *) (3 + zone_names + 11 * curr_idx));
         }
+        if (buf[2] == '4') buf[2] = 'W'; // W looks the closest like 4
     } else {
         watch_clear_colon();
         watch_clear_indicator(WATCH_INDICATOR_24H);
@@ -174,17 +182,20 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
     // blink up the parameter we're setting
     if (event.subsecond % 2 && !_quick_ticks_running) {
         switch (current_page) {
-            case 0:
-            case 3:
+            case SET_TIME_HOUR:
+            case SET_TIME_YEAR:
                 buf[4] = buf[5] = ' ';
                 break;
-            case 1:
-            case 4:
+            case SET_TIME_MIN:
+            case SET_TIME_MONTH:
                 buf[6] = buf[7] = ' ';
                 break;
-            case 2:
-            case 5:
+            case SET_TIME_SEC:
+            case SET_TIME_DAY:
                 buf[8] = buf[9] = ' ';
+                break;
+            case SET_TIME_TZ:
+                buf[4] = buf[5] = buf[6] = buf[7] = buf[8] = buf[9] = ' ';
                 break;
         }
     }

@@ -49,11 +49,10 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
     double rise, set, minutes, seconds;
     bool show_next_match = false;
     movement_location_t movement_location;
-    int16_t tz;
-    watch_date_time date_time = movement_get_local_date_time(); // the current local date / time
+    int32_t tz;
     if (state->longLatToUse == 0 || _location_count <= 1) {
-        tz = movement_get_current_timezone_offset();
         movement_location = (movement_location_t) watch_get_backup_data(1);
+        tz = movement_get_current_timezone_offset();
     }
     else{
         movement_location.bit.latitude = longLatPresets[state->longLatToUse].latitude;
@@ -68,7 +67,8 @@ static void _sunrise_sunset_face_update(movement_settings_t *settings, sunrise_s
         return;
     }
 
-    watch_date_time utc_now = watch_utility_date_time_convert_zone(date_time, tz, 0); // the current date / time in UTC
+    watch_date_time utc_now = movement_get_utc_date_time();
+    watch_date_time date_time = watch_utility_date_time_convert_zone(utc_now, 0, tz);
     watch_date_time scratch_time; // scratchpad, contains different values at different times
     scratch_time.reg = utc_now.reg;
 
@@ -329,6 +329,7 @@ void sunrise_sunset_face_activate(movement_settings_t *settings, void *context) 
     movement_location_t movement_location = (movement_location_t) watch_get_backup_data(1);
     state->working_latitude = _sunrise_sunset_face_struct_from_latlon(movement_location.bit.latitude);
     state->working_longitude = _sunrise_sunset_face_struct_from_latlon(movement_location.bit.longitude);
+    movement_update_dst_offset_cache();
 }
 
 bool sunrise_sunset_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
