@@ -65,7 +65,7 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
             current_page = (current_page + set_time_hackwatch_face_NUM_SETTINGS - 1) % set_time_hackwatch_face_NUM_SETTINGS;
             if (current_page == 2)
                 seconds_reset_sequence = 0;
-
+            if (current_page == 6) movement_update_dst_offset_cache();
             *((uint8_t *)context) = current_page;
             break;
         case EVENT_LIGHT_BUTTON_UP:
@@ -94,7 +94,7 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
                     }
                 }
                 date_time_settings.unit.second = 0;
-                watch_rtc_set_date_time(date_time_settings);
+                movement_set_local_date_time(date_time_settings);
             }
             break;
         case EVENT_ALARM_BUTTON_DOWN:
@@ -134,7 +134,7 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
                     break;
             }
             if (current_page != 2) // Do not set time when we are at seconds, it was already set previously
-                watch_rtc_set_date_time(date_time_settings);
+                movement_set_local_date_time(date_time_settings);
             break;
 
         case EVENT_ALARM_LONG_UP://Setting seconds on long release
@@ -173,7 +173,7 @@ bool set_time_hackwatch_face_loop(movement_event_t event, movement_settings_t *s
                     break;
             }
             if (current_page != 2) // Do not set time when we are at seconds, it was already set previously
-                watch_rtc_set_date_time(date_time_settings);
+                movement_set_local_date_time(date_time_settings);
             //TODO: Do not update whole RTC, just what we are changing
             break;
         case EVENT_TIMEOUT:
@@ -266,4 +266,5 @@ void set_time_hackwatch_face_resign(movement_settings_t *settings, void *context
     (void) context;
     watch_set_led_off();
     watch_store_backup_data(settings->reg, 0);
+    movement_update_dst_offset_cache();
 }
