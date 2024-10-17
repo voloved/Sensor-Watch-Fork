@@ -522,7 +522,6 @@ void movement_set_local_date_time(watch_date_time date_time) {
     int32_t current_offset = movement_get_current_timezone_offset();
     watch_date_time utc_date_time = watch_utility_date_time_convert_zone(date_time, current_offset, 0);
     watch_rtc_set_date_time(utc_date_time);
-    if (_movement_check_dst_occurring_this_day(date_time)) _movement_update_dst_offset_cache();
 }
 
 void app_init(void) {
