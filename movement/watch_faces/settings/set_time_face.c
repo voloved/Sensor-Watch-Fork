@@ -127,6 +127,8 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
             break;
         case EVENT_LIGHT_BUTTON_UP:
             current_page = (current_page + 1) % SET_TIME_FACE_NUM_SETTINGS;
+            if (current_page == SET_TIME_TZ && movement_update_dst_offset_cache())
+                current_offset = movement_get_current_timezone_offset();
             *((uint8_t *)context) = current_page;
             break;
         case EVENT_LIGHT_LONG_PRESS:
@@ -210,4 +212,5 @@ void set_time_face_resign(movement_settings_t *settings, void *context) {
     (void) context;
     watch_set_led_off();
     watch_store_backup_data(settings->reg, 0);
+    movement_update_dst_offset_cache();
 }
