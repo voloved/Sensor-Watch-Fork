@@ -214,6 +214,8 @@ void tarot_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
     if (*context_ptr == NULL) {
         *context_ptr = malloc(sizeof(tarot_state_t));
         memset(*context_ptr, 0, sizeof(tarot_state_t));
+        tarot_state_t *state = (tarot_state_t *)*context_ptr;
+        state->major_arcana_only = true;
     }
     // Emulator only: Seed random number generator
     #if __EMSCRIPTEN__
@@ -228,7 +230,6 @@ void tarot_face_activate(movement_settings_t *settings, void *context) {
     watch_display_string("TA", 0);
     init_deck(state);
     state->num_cards_to_draw = 3;
-    state->major_arcana_only = true;
 }
 
 bool tarot_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
