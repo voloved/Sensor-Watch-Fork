@@ -235,7 +235,7 @@ static bool _movement_update_dst_offset_cache(void) {
     return dst_changed;
 }
 
-static bool _movement_check_dst_occurring_this_day(watch_date_time date_time) {
+static bool _movement_check_dst_changeover_occurring_now(watch_date_time date_time) {
     static watch_date_time dst_occur_date[2];  // Same length as the maximum of zone_defns[].rules_len
     static uint8_t year_prev = 0;
     static uint8_t tz_idx_prev = 0;
@@ -339,7 +339,7 @@ static void _movement_handle_background_tasks(void) {
     watch_date_time date_time = movement_get_local_date_time();
 
     // update the DST offset cache if the current time matches the DST minute, hour, and month
-    if (_movement_check_dst_occurring_this_day(date_time)) {
+    if (_movement_check_dst_changeover_occurring_now(date_time)) {
         _movement_update_dst_offset_cache();
     }
 
