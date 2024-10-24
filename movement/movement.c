@@ -24,7 +24,7 @@
 
 #define MOVEMENT_LONG_PRESS_TICKS 64
 #define DEBOUNCE_TICKS_DOWN  3
-#define DEBOUNCE_TICKS_UP   10
+#define DEBOUNCE_TICKS_UP   20
 /*
 DEBOUNCE_TICKS_DOWN and DEBOUNCE_TICKS_UP are in terms of fast_cb ticks after a button is pressed.
 The logic is that pressed of a button are ignored until the cb_fast_tick function runs this variable amount of times.
@@ -252,9 +252,9 @@ static bool _movement_check_dst_occurring_this_day(watch_date_time date_time) {
         for(uint8_t i = 0; i < rules_len; i++) {
             urule_t unpacked_rule;
             uoffset_t offset;
-            unpack_rule(&zone_rules[rules_idx + i], date_time.unit.year + (WATCH_RTC_REFERENCE_YEAR - 2000), &unpacked_rule);  //gets the fucking rules
-            dst_occur_date[i] = _movement_convert_udate_to_date_time(unpacked_rule.datetime);  // converts to datetime
-            get_current_offset(&local_zone, &unpacked_rule.datetime, &offset);  // gets the offset of 
+            unpack_rule(&zone_rules[rules_idx + i], date_time.unit.year + (WATCH_RTC_REFERENCE_YEAR - 2000), &unpacked_rule);
+            dst_occur_date[i] = _movement_convert_udate_to_date_time(unpacked_rule.datetime);
+            get_current_offset(&local_zone, &unpacked_rule.datetime, &offset);
             int32_t sec_offset = (offset.hours * 60 + offset.minutes) * 60;
             if (unpacked_rule.is_local_time == 0) {
                 int32_t offset_non_dst = zone_defns[tz_idx_curr].offset_inc_minutes * OFFSET_INCREMENT * 60;
