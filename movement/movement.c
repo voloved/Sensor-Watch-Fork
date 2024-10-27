@@ -166,7 +166,7 @@ const int32_t movement_le_deep_sleep_deadline = 60; // In minutes (will trigger 
 const int16_t movement_timeout_inactivity_deadlines[4] = {60, 120, 300, 1800};
 int8_t g_temperature_c = -128;
 uint8_t g_force_sleep; // 0 = no sleep forced; 1 = normal sleep; 2 = deep sleep
-static bool woke_up_for_buzzer;
+static bool _woke_up_for_buzzer;
 movement_event_t event;
 
 int8_t _movement_dst_offset_cache[NUM_ZONE_NAMES] = {0};
@@ -519,7 +519,7 @@ void movement_request_wake() {
 
 static void end_buzzing() {
     movement_state.is_buzzing = false;
-    woke_up_for_buzzer = false;
+    _woke_up_for_buzzer = false;
 }
 
 static void end_buzzing_and_disable_buzzer(void) {
@@ -738,7 +738,7 @@ void app_setup(void) {
         watch_enable_buzzer();
         watch_enable_leds();
         movement_request_tick_frequency(1);
-        if (woke_up_for_buzzer) return;
+        if (_woke_up_for_buzzer) return;
         watch_enable_display();
 
 
@@ -826,8 +826,8 @@ bool app_loop(void) {
         _sleep_mode_app_loop();
         // as soon as _sleep_mode_app_loop returns, we prepare to reactivate
         // ourselves, but first, we check to see if we woke up for the buzzer:
-        woke_up_for_buzzer = movement_state.is_buzzing;
-        if (!woke_up_for_buzzer) {
+        _woke_up_for_buzzer = movement_state.is_buzzing;
+        if (!_woke_up_for_buzzer) {
             event.event_type = EVENT_ACTIVATE;
         }
         _reset_debounce_ticks();  // Likely unneeded, but good to reset the debounce timers on wake.
@@ -901,7 +901,7 @@ bool app_loop(void) {
     if (movement_state.watch_face_changed) can_sleep = false;
 
     // if we woke up for the buzzer, stay awake until it's finished.
-    if (woke_up_for_buzzer) {
+    if (_woke_up_for_buzzer) {
         while(watch_is_buzzer_or_led_enabled());
     }
 
@@ -1053,7 +1053,7 @@ void cb_fast_tick(void) {
 }
 
 void cb_tick(void) {
-    if (!woke_up_for_buzzer) event.event_type = EVENT_TICK;
+    if (!_woke_up_for_buzzer) event.event_type = EVENT_TICK;
     watch_date_time date_time = watch_rtc_get_date_time();
     if (date_time.unit.second != movement_state.last_second) {
         // TODO: can we consolidate these two ticks?
