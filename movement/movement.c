@@ -142,6 +142,7 @@ void * watch_face_contexts[MOVEMENT_NUM_FACES];
 watch_date_time scheduled_tasks[MOVEMENT_NUM_FACES];
 const int32_t movement_le_inactivity_deadlines[8] = {INT_MAX, 600, 3600, 7200, 21600, 43200, 86400, 604800};
 const int16_t movement_timeout_inactivity_deadlines[4] = {60, 120, 300, 1800};
+static watch_date_time _dst_last_cache;
 movement_event_t event;
 
 int8_t _movement_dst_offset_cache[NUM_ZONE_NAMES] = {0};
@@ -181,11 +182,10 @@ static watch_date_time _movement_convert_udate_to_date_time(udatetime_t date_tim
     };
 }
 
-static bool _movement_update_dst_offset_cache(void) {
+static bool _movement_update_dst_offset_cache(watch_date_time system_date_time) {
     uzone_t local_zone;
     udatetime_t udate_time;
     bool dst_changed = false;
-    watch_date_time system_date_time = watch_rtc_get_date_time();
 
     for (uint8_t i = 0; i < NUM_ZONE_NAMES; i++) {
         unpack_zone(&zone_defns[i], "", &local_zone);
@@ -206,7 +206,7 @@ static bool _movement_update_dst_offset_cache(void) {
             _movement_dst_offset_cache[i] = TIMEZONE_DOES_NOT_OBSERVE;
         }
     }
-
+    _dst_last_cache.reg = system_date_time.reg;
     return dst_changed;
 }
 
@@ -276,11 +276,12 @@ static inline void _movement_disable_fast_tick_if_possible(void) {
 }
 
 static void _movement_handle_background_tasks(void) {
-    watch_date_time date_time = movement_get_local_date_time();
+    watch_date_time utc_now = movement_get_utc_date_time();
+    watch_date_time date_time = watch_utility_date_time_convert_zone(utc_now, 0, movement_get_current_timezone_offset());
 
     // update the DST offset cache if the current time matches the DST minute, hour, and month
     if (_movement_check_dst_occurring_this_day(date_time)) {
-        _movement_update_dst_offset_cache();
+        _movement_update_dst_offset_cache(utc_now);
     }
 
     for(uint8_t i = 0; i < MOVEMENT_NUM_FACES; i++) {
@@ -502,14 +503,25 @@ watch_date_time movement_get_utc_date_time(void) {
 }
 
 bool movement_update_dst_offset_cache(void) {
-    return _movement_update_dst_offset_cache();
+    return _movement_update_dst_offset_cache(movement_get_utc_date_time());
+}
+
+bool movement_update_dst_offset_cache_if_needed(watch_date_time utc_now) {
+    const uint8_t min_to_trigger = 30;  // We want to check every half-hour, but no need to cache more than once in a hour-hour.
+    // Checks if the last 20 bits don't match (hours, days, months, years)
+    uint32_t ydmh_compare = (utc_now.reg ^ _dst_last_cache.reg) & 0xFFFFF;
+    if(ydmh_compare != 0) return _movement_update_dst_offset_cache(utc_now);
+    int8_t delta_actual = utc_now.unit.minute - _dst_last_cache.unit.minute;
+    if (delta_actual == 0) return false;
+    int8_t delta_min = min_to_trigger - (_dst_last_cache.unit.minute % min_to_trigger);
+    if (delta_actual >= delta_min || delta_actual < 0) return _movement_update_dst_offset_cache(utc_now);
+    return false;  
 }
 
 watch_date_time movement_get_date_time_in_zone(uint8_t zone_index) {
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_utc_date_time();
     int32_t offset = movement_get_current_timezone_offset_for_zone(zone_index);
-    // If we're looking at a timezone that isn't ours, recache the DST info every 15 minutes
-    if (date_time.unit.minute % 15 == 0) _movement_update_dst_offset_cache();
+    movement_update_dst_offset_cache_if_needed(date_time);
     return watch_utility_date_time_convert_zone(date_time, 0, offset);
 }
 
@@ -580,7 +592,7 @@ void app_setup(void) {
         }
 
         // populate the DST offset cache
-        _movement_update_dst_offset_cache();
+        _movement_update_dst_offset_cache(movement_get_utc_date_time());
 
 #if __EMSCRIPTEN__
         int32_t time_zone_offset = EM_ASM_INT({

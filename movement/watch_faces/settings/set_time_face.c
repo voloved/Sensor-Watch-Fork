@@ -209,8 +209,8 @@ bool set_time_face_loop(movement_event_t event, movement_settings_t *settings, v
 
 void set_time_face_resign(movement_settings_t *settings, void *context) {
     (void) settings;
-    (void) context;
+    uint8_t current_page = *((uint8_t *)context);
     watch_set_led_off();
     watch_store_backup_data(settings->reg, 0);
-    movement_update_dst_offset_cache();
+    if (current_page == SET_TIME_TZ) movement_update_dst_offset_cache();
 }
