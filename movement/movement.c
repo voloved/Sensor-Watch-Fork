@@ -296,7 +296,7 @@ static void _movement_handle_background_tasks(void) {
 }
 
 static void _movement_handle_scheduled_tasks(void) {
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_utc_date_time();
     uint8_t num_active_tasks = 0;
 
     for(uint8_t i = 0; i < MOVEMENT_NUM_FACES; i++) {
@@ -395,7 +395,7 @@ void movement_cancel_background_task(void) {
 }
 
 void movement_schedule_background_task_for_face(uint8_t watch_face_index, watch_date_time date_time) {
-    watch_date_time now = watch_rtc_get_date_time();
+    watch_date_time now = movement_get_utc_date_time();
     if (date_time.reg > now.reg) {
         movement_state.has_scheduled_background_task = true;
         scheduled_tasks[watch_face_index].reg = date_time.reg;
@@ -914,7 +914,7 @@ void cb_fast_tick(void) {
 
 void cb_tick(void) {
     event.event_type = EVENT_TICK;
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_utc_date_time();
     if (date_time.unit.second != movement_state.last_second) {
         // TODO: can we consolidate these two ticks?
         if (movement_state.settings.bit.le_interval && movement_state.le_mode_ticks > 0) movement_state.le_mode_ticks--;
