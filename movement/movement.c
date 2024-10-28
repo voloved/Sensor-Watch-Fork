@@ -461,7 +461,7 @@ bool movement_default_loop_handler(movement_event_t event, movement_settings_t *
             break;
         case EVENT_LOW_ENERGY_UPDATE:
             if (movement_state.current_face_idx >= (int16_t)MOVEMENT_TERIARY_FACE_INDEX)
-                display_time(watch_rtc_get_date_time(), movement_state.settings.bit.clock_mode_24h);
+                display_time(movement_get_local_date_time(), movement_state.settings.bit.clock_mode_24h);
             break;
         default:
             break;

@@ -46,7 +46,7 @@ static void _thermistor_readout_face_update_display(bool in_fahrenheit) {
 }
 
 static void _thermistor_readout_face_blink_display(bool in_fahrenheit) {
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_utc_date_time();  // Only cares about the seconds.
     if (date_time.unit.second % 5 == 0 || !_displaying_curr) {
         _thermistor_readout_face_update_display(in_fahrenheit);
         watch_clear_indicator(WATCH_INDICATOR_SIGNAL);

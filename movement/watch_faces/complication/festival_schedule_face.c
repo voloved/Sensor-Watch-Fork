@@ -306,7 +306,7 @@ static void _handle_btn_up(festival_schedule_state_t *state, bool clock_mode_24h
         return;
     }
     if (!state->festival_occurring) return;
-    watch_date_time curr_time = watch_rtc_get_date_time();
+    watch_date_time curr_time = movement_get_local_date_time();
     if (!state->showing_title) state->curr_stage = handling_light ? (state->curr_stage - 1 + STAGE_COUNT) % STAGE_COUNT : (state->curr_stage + 1) % STAGE_COUNT;
     else state->showing_title = false;
     if (SHOW_EMPTY_STAGES)
@@ -325,7 +325,7 @@ static void _show_title(festival_schedule_state_t *state){
     watch_clear_colon();
     watch_clear_all_indicators();
     state->cyc_through_all_acts = false;
-    watch_date_time curr_time = watch_rtc_get_date_time();
+    watch_date_time curr_time = movement_get_local_date_time();
     state -> prev_day = (curr_time.reg >> 17);
     state -> festival_occurring = _festival_occurring(curr_time, true);
     if (state -> festival_occurring) _display_curr_day(curr_time);
@@ -415,7 +415,7 @@ bool festival_schedule_face_loop(movement_event_t event, movement_settings_t *se
             handle_ts_ticks(state, settings->bit.clock_mode_24h);
 
             if (state->cyc_through_all_acts) break;
-            curr_time = watch_rtc_get_date_time();
+            curr_time = movement_get_local_date_time();
             bool newDay = ((curr_time.reg >> 17) != (state -> prev_day));
             state -> prev_day = (curr_time.reg >> 17);
             state -> festival_occurring = _festival_occurring(curr_time, (newDay && !state->cyc_through_all_acts));

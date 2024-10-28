@@ -78,7 +78,7 @@ static void _party_face_init_lcd(party_state_t *state) {
         state->party_text = (state->party_text + 1)  % textArrayNum;
         watch_set_indicator(WATCH_INDICATOR_BELL);
     }
-    date_time = watch_rtc_get_date_time();
+    date_time = movement_get_local_date_time();
     if (state->prev_text == state->text && date_time.unit.day == state->curr_day){
         disp_loc = 5;
         sprintf(text, "%s",textArray[state->party_text]);
