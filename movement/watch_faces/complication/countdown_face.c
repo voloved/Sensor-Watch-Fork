@@ -72,7 +72,7 @@ static void start(countdown_state_t *state) {
     state->mode = cd_running;
     state->now_ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
     state->target_ts = watch_utility_offset_timestamp(state->now_ts, state->hours, state->minutes, state->seconds);
-    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->target_ts, get_tz_offset());
+    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->target_ts, 0);
     movement_schedule_background_task(target_dt);
     watch_set_indicator(WATCH_INDICATOR_BELL);
 }

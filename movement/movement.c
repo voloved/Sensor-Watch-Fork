@@ -357,7 +357,7 @@ static void _movement_handle_background_tasks(void) {
 }
 
 static void _movement_handle_scheduled_tasks(void) {
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_utc_date_time();
     uint8_t num_active_tasks = 0;
 
     for(uint8_t i = 0; i < MOVEMENT_NUM_FACES; i++) {
@@ -494,7 +494,7 @@ void movement_cancel_background_task(void) {
 }
 
 void movement_schedule_background_task_for_face(uint8_t watch_face_index, watch_date_time date_time) {
-    watch_date_time now = watch_rtc_get_date_time();
+    watch_date_time now = movement_get_utc_date_time();
     if (date_time.reg > now.reg) {
         movement_state.has_scheduled_background_task = true;
         scheduled_tasks[watch_face_index].reg = date_time.reg;
@@ -610,16 +610,21 @@ bool movement_update_dst_offset_cache(void) {
     return _movement_update_dst_offset_cache(movement_get_utc_date_time());
 }
 
-bool movement_update_dst_offset_cache_if_needed(watch_date_time utc_now) {
+static bool dst_cache_may_be_stale(watch_date_time utc_now) {
+    // Checks if the yr, mo, day, and hr are all the same
+    if(((utc_now.reg ^ _dst_last_cache.reg) >> 12) != 0) return true;
     const uint8_t min_to_trigger = 30;  // We want to check every half-hour, but no need to cache more than once in a hour-hour.
-    // Checks if the last 20 bits don't match (hours, days, months, years)
-    uint32_t ydmh_compare = (utc_now.reg ^ _dst_last_cache.reg) & 0xFFFFF;
-    if(ydmh_compare != 0) return _movement_update_dst_offset_cache(utc_now);
     int8_t delta_actual = utc_now.unit.minute - _dst_last_cache.unit.minute;
     if (delta_actual == 0) return false;
     int8_t delta_min = min_to_trigger - (_dst_last_cache.unit.minute % min_to_trigger);
-    if (delta_actual >= delta_min || delta_actual < 0) return _movement_update_dst_offset_cache(utc_now);
+    if (delta_actual >= delta_min || delta_actual < 0) return true;
     return false;  
+}
+
+bool movement_update_dst_offset_cache_if_needed(watch_date_time utc_now) {
+    if (dst_cache_may_be_stale(utc_now))
+        return _movement_update_dst_offset_cache(utc_now);
+    return false;
 }
 
 watch_date_time movement_get_date_time_in_zone(uint8_t zone_index) {
@@ -1066,7 +1071,7 @@ void cb_fast_tick(void) {
 
 void cb_tick(void) {
     if (!_woke_up_for_buzzer) event.event_type = EVENT_TICK;
-    watch_date_time date_time = watch_rtc_get_date_time();
+    watch_date_time date_time = movement_get_utc_date_time();
     if (date_time.unit.second != movement_state.last_second) {
         // TODO: can we consolidate these two ticks?
         if (g_force_sleep){
