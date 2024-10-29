@@ -86,7 +86,10 @@ void world_clock2_face_setup(movement_settings_t *settings, uint8_t watch_face_i
 
         /* Start in settings mode */
         world_clock2_state_t *state = (world_clock2_state_t *) * context_ptr;
-        state->current_mode = WORLD_CLOCK2_MODE_SETTINGS;
+        state->current_mode = WORLD_CLOCK2_MODE_DISPLAY;
+        state->zones[UTZ_LOS_ANGELES].selected = true;
+        state->zones[UTZ_UTC].selected = true;
+        state->current_zone = find_selected_zone(state, FORWARD);
     }
 }
 
