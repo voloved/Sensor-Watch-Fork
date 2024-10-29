@@ -117,8 +117,15 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
         case EVENT_ALARM_BUTTON_UP:
             state->blink = !state->blink;
-            if (!state->blink)
+            if (!state->blink) {
                 _party_face_init_lcd(state);
+                movement_cancel_background_task();
+            }
+            else {
+                uint32_t ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
+                ts = watch_utility_offset_timestamp(ts, 3, 0, 0);  // Allow the watch to blink without timing out for 3 hours.
+                movement_schedule_background_task(watch_utility_date_time_from_unix_time(ts, 0));
+            }
             break;
         case EVENT_ALARM_LONG_PRESS:
             state->fast = !state->fast;
