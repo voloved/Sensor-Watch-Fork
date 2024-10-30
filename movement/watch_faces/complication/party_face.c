@@ -27,6 +27,10 @@
 #include "party_face.h"
 #include "watch_utility.h"
 
+#define HRS_BLINK_BEFORE_SLEEP 10
+#define HRS_BLINK_BEFORE_SLEEP_LED 3
+
+
 void party_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
     (void) settings;
     (void) watch_face_index;
@@ -96,6 +100,15 @@ static void _party_face_init_lcd(party_state_t *state) {
     state->prev_text = state->text;
 }
 
+static void offset_allow_sleep(bool blinking, bool led_on) {
+    movement_cancel_background_task();
+    if (!blinking) return;
+    uint32_t ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
+    uint8_t hours_to_delay = led_on ? HRS_BLINK_BEFORE_SLEEP_LED : HRS_BLINK_BEFORE_SLEEP;
+    ts = watch_utility_offset_timestamp(ts, hours_to_delay, 0, 0);  // Allow the watch to blink without timing out for 3 hours.
+    movement_schedule_background_task(watch_utility_date_time_from_unix_time(ts, 0));
+}
+
 bool party_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
     party_state_t *state = (party_state_t *)context;
 
@@ -106,6 +119,7 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
         case EVENT_LIGHT_BUTTON_UP:
             state->led = (state->led + 1) % 3;
+            offset_allow_sleep(state->blink, state->led != 0);
             if (!state->led){
                 watch_set_led_off();
                 break;
@@ -117,15 +131,9 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             break;
         case EVENT_ALARM_BUTTON_UP:
             state->blink = !state->blink;
-            if (!state->blink) {
+            if (!state->blink)
                 _party_face_init_lcd(state);
-                movement_cancel_background_task();
-            }
-            else {
-                uint32_t ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
-                ts = watch_utility_offset_timestamp(ts, 3, 0, 0);  // Allow the watch to blink without timing out for 3 hours.
-                movement_schedule_background_task(watch_utility_date_time_from_unix_time(ts, 0));
-            }
+            offset_allow_sleep(state->blink, state->led != 0);
             break;
         case EVENT_ALARM_LONG_PRESS:
             state->fast = !state->fast;
@@ -181,6 +189,10 @@ bool party_face_loop(movement_event_t event, movement_settings_t *settings, void
             }
             break;
         case EVENT_LIGHT_BUTTON_DOWN:
+            break;
+        case EVENT_BACKGROUND_TASK:
+            watch_set_led_off();
+            _party_face_init_lcd(state);
             break;
         default:
             // Movement's default loop handler will step in for any cases you don't handle above:
