@@ -232,9 +232,18 @@ static void reset_incorrect_elements(wordle_state_t *state) {
     }
 }
 
+static bool is_in_do_not_use_list(uint16_t guess, const uint16_t *not_to_use, uint8_t max_repeats) {
+    for (size_t i = 0; i < max_repeats; i++) {
+        if (guess == not_to_use[i]) return true;
+    }
+    return false;
+}
+
 static void reset_board(wordle_state_t *state) {
     reset_all_elements(state);
-    state->curr_answer = get_random(WORDLE_NUM_WORDS);
+    do {
+        state->curr_answer = get_random(WORDLE_NUM_WORDS);
+     } while (is_in_do_not_use_list(state->curr_answer, state->not_to_use, WORDLE_MAX_BETWEEN_REPEATS));
     watch_clear_colon();
     state->position = get_first_pos(state->word_elements_result);
     display_playing(state);
@@ -304,14 +313,14 @@ static uint32_t get_day_unix_time(void) {
 
 static void display_lose(wordle_state_t *state, uint8_t subsecond) {
     char buf[WORDLE_LENGTH + 6];
-    sprintf(buf," L   %s", subsecond % 2 ? _valid_words[state->curr_answer] : "     ");
+    sprintf(buf,"L    %s", subsecond % 2 ? _valid_words[state->curr_answer] : "     ");
     watch_display_string(buf, 0);
 }
 
 static void display_win(wordle_state_t *state, uint8_t subsecond) {
     (void) state;
     char buf[13];
-    sprintf(buf," W   %s  ", subsecond % 2 ? "NICE" : "JOb ");
+    sprintf(buf,"W    %s  ", subsecond % 2 ? "NICE" : "JOb ");
     watch_display_string(buf, 0);
 }
 
@@ -419,6 +428,13 @@ static bool act_on_btn(wordle_state_t *state, const uint8_t pin) {
     return false;
 }
 
+static void win_lose_shared(wordle_state_t *state) {
+        reset_all_elements(state);
+        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
+        state->not_to_use[state->not_to_use_position] = state->curr_answer;
+        state->not_to_use_position = (state->not_to_use_position + 1) % WORDLE_MAX_BETWEEN_REPEATS;        
+}
+
 static void get_result(wordle_state_t *state) {
 #if !WORDLE_ALLOW_NON_WORD_AND_REPEAT_GUESSES
     // Check if it's in the dict
@@ -440,9 +456,8 @@ static void get_result(wordle_state_t *state) {
 #endif
     bool exact_match = check_word(state);
     if (exact_match) {
-        reset_all_elements(state);
         state->curr_screen = SCREEN_WIN;
-        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
+        win_lose_shared(state);
         if (state->streak < 0x7F)
             state->streak++;
 #if WORDLE_USE_DAILY_STREAK == 2
@@ -451,9 +466,8 @@ static void get_result(wordle_state_t *state) {
         return;
     }
     if (++state->attempt >= WORDLE_MAX_ATTEMPTS) {
-        reset_all_elements(state);
         state->curr_screen = SCREEN_LOSE;
-        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
+        win_lose_shared(state);
         state->streak = 0;
         return;
     }
@@ -513,6 +527,7 @@ void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, 
         state->curr_screen = SCREEN_TITLE;
         state->skip_wrong_letter = true;
         reset_all_elements(state);
+        memset(state->not_to_use, 0xff, sizeof(state->not_to_use));
     }
     // Do any pin or peripheral setup here; this will be called whenever the watch wakes from deep sleep.
 }

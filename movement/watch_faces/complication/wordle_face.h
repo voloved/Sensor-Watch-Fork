@@ -89,6 +89,9 @@
 #define WORDLE_TICKS_RESULT 4  
 #define WORDLE_TICK_WIN_LOSE 2
 #define WORDLE_TICK_BAD_GUESS 0
+
+// Store this many words in our list of words that were already used to avoid too much repetition of guesses
+#define WORDLE_MAX_BETWEEN_REPEATS 50
 #include "wordle_face_dict.h"
 
 #define WORDLE_NUM_WORDS (sizeof(_valid_words) / sizeof(_valid_words[0]))
@@ -136,6 +139,8 @@ typedef struct {
     bool known_wrong_letters[WORDLE_NUM_VALID_LETTERS];
     uint32_t day_last_game_started;
     uint8_t ignore_btn_ticks;
+    uint16_t not_to_use[WORDLE_MAX_BETWEEN_REPEATS];
+    uint8_t not_to_use_position;
 } wordle_state_t;
 
 void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr);
