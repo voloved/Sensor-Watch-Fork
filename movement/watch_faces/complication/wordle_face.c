@@ -244,8 +244,6 @@ static void reset_board(wordle_state_t *state) {
     do {
         state->curr_answer = get_random(WORDLE_NUM_WORDS);
      } while (is_in_do_not_use_list(state->curr_answer, state->not_to_use, WORDLE_MAX_BETWEEN_REPEATS));
-    state->not_to_use[state->not_to_use_position] = state->curr_answer;
-    state->not_to_use_position = (state->not_to_use_position + 1) % WORDLE_MAX_BETWEEN_REPEATS;        
     watch_clear_colon();
     state->position = get_first_pos(state->word_elements_result);
     display_playing(state);
@@ -430,6 +428,13 @@ static bool act_on_btn(wordle_state_t *state, const uint8_t pin) {
     return false;
 }
 
+static void win_lose_shared(wordle_state_t *state) {
+        reset_all_elements(state);
+        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
+        state->not_to_use[state->not_to_use_position] = state->curr_answer;
+        state->not_to_use_position = (state->not_to_use_position + 1) % WORDLE_MAX_BETWEEN_REPEATS;        
+}
+
 static void get_result(wordle_state_t *state) {
 #if !WORDLE_ALLOW_NON_WORD_AND_REPEAT_GUESSES
     // Check if it's in the dict
@@ -451,9 +456,8 @@ static void get_result(wordle_state_t *state) {
 #endif
     bool exact_match = check_word(state);
     if (exact_match) {
-        reset_all_elements(state);
         state->curr_screen = SCREEN_WIN;
-        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
+        win_lose_shared(state);
         if (state->streak < 0x7F)
             state->streak++;
 #if WORDLE_USE_DAILY_STREAK == 2
@@ -462,9 +466,8 @@ static void get_result(wordle_state_t *state) {
         return;
     }
     if (++state->attempt >= WORDLE_MAX_ATTEMPTS) {
-        reset_all_elements(state);
         state->curr_screen = SCREEN_LOSE;
-        state->ignore_btn_ticks = WORDLE_TICK_WIN_LOSE;
+        win_lose_shared(state);
         state->streak = 0;
         return;
     }
