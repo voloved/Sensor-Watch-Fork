@@ -232,9 +232,20 @@ static void reset_incorrect_elements(wordle_state_t *state) {
     }
 }
 
+static bool is_in_do_not_use_list(uint16_t guess, const uint16_t *not_to_use, uint8_t max_repeats) {
+    for (size_t i = 0; i < max_repeats; i++) {
+        if (guess == not_to_use[i]) return true;
+    }
+    return false;
+}
+
 static void reset_board(wordle_state_t *state) {
     reset_all_elements(state);
-    state->curr_answer = get_random(WORDLE_NUM_WORDS);
+    do {
+        state->curr_answer = get_random(WORDLE_NUM_WORDS);
+     } while (is_in_do_not_use_list(state->curr_answer, state->not_to_use, WORDLE_MAX_BETWEEN_REPEATS));
+    state->not_to_use[state->not_to_use_position] = state->curr_answer;
+    state->not_to_use_position = (state->not_to_use_position + 1) % WORDLE_MAX_BETWEEN_REPEATS;        
     watch_clear_colon();
     state->position = get_first_pos(state->word_elements_result);
     display_playing(state);
@@ -304,14 +315,14 @@ static uint32_t get_day_unix_time(void) {
 
 static void display_lose(wordle_state_t *state, uint8_t subsecond) {
     char buf[WORDLE_LENGTH + 6];
-    sprintf(buf," L   %s", subsecond % 2 ? _valid_words[state->curr_answer] : "     ");
+    sprintf(buf,"L    %s", subsecond % 2 ? _valid_words[state->curr_answer] : "     ");
     watch_display_string(buf, 0);
 }
 
 static void display_win(wordle_state_t *state, uint8_t subsecond) {
     (void) state;
     char buf[13];
-    sprintf(buf," W   %s  ", subsecond % 2 ? "NICE" : "JOb ");
+    sprintf(buf,"W    %s  ", subsecond % 2 ? "NICE" : "JOb ");
     watch_display_string(buf, 0);
 }
 
@@ -517,6 +528,28 @@ void wordle_face_activate(movement_settings_t *settings, void *context) {
     watch_clear_all_indicators();
     watch_clear_colon();
     display_title(state);
+}
+
+void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
+    (void) settings;
+    (void) watch_face_index;
+    if (*context_ptr == NULL) {
+        *context_ptr = malloc(sizeof(wordle_state_t));
+        memset(*context_ptr, 0, sizeof(wordle_state_t));
+        wordle_state_t *state = (wordle_state_t *)*context_ptr;
+        state->curr_screen = SCREEN_TITLE;
+        state->skip_wrong_letter = true;
+        reset_all_elements(state);
+        memset(state->not_to_use, 0xff, sizeof(state->not_to_use));
+    }
+    // Do any pin or peripheral setup here; this will be called whenever the watch wakes from deep sleep.
+}
+
+void wordle_face_activate(movement_settings_t *settings, void *context) {
+    (void) settings;
+    wordle_state_t *state = (wordle_state_t *)context;
+    _activate(state);
+
 }
 
 bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
