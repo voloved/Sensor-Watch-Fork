@@ -506,6 +506,7 @@ void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, 
         state->curr_screen = SCREEN_TITLE;
         state->skip_wrong_letter = false;
         reset_all_elements(state);
+        memset(state->not_to_use, 0xff, sizeof(state->not_to_use));
     }
     // Do any pin or peripheral setup here; this will be called whenever the watch wakes from deep sleep.
 }
@@ -531,28 +532,6 @@ void wordle_face_activate(movement_settings_t *settings, void *context) {
     watch_clear_all_indicators();
     watch_clear_colon();
     display_title(state);
-}
-
-void wordle_face_setup(movement_settings_t *settings, uint8_t watch_face_index, void ** context_ptr) {
-    (void) settings;
-    (void) watch_face_index;
-    if (*context_ptr == NULL) {
-        *context_ptr = malloc(sizeof(wordle_state_t));
-        memset(*context_ptr, 0, sizeof(wordle_state_t));
-        wordle_state_t *state = (wordle_state_t *)*context_ptr;
-        state->curr_screen = SCREEN_TITLE;
-        state->skip_wrong_letter = true;
-        reset_all_elements(state);
-        memset(state->not_to_use, 0xff, sizeof(state->not_to_use));
-    }
-    // Do any pin or peripheral setup here; this will be called whenever the watch wakes from deep sleep.
-}
-
-void wordle_face_activate(movement_settings_t *settings, void *context) {
-    (void) settings;
-    wordle_state_t *state = (wordle_state_t *)context;
-    _activate(state);
-
 }
 
 bool wordle_face_loop(movement_event_t event, movement_settings_t *settings, void *context) {
