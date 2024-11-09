@@ -83,7 +83,7 @@ const watch_face_t watch_faces[] = {
  * 1: 24Hr
  * 2: Toggle with Alarm Btn
  */
-#define MOVEMENT_DEFAULT_24H_MODE 2
+#define MOVEMENT_DEFAULT_24H_MODE 0
 
 /* Enable or disable the sound on mode button press */
 #define MOVEMENT_DEFAULT_BUTTON_SOUND false
