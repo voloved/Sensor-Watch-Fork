@@ -44,10 +44,6 @@ static void abort_quick_ticks(countdown_state_t *state) {
     }
 }
 
-static inline int32_t get_tz_offset(void) {
-    return movement_get_current_timezone_offset();
-}
-
 static inline void store_countdown(countdown_state_t *state) {
     /* Store set countdown time */
     state->set_hours = state->hours;
@@ -70,7 +66,7 @@ static inline void button_beep(movement_settings_t *settings) {
 
 static void start(countdown_state_t *state) {
     state->mode = cd_running;
-    state->now_ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
+    state->now_ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), 0);
     state->target_ts = watch_utility_offset_timestamp(state->now_ts, state->hours, state->minutes, state->seconds);
     watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->target_ts, 0);
     movement_schedule_background_task(target_dt);
@@ -176,7 +172,7 @@ void countdown_face_activate(movement_settings_t *settings, void *context) {
     (void) settings;
     countdown_state_t *state = (countdown_state_t *)context;
     if(state->mode == cd_running) {
-        state->now_ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
+        state->now_ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), 0);
         watch_set_indicator(WATCH_INDICATOR_BELL);
     }
     watch_set_colon();

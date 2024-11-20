@@ -103,7 +103,7 @@ static void _party_face_init_lcd(party_state_t *state) {
 static void offset_allow_sleep(bool blinking, bool led_on) {
     movement_cancel_background_task();
     if (!blinking) return;
-    uint32_t ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), movement_get_current_timezone_offset());
+    uint32_t ts = watch_utility_date_time_to_unix_time(movement_get_utc_date_time(), 0);
     uint8_t hours_to_delay = led_on ? HRS_BLINK_BEFORE_SLEEP_LED : HRS_BLINK_BEFORE_SLEEP;
     ts = watch_utility_offset_timestamp(ts, hours_to_delay, 0, 0);  // Allow the watch to blink without timing out for 3 hours.
     movement_schedule_background_task(watch_utility_date_time_from_unix_time(ts, 0));
