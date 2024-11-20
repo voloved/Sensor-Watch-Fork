@@ -165,7 +165,7 @@ static void ring(sailing_state_t *state) {
         return;
     }
     state->nextbeep_ts = state->target_ts - beepseconds[beepflag+1];
-    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->nextbeep_ts, 0);
+    watch_date_time target_dt = watch_utility_date_time_from_unix_time(state->nextbeep_ts, movement_get_current_timezone_offset());
     movement_schedule_background_task_for_face(state->watch_face_index, target_dt);
 //background task is set, now we have time to play the tune. If this is cancelled accidentally, the next alarm will still ring. Sound is implemented non-blocking, so that neither buttons nor display output are compromised.
     for (int i = 0; i < 5; i++) {
@@ -194,7 +194,7 @@ static void start(sailing_state_t *state) {//gets called by starting / switching
     }
     if (state->index > 5 || state->minutes[state->index] == 0) {
         watch_date_time now = movement_get_utc_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
+        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
         state->target_ts = state->now_ts;
         if (alarmflag != 0){
             watch_buzzer_play_sequence(long_beep, NULL);
@@ -205,7 +205,7 @@ static void start(sailing_state_t *state) {//gets called by starting / switching
     movement_request_tick_frequency(1); //synchronises tick with the moment the button was pressed. Solves 1s offset between sound and display, solves up to +-0.5s offset between button action and display.
     state->mode = sl_running;
     watch_date_time now = movement_get_utc_date_time();
-    state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
+    state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
     state->target_ts = watch_utility_offset_timestamp(state->now_ts, 0, state->minutes[state->index], 0);
     ring(state);
 }
@@ -253,11 +253,11 @@ void sailing_face_activate(movement_settings_t *settings, void *context) {
     sailing_state_t *state = (sailing_state_t *)context;
     if(state->mode == sl_running) {
         watch_date_time now = movement_get_utc_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
+        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
     }
     if(state->mode == sl_counting) {
         watch_date_time now = movement_get_utc_date_time();
-        state->now_ts = watch_utility_date_time_to_unix_time(now, 0);
+        state->now_ts = watch_utility_date_time_to_unix_time(now, get_tz_offset());
         watch_set_indicator(WATCH_INDICATOR_LAP);
     }
     switch (alarmflag) {
