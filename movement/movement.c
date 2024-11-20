@@ -278,6 +278,7 @@ static inline void _movement_reset_inactivity_countdown(void) {
     movement_state.le_mode_ticks = movement_le_inactivity_deadlines[movement_state.settings.bit.le_interval];
     movement_state.timeout_ticks = movement_timeout_inactivity_deadlines[movement_state.settings.bit.to_interval];
     movement_state.le_deep_sleeping_ticks = movement_le_deep_sleep_deadline;
+    _woke_up_for_buzzer = false;
 }
 
 static inline void _reset_debounce_ticks(void) {
@@ -520,7 +521,6 @@ void movement_request_wake() {
 
 static void end_buzzing() {
     movement_state.is_buzzing = false;
-    _woke_up_for_buzzer = false;
 }
 
 static void end_buzzing_and_disable_buzzer(void) {
@@ -837,6 +837,7 @@ bool app_loop(void) {
         watch_register_extwake_callback(BTN_ALARM, cb_alarm_btn_extwake, true);
         event.event_type = EVENT_NONE;
         event.subsecond = 0;
+        _woke_up_for_buzzer = false;
 
         // _sleep_mode_app_loop takes over at this point and loops until le_mode_ticks is reset by the extwake handler,
         // or wake is requested using the movement_request_wake function.
