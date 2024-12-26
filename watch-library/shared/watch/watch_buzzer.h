@@ -150,7 +150,7 @@ typedef enum BuzzerNote {
 } BuzzerNote;
 
 /* Custom hourly chime tune. Check movement_custom_signal_tunes.h for options. */
-#define SIGNAL_TUNE_DEFAULT SIGNAL_TUNE_SONG_OF_STORMS
+#define SIGNAL_TUNE_DEFAULT SIGNAL_TUNE_CUSTOM
 
 /** @brief Plays the given note for a set duration.
   * @param note The note you wish to play, or BUZZER_NOTE_REST to disable output for the given duration.

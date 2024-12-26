@@ -55,7 +55,7 @@ void party_face_activate(movement_settings_t *settings, void *context) {
 static void _party_face_init_lcd(party_state_t *state) {
     char text[11];
     const char partyTime[][7] = {"Party", "Tin&e", " It's"};
-    const char secondaryText[][7] = {"Pron&"};
+    const char secondaryText[][7] = {"FRANK"};
     const int partyTextNum = sizeof(partyTime) / sizeof(partyTime[0]);
     const int secondaryTextNum = sizeof(secondaryText) / sizeof(secondaryText[0]);
     const char (*textArray)[7];

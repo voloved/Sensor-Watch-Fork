@@ -40,7 +40,6 @@ const watch_face_t watch_faces[] = {
     party_face,
     periodic_face,
     simple_calculator_face,
-    kitchen_conversions_face,
     festival_schedule_face,
     wyoscan_face,
 // Start of Secondary Faces
@@ -51,12 +50,11 @@ const watch_face_t watch_faces[] = {
     finetune_face,
     nanosec_face,
 // Start of Teriary Faces
-    endless_runner_face,
     wordle_face,
+    endless_runner_face,
     higher_lower_game_face,
     lander_face,
     simon_face,
-    smallchess_face,
     tarot_face,
 };
 
@@ -68,11 +66,11 @@ const watch_face_t watch_faces[] = {
  * Some folks also like to use this to hide the preferences and time set faces from the normal rotation.
  * If you don't want any faces to be excluded, set this to 0 and a long Mode press will have no effect.
  */
-#define MOVEMENT_TERIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 7)
+#define MOVEMENT_TERIARY_FACE_INDEX (MOVEMENT_NUM_FACES - 6)
 #define MOVEMENT_SECONDARY_FACE_INDEX (MOVEMENT_TERIARY_FACE_INDEX - 6) // or (0)
 
 /* Custom hourly chime tune. Check movement_custom_signal_tunes.h for options. */
-#define SIGNAL_TUNE_DEFAULT SIGNAL_TUNE_SONG_OF_STORMS
+#define SIGNAL_TUNE_DEFAULT SIGNAL_TUNE_CUSTOM
 
 /* Determines the intensity of the led colors
  * Set a hex value 0-7 with 0x0 being off and 0x7 being max intensity
@@ -164,8 +162,8 @@ const watch_face_t watch_faces[] = {
  * Month: 1 - 12
  * Day: 1 - 31
  */
-#define MOVEMENT_DEFAULT_BIRTHDATE_YEAR 1994
+#define MOVEMENT_DEFAULT_BIRTHDATE_YEAR 1995
 #define MOVEMENT_DEFAULT_BIRTHDATE_MONTH 6
-#define MOVEMENT_DEFAULT_BIRTHDATE_DAY 3
+#define MOVEMENT_DEFAULT_BIRTHDATE_DAY 14
 
 #endif // MOVEMENT_CONFIG_H_
