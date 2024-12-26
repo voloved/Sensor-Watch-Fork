@@ -141,6 +141,7 @@ static void _alarm_update_alarm_enabled(movement_settings_t *settings, alarm_sta
     uint8_t weekday_idx;
     uint16_t now_minutes_of_day;
     uint16_t alarm_minutes_of_day;
+    bool alarming_today;
     for (uint8_t i = 0; i < ALARM_ALARMS; i++) {
         if (state->alarm[i].enabled) {
             // figure out if alarm is to go off in the next 24 h
@@ -153,17 +154,18 @@ static void _alarm_update_alarm_enabled(movement_settings_t *settings, alarm_sta
                     now_init = true;
                     weekday_idx = _get_weekday_idx(now);
                     now_minutes_of_day = now.unit.hour * 60 + now.unit.minute;
+                    alarming_today = alarm_minutes_of_day >= now_minutes_of_day;
                 }
                 alarm_minutes_of_day = state->alarm[i].hour * 60 + state->alarm[i].minute;
                 // no more shortcuts: check days and times for all possible cases...
-                if ((state->alarm[i].day == weekday_idx && alarm_minutes_of_day >= now_minutes_of_day)
-                    || ((weekday_idx + 1) % 7 == state->alarm[i].day && alarm_minutes_of_day <= now_minutes_of_day) 
+                if ((state->alarm[i].day == weekday_idx && alarming_today)
+                    || ((weekday_idx + 1) % 7 == state->alarm[i].day && !alarming_today)
                     || (state->alarm[i].day == ALARM_DAY_WORKDAY && (weekday_idx < 4
-                        || (weekday_idx == 4 && alarm_minutes_of_day >= now_minutes_of_day)
-                        || (weekday_idx == 6 && alarm_minutes_of_day <= now_minutes_of_day)))
+                        || (weekday_idx == 4 && alarming_today)
+                        || (weekday_idx == 6 && !alarming_today)))
                     || (state->alarm[i].day == ALARM_DAY_WEEKEND && (weekday_idx == 5
-                        || (weekday_idx == 6 && alarm_minutes_of_day >= now_minutes_of_day)
-                        || (weekday_idx == 4 && alarm_minutes_of_day <= now_minutes_of_day)))) {
+                        || (weekday_idx == 6 && alarming_today)
+                        || (weekday_idx == 4 && !alarming_today)))) {
                     active_alarms = true;
                     break;
                 }
