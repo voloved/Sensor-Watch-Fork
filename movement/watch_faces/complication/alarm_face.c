@@ -56,6 +56,32 @@ static uint8_t _get_weekday_idx(watch_date_time date_time) {
     return (date_time.unit.day + 13 * (date_time.unit.month + 1) / 5 + date_time.unit.year + date_time.unit.year / 4 + 525 - 2) % 7;
 }
 
+static bool is_holiday(watch_date_time time, uint8_t weekday_idx, movement_birthdate_t birth_date) {
+    if (time.unit.month == 1 && time.unit.day == 1)  // New Year's Day
+        return true;
+    if (time.unit.month == 1 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // MLK Day
+        return true;
+    if (time.unit.month == 2 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // President's Day
+        return true;
+    if (time.unit.month == 5 && weekday_idx == 0 && time.unit.day > 24)  // Memorial Day
+        return true;
+    if (time.unit.month == 6 && time.unit.day == 19)  // Juneteenth
+        return true;
+    if (time.unit.month == 7 && time.unit.day == 4)  // Independence Day
+        return true;
+    if (time.unit.month == 9 && weekday_idx == 0 && time.unit.day <= 7)  // Labor Day
+        return true;
+    if (time.unit.month == 11 && time.unit.day == 11)  // Veterans Day
+        return true;
+    if (time.unit.month == 11 && weekday_idx == 3 && time.unit.day > 21 && time.unit.day <= 28)  // Thanksgiving
+        return true;
+    if (time.unit.month == 12 && time.unit.day == 25)  // Christmas
+        return true;
+    if (birth_date.reg != 0 && time.unit.month == birth_date.bit.month && time.unit.day == birth_date.bit.day)  // Birthday
+        return true;
+    return false;
+}
+
 static void _alarm_set_signal(alarm_state_t *state) {
     if (state->alarm[state->alarm_idx].enabled) {
         watch_set_indicator(WATCH_INDICATOR_SIGNAL);
@@ -137,6 +163,7 @@ static void _alarm_update_alarm_enabled(movement_settings_t *settings, alarm_sta
     // save indication for active alarms to movement settings
     bool active_alarms = false;
     watch_date_time now;
+    watch_date_time tmrw;
     bool now_init = false;
     uint8_t weekday_idx;
     uint16_t now_minutes_of_day;
@@ -151,6 +178,7 @@ static void _alarm_update_alarm_enabled(movement_settings_t *settings, alarm_sta
             } else {
                 if (!now_init) {
                     now = movement_get_local_date_time();
+                    tmrw = watch_utility_date_time_from_unix_time(watch_utility_date_time_to_unix_time(now, 0) + 86400, 0);
                     now_init = true;
                     weekday_idx = _get_weekday_idx(now);
                     now_minutes_of_day = now.unit.hour * 60 + now.unit.minute;
@@ -160,7 +188,11 @@ static void _alarm_update_alarm_enabled(movement_settings_t *settings, alarm_sta
                 // no more shortcuts: check days and times for all possible cases...
                 if ((state->alarm[i].day == weekday_idx && alarming_today)
                     || ((weekday_idx + 1) % 7 == state->alarm[i].day && !alarming_today)
-                    || (state->alarm[i].day == ALARM_DAY_WORKDAY && (weekday_idx < 4
+                    || ((state->alarm[i].day == ALARM_DAY_WORKDAY
+                        || (state->alarm[i].day == ALARM_DAY_WORKDAY_NO_HOLIDAYS 
+                        && ((alarming_today && !is_holiday(now, weekday_idx, state->birth_date))
+                        || (!alarming_today && !is_holiday(tmrw, weekday_idx, state->birth_date)))))
+                        && (weekday_idx < 4
                         || (weekday_idx == 4 && alarming_today)
                         || (weekday_idx == 6 && !alarming_today)))
                     || (state->alarm[i].day == ALARM_DAY_WEEKEND && (weekday_idx == 5
@@ -228,6 +260,7 @@ void alarm_face_setup(movement_settings_t *settings, uint8_t watch_face_index, v
 
         state->alarm_handled_minute = -1;
         _wait_ticks = -1;
+        _alarm_update_alarm_enabled(settings, state);
     }
 }
 
@@ -247,32 +280,6 @@ void alarm_face_resign(movement_settings_t *settings, void *context) {
     state->alarm_quick_ticks = false;
     _wait_ticks = -1;
     movement_request_tick_frequency(1);
-}
-
-static bool is_holiday(watch_date_time time, uint8_t weekday_idx, movement_birthdate_t birth_date) {
-    if (time.unit.month == 1 && time.unit.day == 1)  // New Year's Day
-        return true;
-    if (time.unit.month == 1 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // MLK Day
-        return true;
-    if (time.unit.month == 2 && weekday_idx == 0 && time.unit.day > 14 && time.unit.day <= 21)  // President's Day
-        return true;
-    if (time.unit.month == 5 && weekday_idx == 0 && time.unit.day > 24)  // Memorial Day
-        return true;
-    if (time.unit.month == 6 && time.unit.day == 19)  // Juneteenth
-        return true;
-    if (time.unit.month == 7 && time.unit.day == 4)  // Independence Day
-        return true;
-    if (time.unit.month == 9 && weekday_idx == 0 && time.unit.day <= 7)  // Labor Day
-        return true;
-    if (time.unit.month == 11 && time.unit.day == 11)  // Veterans Day
-        return true;
-    if (time.unit.month == 11 && weekday_idx == 3 && time.unit.day > 21 && time.unit.day <= 28)  // Thanksgiving
-        return true;
-    if (time.unit.month == 12 && time.unit.day == 25)  // Christmas
-        return true;
-    if (birth_date.reg != 0 && time.unit.month == birth_date.bit.month && time.unit.day == birth_date.bit.day)  // Birthday
-        return true;
-    return false;
 }
 
 bool alarm_face_wants_background_task(movement_settings_t *settings, void *context) {
