@@ -182,9 +182,9 @@ static void _alarm_update_alarm_enabled(movement_settings_t *settings, alarm_sta
                     now_init = true;
                     weekday_idx = _get_weekday_idx(now);
                     now_minutes_of_day = now.unit.hour * 60 + now.unit.minute;
-                    alarming_today = alarm_minutes_of_day >= now_minutes_of_day;
                 }
                 alarm_minutes_of_day = state->alarm[i].hour * 60 + state->alarm[i].minute;
+                alarming_today = alarm_minutes_of_day >= now_minutes_of_day;
                 // no more shortcuts: check days and times for all possible cases...
                 if ((state->alarm[i].day == weekday_idx && alarming_today)
                     || ((weekday_idx + 1) % 7 == state->alarm[i].day && !alarming_today)
