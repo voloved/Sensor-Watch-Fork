@@ -40,8 +40,6 @@ const watch_face_t watch_faces[] = {
     party_face,
     periodic_face,
     simple_calculator_face,
-    festival_schedule_face,
-    wyoscan_face,
 // Start of Secondary Faces
     preferences_face,
     set_time_face,
