@@ -248,7 +248,7 @@ static void clock_display_logo(clock_state_t *clock) {
     clock->time_signal_enabled = !clock->time_signal_enabled;
     watch_clear_all_indicators();
     watch_clear_colon();
-    watch_display_string("    CASIO ", 0);
+    watch_display_string("    GAm&ES", 0);
 }
 
 static void clock_stop_logo(movement_settings_t *settings, clock_state_t *clock, watch_date_time current)  {
